@@ -1,4 +1,3 @@
-CC=gcc
 CXX=g++
 
 build: cli.o
@@ -7,3 +6,7 @@ build: cli.o
 
 cli.o:
 	$(CXX) -o obj/cli.o -c cli/cli.cpp
+
+# DON'T USE THIS PART IN THE PACKAGE.SH
+install: build
+	sudo tridy local .
