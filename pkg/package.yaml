@@ -1,13 +1,7 @@
 name: "Tridymite"
 decription: "Just a really short description."
 information: |
-    "Here comes really long textes, that describe what you can do with this package,
-    maybe some help. Like a little man page. Or just create a man page for this
-    program, install it (as a product) and let the user know how to see the man page.
-
-    For example:
-        
-    Install packages from GitHub, GitLab or other Git-Servers by using Tridymite!
+    "Install packages from GitHub, GitLab or other Git-Servers by using Tridymite!
     Try it:
         
         sudo tridy install user:repo@server
@@ -19,10 +13,11 @@ information: |
         sudo tridy install user:repo
         sudo tridy install triploit:tridymite"
 
-
 dependencies:
-    - arg: "user:repo@github"
-    - git: "https://github.com/user/repo.git"
+    - git:
+        url: "https://github.com/jbeder/yaml-cpp"
+        type: "cmake"
 
 products:
     - ./tridy: /usr/bin/tridy
+    - ./pkg/conf: /usr/opt/
