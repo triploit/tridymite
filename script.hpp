@@ -1,0 +1,15 @@
+/*
+
+THE WHOLE PACKAGE.SH CONTENT GOES HERE, WITH ALL FUNCTIONS
+
+*/
+
+#ifndef SCRIPT_HPP
+#define SCRIPT_HPP
+
+class Script
+{
+
+};
+
+#endif
