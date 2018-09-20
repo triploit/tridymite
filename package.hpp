@@ -5,23 +5,26 @@
 #include <vector>
 
 #include "version.hpp"
+#include "script.hpp"
 
 class Package
 {
 public:
+    std::string reponame;
     std::string gituser;
-    std::string gitserver;
+    std::string name;
     std::string description;
+    std::string information;
+    std::string server;
+    std::string version;
+    Script functions;
 
-    std::vector<std::string> contributors;
     std::vector<Package> dependencies;
+    std::vector<std::string> authors;
 
     Version version;
 
-    Package()
-    {
-        version = Version("0.0.0.0");
-    }
+    Package();
 };
 
 #endif
