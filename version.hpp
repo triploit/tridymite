@@ -8,7 +8,8 @@
 class Version // Really nice: https://sourcey.com/comparing-version-strings-in-cpp/
 {
 public:
-	int major = 0, minor = 0, revision = 0, build = 0;
+	int major = 0, minor = 0, revision = 0;
+	char build = 0;
 	std::string str; // added by survari
 
 	Version() {}
@@ -16,7 +17,7 @@ public:
 	Version(const std::string& version)
 	{
 		str = version; // added by survari
-		std::sscanf(version.c_str(), "%d.%d.%d.%d", &major, &minor, &revision, &build);
+		std::sscanf(version.c_str(), "%d.%d.%d%c", &major, &minor, &revision, &build);
 	}
 
 	bool operator < (const Version& other)
@@ -80,7 +81,6 @@ public:
 		stream << ver.minor;
 		stream << '.';
 		stream << ver.revision;
-		stream << '.';
 		stream << ver.build;
 		return stream;
 	}
