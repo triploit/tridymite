@@ -16,7 +16,6 @@ public:
     std::string description;
     std::string information;
     std::string server;
-    std::string version;
     Script functions;
 
     std::vector<Package> dependencies;
