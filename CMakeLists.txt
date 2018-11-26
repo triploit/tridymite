@@ -14,13 +14,9 @@ add_executable(tridymite
         pkg/package.yaml
         function.cpp
         function.hpp
-        LICENSE
         main.cpp
-        Makefile
         package.cpp
         package.hpp
-        PKGBUILD
-        ReadMe.md
         runtime.hpp
         script.cpp
         script.hpp
