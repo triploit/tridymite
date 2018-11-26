@@ -10,6 +10,7 @@ class Version // Really nice: https://sourcey.com/comparing-version-strings-in-c
 public:
 	int major = 0, minor = 0, revision = 0;
 	char build = 0;
+
 	std::string str; // added by survari
 
 	Version() {}
