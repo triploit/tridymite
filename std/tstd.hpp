@@ -17,7 +17,7 @@ namespace tstd
 
         for (int i = 0; i < s.size(); i++)
         {
-            if (s[i] == ' ')
+            if (s[i] == delim)
             {
                 result.push_back(tmp);
                 tmp = "";
