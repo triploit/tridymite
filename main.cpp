@@ -21,6 +21,15 @@ const std::vector<std::string> __ARG_HELP { // Help for the arguments
     "Install a package from the source in the current directory."
 };
 
+const std::vector<std::string> __ARG_USAGE { // Help for the arguments
+        "<package> ...",
+        "<package> ...",
+        "<package> ...",
+        "",
+        "",
+        "<path>"
+};
+
 std::vector<int> __ARG_LENGTH { // How many arguments can an argument have? -1 = endless, 0 = 0, 1 = 1, ...
     -1, // Endless arguments can be provided
     -1,
@@ -33,7 +42,12 @@ std::vector<int> __ARG_LENGTH { // How many arguments can an argument have? -1 =
 int main(int argc, char* argv[])
 {
     CLI cli;
-    cli.init(__ARG_NAME, __ARG_HELP, __ARG_LENGTH, "tridymite", Version("0.0.1a"));
+    cli.init(__ARG_NAME,
+            __ARG_HELP,
+            __ARG_LENGTH,
+            __ARG_USAGE,
+            "tridymite",
+            Version("0.0.1a"));
 
     bool yes = cli.parseArguments(std::vector<std::string>(argv + 1, argv + argc));
 
@@ -42,7 +56,7 @@ int main(int argc, char* argv[])
         if (!yes)
             std::cout << std::endl;
 
-        cli.printHelp();
+        cli.printHelp(argv[0]);
         exit(1);
     }
     else

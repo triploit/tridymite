@@ -11,12 +11,14 @@
 void CLI::init(const std::vector<std::string> &names,
         const std::vector<std::string> &helps,
         const std::vector<int> &argc,
+        const std::vector<std::string> &usage,
         const std::string &pname,
         const Version &v)
 {
     CLI::arg_name = names;
     CLI::arg_help = helps;
     CLI::arg_argc = argc;
+    CLI::arg_usage = usage;
 
     CLI::program_name = pname;
     CLI::version = v;
@@ -137,10 +139,11 @@ bool CLI::parseArguments(std::vector<std::string> args)
     return true;
 }
 
-void CLI::printHelp()
+void CLI::printHelp(std::string arg0)
 {
     std::cout << program_name << " version " << version << std::endl << std::endl;
     int max_len = 0;
+    int tmp = 0;
 
     for (const std::string &s : arg_name)
     {
@@ -148,8 +151,17 @@ void CLI::printHelp()
             max_len = (int) s.size();
     }
 
+    for (const std::string &s : arg_usage)
+    {
+        if (s.size() > tmp)
+            tmp = (int) s.size();
+    }
+
+    max_len = max_len + tmp;
+
     std::vector<std::string> gen_help;
     std::vector<std::string> gen_name;
+    std::vector<std::string> gen_usage;
 
     for (int x = 0; x < arg_name.size(); x++)
     {
@@ -161,6 +173,8 @@ void CLI::printHelp()
             if (c == ',')
             {
                 gen_help.push_back("<NOTHING!>");
+
+                gen_usage.push_back(arg_usage[x]);
                 gen_name.push_back(tmp);
                 tmp = "";
 
@@ -177,6 +191,7 @@ void CLI::printHelp()
             if (x < arg_help.size())
                 gen_help.push_back(arg_help[x]);
 
+            gen_usage.push_back(arg_usage[x]);
             gen_name.push_back(tmp);
             tmp = "";
         }
@@ -205,9 +220,11 @@ void CLI::printHelp()
         else
             prefix = "-";
 
-        for (int x = 0; x < (max_len-gen_name[i].size()-prefix.size()); x++)
+        int gen_count = (max_len - gen_name[i].size() - prefix.size() - gen_usage[count].size());
+
+        for (int x = 0; x < gen_count; x++)
         {
-            if ((max_len-gen_name[i].size()-prefix.size()) < 0)
+            if (gen_count < 0)
                 break;
 
             space += " ";
@@ -223,7 +240,7 @@ void CLI::printHelp()
                 std::string help_space;
                 std::string help_part;
 
-                int size = (int) std::string(prefix + gen_name[i] + space).size()+7;
+                int size = (int) std::string(prefix + gen_name[i] + gen_usage[count] + space).size()+8;
                 int line = 0;
 
                 for (int x = 0; x < size; x++)
@@ -255,7 +272,7 @@ void CLI::printHelp()
             else
                 help = gen_help[count];
 
-            std::cout << "    " << prefix << gen_name[i] << space << " - " << help << std::endl;
+            std::cout << "    " << prefix << gen_name[i] << " " << gen_usage[count] << space << " - " << help << std::endl << std::endl;
         }
         else
         {
