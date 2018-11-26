@@ -21,4 +21,4 @@ add_executable(tridymite
         runtime.hpp
         script.cpp
         script.hpp
-        version.hpp std/tstd.hpp)
+        version.hpp std/tstd.hpp std/arguments.hpp)
