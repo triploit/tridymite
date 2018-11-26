@@ -5,11 +5,18 @@
 #include <std/tstd.hpp>
 
 #include <cli/cli.hpp>
+#include "cli.hpp"
 
-void CLI::init(const std::vector<std::string> &names, const std::vector<std::string> &helps, std::string pname, Version v)
+
+void CLI::init(const std::vector<std::string> &names,
+        const std::vector<std::string> &helps,
+        const std::vector<int> &argc,
+        const std::string &pname,
+        const Version &v)
 {
     CLI::arg_name = names;
     CLI::arg_help = helps;
+    CLI::arg_argc = argc;
 
     CLI::program_name = pname;
     CLI::version = v;
@@ -17,9 +24,114 @@ void CLI::init(const std::vector<std::string> &names, const std::vector<std::str
 
 bool CLI::parseArguments(std::vector<std::string> args)
 {
-    for (int i = 0; i < args.size(); i++)
+    std::string type;
+
+    for (std::string arg : args)
     {
-        std::cout << args[i] << std::endl;
+        std::vector<std::string> family;
+
+        if (arg[0] == '-')
+        {
+            family.clear();
+
+            family = tstd::get_family(arg, arg_name);
+            type = family[0];
+
+            for (const std::string &an : arg_name)
+            {
+                std::string tmp;
+
+                for (char c : an)
+                {
+                    if (c == ',')
+                    {
+                        for (const std::string &s : family)
+                        {
+                            if (CLI::arg_values.find(s) != CLI::arg_values.end())
+                                arg_values.erase(CLI::arg_values.find(s));
+                        }
+
+                        tmp = "";
+                        continue;
+                    }
+
+                    tmp += c;
+                }
+
+                if (!tmp.empty())
+                {
+                    for (std::string s : family)
+                    {
+                        if (CLI::arg_values.find(s) != CLI::arg_values.end())
+                            arg_values.erase(CLI::arg_values.find(s));
+                    }
+
+                    tmp = "";
+                }
+            }
+        }
+        else
+        {
+            if (type.empty())
+            {
+                std::cout << "error: no argument passed! (\"" << arg << "\")" << std::endl;
+                return false;
+            }
+            else
+            {
+                std::string key = type;
+
+                if (!family.empty())
+                    key = family[0];
+
+                CLI::arg_values[key].push_back(arg);
+            }
+        }
+    }
+
+    for (int i = 0; i < arg_name.size(); i++)
+    {
+        std::string tmp;
+
+        for (char c : arg_name[i])
+        {
+            if (c == ',')
+            {
+                if (CLI::arg_values.find(tmp) != CLI::arg_values.end())
+                {
+                    if (CLI::arg_values[tmp].size() != CLI::arg_argc[i])
+                    {
+                        if (CLI::arg_argc[i] != -1)
+                        {
+                            std::cout << "error: too much parameters for argument \"" << tstd::add_prefix(tmp) << "\"" << std::endl;
+                            return false;
+                        }
+                    }
+                }
+
+                tmp = "";
+                continue;
+            }
+
+            tmp += c;
+        }
+
+        if (!tmp.empty())
+        {
+            if (CLI::arg_values.find(tmp) != CLI::arg_values.end())
+            {
+                if (CLI::arg_values[tmp].size() != CLI::arg_argc[i])
+                {
+                    if (CLI::arg_argc[i] != -1)
+                    {
+                        std::cout << "error: too much parameters for argument \"" << tstd::add_prefix(tmp) << "\"" << std::endl;
+                        return false;
+                    }
+                }
+            }
+
+            tmp = "";
+        }
     }
 
     return true;
@@ -30,7 +142,7 @@ void CLI::printHelp()
     std::cout << program_name << " version " << version << std::endl << std::endl;
     int max_len = 0;
 
-    for (std::string s : arg_name)
+    for (const std::string &s : arg_name)
     {
         if (s.size() > max_len)
             max_len = (int) s.size();
@@ -44,9 +156,9 @@ void CLI::printHelp()
         std::string tmp;
         bool found = false;
 
-        for (int i = 0; i < arg_name[x].size(); i++)
+        for (const char &c : arg_name[x])
         {
-            if (arg_name[x][i] == ',')
+            if (c == ',')
             {
                 gen_help.push_back("<NOTHING!>");
                 gen_name.push_back(tmp);
@@ -56,7 +168,7 @@ void CLI::printHelp()
                 continue;
             }
 
-            tmp += arg_name[x][i];
+            tmp += c;
         }
 
         if (!tmp.empty())
@@ -147,7 +259,7 @@ void CLI::printHelp()
         }
         else
         {
-            std::string postfix = "";
+            std::string postfix;
 
             if (gen_help[count] == "<NOTHING!>")
                 postfix = ",";
@@ -157,4 +269,12 @@ void CLI::printHelp()
 
         count += 1;
     }
+}
+
+std::vector<std::string> CLI::getParameters(std::string argument)
+{
+    if (CLI::arg_values.find(argument) != CLI::arg_values.end())
+        return CLI::arg_values[argument];
+
+    return std::vector<std::string>();
 }
