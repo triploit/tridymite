@@ -272,7 +272,7 @@ void CLI::printHelp(std::string arg0)
             else
                 help = gen_help[count];
 
-            std::cout << "    " << prefix << gen_name[i] << " " << gen_usage[count] << space << " - " << help << std::endl << std::endl;
+            std::cout << "    " << prefix << gen_name[i] << " " << gen_usage[count] << space << " - " << help << std::endl;
         }
         else
         {
