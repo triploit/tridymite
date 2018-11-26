@@ -65,14 +65,17 @@ int main(int argc, char* argv[])
 
         for (const std::string &f : families)
         {
-            std::cout << f << " : ";
+            if (!cli.argumentGiven(f))
+                continue;
+
+            std::cout << f << " : Given! => ( ";
 
             for (const std::string &s : cli.getParameters(f))
             {
                 std::cout << s << " ";
             }
 
-            std::cout << std::endl;
+            std::cout << ")" << std::endl;
         }
     }
 }
