@@ -38,6 +38,7 @@ bool CLI::parseArguments(std::vector<std::string> args)
 
             family = tstd::get_family(arg, arg_name);
             type = family[0];
+            bool found = false;
 
             for (const std::string &an : arg_name)
             {
@@ -47,6 +48,9 @@ bool CLI::parseArguments(std::vector<std::string> args)
                 {
                     if (c == ',')
                     {
+                        if (tstd::add_prefix(tmp) == arg)
+                            found = true;
+
                         for (const std::string &s : family)
                         {
                             if (CLI::arg_values.find(s) != CLI::arg_values.end())
@@ -62,6 +66,9 @@ bool CLI::parseArguments(std::vector<std::string> args)
 
                 if (!tmp.empty())
                 {
+                    if (tstd::add_prefix(tmp) == arg)
+                        found = true;
+
                     for (std::string s : family)
                     {
                         if (CLI::arg_values.find(s) != CLI::arg_values.end())
@@ -70,6 +77,12 @@ bool CLI::parseArguments(std::vector<std::string> args)
 
                     tmp = "";
                 }
+            }
+
+            if (!found)
+            {
+                std::cout << "error: argument \"" << arg << "\" not found!" << std::endl;
+                return false;
             }
 
             std::string key = type;
@@ -120,7 +133,10 @@ bool CLI::parseArguments(std::vector<std::string> args)
                     {
                         if (CLI::arg_argc[i] != -1)
                         {
-                            std::cout << "error: too much parameters for argument \"" << tstd::add_prefix(tmp) << "\"" << std::endl;
+                            if (count > CLI::arg_argc[i])
+                                std::cout << "error: to much parameters for argument \"" << tstd::add_prefix(tmp) << "\"" << std::endl;
+                            else
+                                std::cout << "error: to few parameters for argument \"" << tstd::add_prefix(tmp) << "\"" << std::endl;
                             return false;
                         }
                     }
@@ -141,7 +157,7 @@ bool CLI::parseArguments(std::vector<std::string> args)
                 {
                     if (CLI::arg_argc[i] != -1)
                     {
-                        std::cout << "error: too much parameters for argument \"" << tstd::add_prefix(tmp) << "\"" << std::endl;
+                        std::cout << "error: to much parameters for argument \"" << tstd::add_prefix(tmp) << "\"" << std::endl;
                         return false;
                     }
                 }
