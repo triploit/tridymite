@@ -71,6 +71,13 @@ bool CLI::parseArguments(std::vector<std::string> args)
                     tmp = "";
                 }
             }
+
+            std::string key = type;
+
+            if (!family.empty())
+                key = family[0];
+
+            CLI::arg_values[key].push_back("<IGNORE_ME!>");
         }
         else
         {
@@ -101,7 +108,15 @@ bool CLI::parseArguments(std::vector<std::string> args)
             {
                 if (CLI::arg_values.find(tmp) != CLI::arg_values.end())
                 {
-                    if (CLI::arg_values[tmp].size() != CLI::arg_argc[i])
+                    int count = 0;
+
+                    for (const std::string &s : CLI::arg_values[tmp])
+                    {
+                        if (s != "<IGNORE_ME!>")
+                            count++;
+                    }
+
+                    if (count != CLI::arg_argc[i])
                     {
                         if (CLI::arg_argc[i] != -1)
                         {
@@ -288,10 +303,23 @@ void CLI::printHelp(std::string arg0)
     }
 }
 
+bool CLI::argumentGiven(std::string name)
+{
+    if (CLI::arg_values.find(name) != CLI::arg_values.end())
+        return true;
+
+    return false;
+}
+
 std::vector<std::string> CLI::getParameters(std::string argument)
 {
-    if (CLI::arg_values.find(argument) != CLI::arg_values.end())
-        return CLI::arg_values[argument];
+    std::vector<std::string> result;
 
-    return std::vector<std::string>();
+    for (const std::string &s : CLI::arg_values[argument])
+    {
+        if (s != "<IGNORE_ME!>")
+            result.push_back(s);
+    }
+
+    return result;
 }

@@ -27,7 +27,9 @@ public:
             const Version &v);
 
     void printHelp(std::string arg0);
+
     bool parseArguments(std::vector<std::string> arguments);
+    bool argumentGiven(std::string name);
 
     std::vector<std::string> getParameters(std::string argument);
     
