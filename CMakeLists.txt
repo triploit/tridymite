@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 14)
 
 include_directories(.)
 include_directories(cli)
+include_directories(std)
 
 add_executable(tridymite
         cli/cli.cpp
