@@ -13,8 +13,11 @@ const std::vector<std::string> __ARG_NAME{ // Names, two names of the same argum
         "r,remove",
         "u,update",
         "ua,update-all",
-        "t,test",
-        "l,local"
+        "l,local",
+        "v,verbose",
+        "insecure",
+        "s,server",
+        "u,user"
 };
 
 const std::vector<std::string> __ARG_HELP { // Help for the arguments
@@ -23,7 +26,11 @@ const std::vector<std::string> __ARG_HELP { // Help for the arguments
         "Update a package",
         "Update all installed packages",
         "A really long message, I think more than 20 characters. I hope it'll work. Let's look around...",
-        "Install a package from the source in the current directory."
+        "Install a package from the source in the current directory.",
+        "Show verbose output.",
+        "Install packages without asking security questions.",
+        "Setting the server for all package arguments.",
+        "Setting the user for all package arguments."
 };
 
 const std::vector<std::string> __ARG_USAGE { // Help for the arguments
@@ -32,7 +39,10 @@ const std::vector<std::string> __ARG_USAGE { // Help for the arguments
         "<package> ...",
         "",
         "",
-        "<path>"
+        "",
+        "<path>",
+        "<server>",
+        "<user>"
 };
 
 std::vector<int> __ARG_LENGTH { // How many arguments can an argument have? -1 = endless, 0 = 0, 1 = 1, ...
@@ -40,7 +50,10 @@ std::vector<int> __ARG_LENGTH { // How many arguments can an argument have? -1 =
         -1,
         -1,
         0,
+        1,
         0,
+        0,
+        1,
         1
 };
 
