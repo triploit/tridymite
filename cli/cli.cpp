@@ -24,11 +24,11 @@ void CLI::init(const std::vector<std::string> &names,
     CLI::version = v;
 }
 
-bool CLI::parseArguments(std::vector<std::string> args)
+bool CLI::parseArguments(std::vector<std::string> args) // parse the given arguments
 {
     std::string type;
 
-    for (std::string arg : args)
+    for (std::string arg : args) // iterate through every argument
     {
         std::vector<std::string> family;
 
@@ -170,7 +170,7 @@ bool CLI::parseArguments(std::vector<std::string> args)
     return true;
 }
 
-void CLI::printHelp(std::string arg0)
+void CLI::printHelp(std::string arg0) // Generating the help page from the defined arguments.
 {
     std::cout << program_name << " version " << version << std::endl << std::endl;
     int max_len = 0;

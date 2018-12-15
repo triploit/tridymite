@@ -15,11 +15,11 @@ int main(int argc, char* argv[])
             "tridymite",
             Version("0.0.1a"));
 
-    bool yes = cli.parseArguments(std::vector<std::string>(argv + 1, argv + argc));
+    bool working = cli.parseArguments(std::vector<std::string>(argv + 1, argv + argc)); // Parsing the given arguments, returns a boolean (false if there are errors)
 
-    if (!yes || argc == 1)
+    if (!working || argc == 1) // If there are errors or there is only one argument, we're printing the help page.
     {
-        if (!yes)
+        if (!working)
             std::cout << std::endl;
 
         cli.printHelp(argv[0]);
@@ -27,6 +27,8 @@ int main(int argc, char* argv[])
     }
     else
     {
+        // Doing some testing stuff...
+
         std::vector<std::string> families;
 
         for (std::string s : __ARG_NAME)
@@ -63,7 +65,7 @@ int main(int argc, char* argv[])
             }
         }
 
-        for (const std::string &f : families)
+        for (const std::string &f : families) // Show all arguments, that are given and their values.
         {
             if (!cli.argumentGiven(f))
                 continue;
@@ -76,6 +78,12 @@ int main(int argc, char* argv[])
             }
 
             std::cout << ")" << std::endl;
+        }
+
+        if (cli.argumentGiven("f"))
+        {
+            Script s = Script(cli.getParameters("f")[0]);
+            s.go();
         }
     }
 }
