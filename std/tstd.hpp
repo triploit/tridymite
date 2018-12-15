@@ -1,7 +1,3 @@
-//
-// Created by survari on 25.11.18.
-//
-
 #ifndef TRIDYMITE_TSTD_HPP
 #define TRIDYMITE_TSTD_HPP
 
@@ -10,7 +6,7 @@
 
 namespace tstd
 {
-    std::vector<std::string> split(std::string s, char delim) // split a string
+    std::vector<std::string> split(std::string s, char delim) // split a string by a delimiter
     {
         std::vector<std::string> result;
         std::string tmp = "";
@@ -32,14 +28,14 @@ namespace tstd
         return result;
     }
 
-    std::string add_prefix(std::string arg) // add a prefix (- or --) to argument (like "help" -> "--help")
+    std::string add_prefix(std::string arg) // add a prefix (- or --) to argument (like "help" -> "--help"; "i" -> "-i")
     {
         if (arg.size() > 2)
             return "--"+arg;
         return "-"+arg;
     }
 
-    std::vector<std::string> get_family(std::string arg, std::vector<std::string> arg_name)
+    std::vector<std::string> get_family(std::string arg, std::vector<std::string> arg_name) // getting the family of an argument, e.g. "i" is contained in the family of "i,install"
     {
         std::vector<std::string> family;
 
