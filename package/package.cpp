@@ -18,7 +18,7 @@ const std::string &Package::getGituser() const {
     return gituser;
 }
 
-void Package::setGituser(const std::string &gituser) {
+void Package::setGitUser(const std::string &gituser) {
     Package::gituser = gituser;
 }
 
@@ -54,12 +54,12 @@ void Package::setServer(const std::string &server) {
     Package::server = server;
 }
 
-const Script &Package::getFunctions() const {
-    return functions;
+const Script &Package::getBuildScript() const {
+    return build_script;
 }
 
-void Package::setFunctions(const Script &functions) {
-    Package::functions = functions;
+void Package::setBuildScript(const Script &functions) {
+    Package::build_script = functions;
 }
 
 const std::vector<Package> &Package::getDependencies() const {
