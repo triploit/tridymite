@@ -17,7 +17,8 @@ const std::vector<std::string> __ARG_NAME{ // Names, two names of the same argum
         "v,verbose",
         "insecure",
         "s,server",
-        "u,user"
+        "u,user",
+        "f,file"
 };
 
 const std::vector<std::string> __ARG_HELP { // Help for the arguments
@@ -30,7 +31,8 @@ const std::vector<std::string> __ARG_HELP { // Help for the arguments
         "Show verbose output.",
         "Install packages without asking security questions.",
         "Setting the server for all package arguments.",
-        "Setting the user for all package arguments."
+        "Setting the user for all package arguments.",
+        "Start a script file."
 };
 
 const std::vector<std::string> __ARG_USAGE { // Help for the arguments
@@ -42,7 +44,8 @@ const std::vector<std::string> __ARG_USAGE { // Help for the arguments
         "",
         "<path>",
         "<server>",
-        "<user>"
+        "<user>",
+        "<file>"
 };
 
 std::vector<int> __ARG_LENGTH { // How many arguments can an argument have? -1 = endless, 0 = 0, 1 = 1, ...
@@ -53,6 +56,7 @@ std::vector<int> __ARG_LENGTH { // How many arguments can an argument have? -1 =
         1,
         0,
         0,
+        1,
         1,
         1
 };
