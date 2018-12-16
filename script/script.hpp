@@ -25,7 +25,10 @@ public:
     Script();
     Script(const std::string &file_name);
 
-    const Function &getFunction(const std::string &name);
+    const std::vector<Function> &getFunctions();
+    Function &getFunction(const std::string &name);
+
+    bool existsFunction(const std::string &name);
     void addFunction(Function f);
 
     const std::string &getFileName();

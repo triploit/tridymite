@@ -1,15 +1,17 @@
 #include <function.hpp>
 #include <fstream>
+#include <runtime.hpp>
 #include "script.hpp"
+#include "token.hpp"
 
 Script::Script()
 {
-    null_function = Function("null", "null");
+    null_function = Function("{null}", "{null}");
 }
 
 Script::Script(const std::string &file_name)
 {
-    null_function = Function("null", "null");
+    null_function = Function("{null}", "{null}");
     this->file_name = file_name;
 }
 
@@ -37,7 +39,7 @@ void Script::parse_file(std::string f)
     if (file_name.empty())
     {
         std::cout << "error: can't go on without a file." << std::endl;
-        exit(1);
+        Runtime::exit(1);
     }
     else
     {
@@ -46,7 +48,7 @@ void Script::parse_file(std::string f)
         std::string code;
         std::string line;
 
-        std::vector<std::string> tokens;
+        std::vector<Token> tokens;
 
         while (std::getline(istream, line))
         {
@@ -57,12 +59,16 @@ void Script::parse_file(std::string f)
         int bracket_count = 0;
 
         bool delim = false;
-
         bool str = false;
+
         std::string tmp;
+        int line_count = 1;
 
         for (const char &c : code)
         {
+            if (c == '\n')
+                line_count++;
+
             if (c == '{')
             {
                 if (bracket_count >= 1)
@@ -80,15 +86,15 @@ void Script::parse_file(std::string f)
 
                 if (bracket_count == 0)
                 {
-                    tokens.push_back(tmp);
+                    tokens.push_back(Token(tmp, line_count));
                     tmp = "";
 
                     brackets = false;
                 }
                 else if (bracket_count < 0)
                 {
-                    std::cout << "error: to many \"}\" in file \"" << file_name << "\"!" << std::endl;
-                    exit(1);
+                    std::cout << "error: line " << line_count << ": too many \"}\" in file \"" << file_name << "\"!" << std::endl;
+                    Runtime::exit(1);
                 }
                 else
                     tmp += c;
@@ -101,7 +107,7 @@ void Script::parse_file(std::string f)
                 if (isdelim(c))
                 {
                     delim = true;
-                    tokens.push_back(tmp);
+                    tokens.push_back(Token(tmp, line_count));
                     tmp = "";
                 }
                 else
@@ -115,24 +121,39 @@ void Script::parse_file(std::string f)
 
         for (int i = 0; i < tokens.size(); i++)
         {
-            if (tokens[i] == "function" ||
-                tokens[i] == "func")
+            if (tokens[i].getValue() == "function" ||
+                tokens[i].getValue() == "func")
             {
                 if ((i+2) >= tokens.size())
                 {
-                    std::cout << "error: unfinished decleration in build script." << std::endl;
-                    exit(1);
+                    std::cout << "error: line " << tokens[i].getLine() << ": unfinished decleration in build script." << std::endl;
+                    Runtime::exit(1);
                 }
 
-                fs.push_back(Function(tokens[i+1], tokens[i+2]));
+                fs.push_back(Function(tokens[i+1].getValue(), tokens[i+2].getValue()));
 
                 i += 2;
                 continue;
+            }
+            else if (tokens[i].getValue() == "()")
+            {
+                if ((i+1) >= tokens.size() || (i-1) < 0)
+                {
+                    std::cout << "error: line " << tokens[i].getLine() << ": unfinished decleration in build script." << std::endl;
+                    Runtime::exit(1);
+                }
+
+                fs.push_back(Function(tokens[i-1].getValue(), tokens[i+1].getValue()));
             }
         }
     }
 
     functions = fs;
+}
+
+const std::vector<Function>& Script::getFunctions()
+{
+    return functions;
 }
 
 const std::vector<Function> &Script::go()
@@ -141,7 +162,7 @@ const std::vector<Function> &Script::go()
     return functions;
 }
 
-const Function &Script::getFunction(const std::string &name)
+Function &Script::getFunction(const std::string &name)
 {
     for (Function &func : functions)
     {
@@ -155,6 +176,11 @@ const Function &Script::getFunction(const std::string &name)
 void Script::addFunction(Function f)
 {
     functions.push_back(f);
+}
+
+bool Script::existsFunction(const std::string &name)
+{
+    return (null_function != getFunction(name));
 }
 
 const std::string& Script::getFileName()
