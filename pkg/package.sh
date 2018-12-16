@@ -1,5 +1,8 @@
-function install {
+function build {
+    echo ""
+
     make
+    ./tridymite
 }
 
 function update {
