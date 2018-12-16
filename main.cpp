@@ -7,13 +7,15 @@
 
 int main(int argc, char* argv[])
 {
+    Runtime::init();
+
     CLI cli;
     cli.init(__ARG_NAME,
             __ARG_HELP,
             __ARG_LENGTH,
             __ARG_USAGE,
             "tridymite",
-            Version("0.0.1a"));
+            Version("0.0.1b"));
 
     bool working = cli.parseArguments(std::vector<std::string>(argv + 1, argv + argc)); // Parsing the given arguments, returns a boolean (false if there are errors)
 
@@ -23,7 +25,7 @@ int main(int argc, char* argv[])
             std::cout << std::endl;
 
         cli.printHelp(argv[0]);
-        exit(1);
+        Runtime::exit(1);
     }
     else
     {
@@ -84,6 +86,18 @@ int main(int argc, char* argv[])
         {
             Script s = Script(cli.getParameters("f")[0]);
             s.go();
+
+            for (Function f : s.getFunctions())
+            {
+                std::cout << "FUNCTION: " << f.getName() << std::endl;
+            }
+
+            if (s.existsFunction("build"))
+            {
+                s.getFunction("build").run();
+            }
         }
     }
+
+    Runtime::exit(0);
 }
