@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 project(tridymite)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 include_directories(.)
 include_directories(cli)
@@ -13,17 +13,24 @@ include_directories(package)
 include_directories(script)
 
 add_executable(tridymite
+        main.cpp
+        runtime.hpp
+        version.hpp
+
         cli/cli.cpp
         cli/cli.hpp
-        pkg/example_package.yaml
-        pkg/package.sh
-        pkg/package.yaml
+
         function/function.cpp
         function/function.hpp
-        main.cpp
+
         package/package.cpp
         package/package.hpp
-        runtime.hpp
+
+        std/tstd.hpp
+        std/arguments.hpp
+
+        script/token.cpp
+        script/token.hpp
+
         script/script.cpp
-        script/script.hpp
-        version.hpp std/tstd.hpp std/arguments.hpp)
+        script/script.hpp)
