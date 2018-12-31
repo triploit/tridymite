@@ -1,10 +1,3 @@
-#include <vector>
-#include <string>
-#include <iostream>
-
-#include <std/tstd.hpp>
-
-#include <cli/cli.hpp>
 #include "cli.hpp"
 
 
@@ -114,6 +107,7 @@ bool CLI::parseArguments(std::vector<std::string> args) // parse the given argum
     for (int i = 0; i < arg_name.size(); i++)
     {
         std::string tmp;
+        int count = 0;
 
         for (char c : arg_name[i])
         {
@@ -121,7 +115,7 @@ bool CLI::parseArguments(std::vector<std::string> args) // parse the given argum
             {
                 if (CLI::arg_values.find(tmp) != CLI::arg_values.end())
                 {
-                    int count = 0;
+                    count = 0;
 
                     for (const std::string &s : CLI::arg_values[tmp])
                     {
@@ -134,9 +128,10 @@ bool CLI::parseArguments(std::vector<std::string> args) // parse the given argum
                         if (CLI::arg_argc[i] != -1)
                         {
                             if (count > CLI::arg_argc[i])
-                                std::cout << "error: to much parameters for argument \"" << tstd::add_prefix(tmp) << "\"" << std::endl;
+                                std::cout << "error: too much parameters for argument \"" << tstd::add_prefix(tmp) << "\"" << std::endl;
                             else
-                                std::cout << "error: to few parameters for argument \"" << tstd::add_prefix(tmp) << "\"" << std::endl;
+                                std::cout << "error: too few parameters for argument \"" << tstd::add_prefix(tmp) << "\"" << std::endl;
+
                             return false;
                         }
                     }
@@ -157,8 +152,13 @@ bool CLI::parseArguments(std::vector<std::string> args) // parse the given argum
                 {
                     if (CLI::arg_argc[i] != -1)
                     {
-                        std::cout << "error: to much parameters for argument \"" << tstd::add_prefix(tmp) << "\"" << std::endl;
-                        return false;
+                        if (count > CLI::arg_argc[i])
+                            std::cout << "error: too much parameters for argument \"" << tstd::add_prefix(tmp) << "\"" << std::endl;
+                        else if (count < CLI::arg_argc[i])
+                            std::cout << "error: too few parameters for argument \"" << tstd::add_prefix(tmp) << "\"" << std::endl;
+
+                        if (count != CLI::arg_argc[i])
+                            return false;
                     }
                 }
             }

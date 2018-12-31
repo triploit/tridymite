@@ -4,6 +4,14 @@
 #include <vector>
 #include <map>
 #include <package.hpp>
+#include <string>
+#include <iostream>
+
+#include <std/tstd.hpp>
+
+#ifndef ARGUMENT_COUNT
+#define ARGUMENT_COUNT 12
+#endif
 
 class CLI 
 {
@@ -17,6 +25,7 @@ private:
 
     std::string program_name;
     Version version;
+
 
 public:
     void init(const std::vector<std::string> &args,
