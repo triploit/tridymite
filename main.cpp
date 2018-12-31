@@ -3,7 +3,7 @@
 #include "runtime.hpp"
 #include "cli/cli.hpp"
 
-#include "std/arguments.hpp"
+#include <std/arguments.hpp>
 
 int main(int argc, char* argv[])
 {
@@ -29,74 +29,46 @@ int main(int argc, char* argv[])
     }
     else
     {
-        // Doing some testing stuff...
+        if (cli.argumentGiven("h")) // Printing the help page
+            cli.printHelp("");
 
-        std::vector<std::string> families;
+        // Setting the variables
 
-        for (std::string s : __ARG_NAME)
+        if (cli.argumentGiven("u"))
+            Runtime::git_user = cli.getParameters("u")[0]; // Setting the standard git user
+
+        if (cli.argumentGiven("s"))
+            Runtime::git_user = cli.getParameters("s")[0]; // Setting the standard git server
+
+        if (cli.argumentGiven(("e")))
+            Runtime::verbose = true;
+
+        if (cli.argumentGiven(("n")))
+            Runtime::insecure = true;
+
+        // Adding the packages
+
+        if (cli.argumentGiven("i")) // Check if argument -i/--install is used
         {
-            std::string tmp;
-            bool found = false;
-
-            for (char c : s)
-            {
-                if (c == ',')
-                {
-                    if (!found)
-                    {
-                        families.push_back(tmp);
-                        found = true;
-                    }
-
-                    tmp = "";
-                    continue;
-                }
-
-                tmp += c;
-            }
-
-            if (!tmp.empty())
-            {
-                if (!found)
-                {
-                    families.push_back(tmp);
-                    found = true;
-                }
-
-                tmp = "";
-            }
+            std::vector<Package> pkgs = tstd::parse_package_arguments(cli.getParameters("i")); // Get all parameters and convert them to packages
+            Runtime::to_install.insert(Runtime::to_install.end(), pkgs.begin(), pkgs.end()); // Add Packages to install.
         }
 
-        for (const std::string &f : families) // Show all arguments, that are given and their values.
+        if (cli.argumentGiven("u"))
         {
-            if (!cli.argumentGiven(f))
-                continue;
-
-            std::cout << f << " : Given! => ( ";
-
-            for (const std::string &s : cli.getParameters(f))
-            {
-                std::cout << s << " ";
-            }
-
-            std::cout << ")" << std::endl;
+            std::vector<Package> pkgs = tstd::parse_package_arguments(cli.getParameters("i"));
+            Runtime::to_update.insert(Runtime::to_update.end(), pkgs.begin(), pkgs.end());
         }
 
-        if (cli.argumentGiven("f"))
+        if (cli.argumentGiven("r"))
         {
-            Script s = Script(cli.getParameters("f")[0]);
-            s.go();
-
-            for (Function f : s.getFunctions())
-            {
-                std::cout << "FUNCTION: " << f.getName() << std::endl;
-            }
-
-            if (s.existsFunction("build"))
-            {
-                s.getFunction("build").run();
-            }
+            std::vector<Package> pkgs = tstd::parse_package_arguments(cli.getParameters("i"));
+            Runtime::to_remove.insert(Runtime::to_remove.end(), pkgs.begin(), pkgs.end());
         }
+
+        // Running the managers, doing installing, updating etc.
+
+
     }
 
     Runtime::exit(0);
