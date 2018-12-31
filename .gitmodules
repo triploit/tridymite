@@ -1,0 +1,6 @@
+[submodule "yaml"]
+	path = yaml
+	url = https://github.com/jimmiebergmann/mini-yaml
+[submodule "mini-yaml"]
+	path = mini-yaml
+	url = https://github.com/jimmiebergmann/mini-yaml
