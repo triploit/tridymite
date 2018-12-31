@@ -30,7 +30,6 @@
 #include <list>
 #include <cstdio>
 #include <stdarg.h>
-#include <vector>
 
 
 // Implementation access definitions.
