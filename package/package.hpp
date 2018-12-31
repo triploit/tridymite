@@ -10,16 +10,9 @@
 class Package
 {
 private:
-    std::string reponame;
-public:
-    const std::string &getReponame() const;
-
-    void setReponame(const std::string &reponame);
-
-private:
     std::string gituser;        // name of user/organisation where the project lies
     std::string name;           // name of repository
-    std::string description;    // long description of programm.
+    std::string description;    // long description
     std::string information;    // short description
     std::string server;         // name of server (e.g. github.com, bitbucket.org, ...)
     Script build_script;        // build script
@@ -31,8 +24,9 @@ private:
 
 public:
     Package();
+    Package(const std::string &argument_name);
 
-    const std::string &getGituser() const;
+    const std::string &getGitUser() const;
     const std::string &getName() const;
     const std::string &getDescription() const;
     const std::string &getInformation() const;

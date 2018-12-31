@@ -1,20 +1,21 @@
 #include "package.hpp"
+#include <std/tstd.hpp>
 
 Package::Package()
 {
     version = Version("0.0.0a");
 }
 
-const std::string &Package::getReponame() const {
-    return reponame;
+Package::Package(const std::string &argument_name)
+{
+    Package p = tstd::parse_package(argument_name);
+
+    setGitUser(p.getGitUser());
+    setServer(p.getServer());
+    setName(p.getName());
 }
 
-void Package::setReponame(const std::string &reponame) {
-    Package::reponame = reponame;
-}
-
-
-const std::string &Package::getGituser() const {
+const std::string &Package::getGitUser() const {
     return gituser;
 }
 
