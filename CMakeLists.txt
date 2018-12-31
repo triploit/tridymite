@@ -12,7 +12,7 @@ include_directories(lexer)
 include_directories(parser)
 include_directories(package)
 include_directories(script)
-include_directories(yaml)
+include_directories(yaml/yaml)
 
 add_executable(tridymite
         main.cpp
@@ -20,8 +20,8 @@ add_executable(tridymite
         version.hpp
         fun.cpp
 
-        yaml/Yaml.cpp
-        yaml/Yaml.hpp
+        yaml/yaml/Yaml.cpp
+        yaml/yaml/Yaml.hpp
 
         cli/cli.cpp
         cli/cli.hpp
