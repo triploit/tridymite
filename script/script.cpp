@@ -38,7 +38,7 @@ void Script::parse_file(std::string f)
 
     if (file_name.empty())
     {
-        std::cout << "error: can't go on without a file." << std::endl;
+        std::cout << Translation::get("script.parse_file.file_not_found");
         Runtime::exit(1);
     }
     else
@@ -93,7 +93,7 @@ void Script::parse_file(std::string f)
                 }
                 else if (bracket_count < 0)
                 {
-                    std::cout << "error: line " << line_count << ": too many \"}\" in file \"" << file_name << "\"!" << std::endl;
+                    printf(Translation::get("script.parse_file.too_many_brackets").c_str(), line_count, file_name.c_str());
                     Runtime::exit(1);
                 }
                 else
@@ -126,7 +126,7 @@ void Script::parse_file(std::string f)
             {
                 if ((i+2) >= tokens.size())
                 {
-                    std::cout << "error: line " << tokens[i].getLine() << ": unfinished decleration in build script." << std::endl;
+                    printf(Translation::get("script.parse_file.unfinished_declaration").c_str(), tokens[i].getLine());
                     Runtime::exit(1);
                 }
 
@@ -139,7 +139,7 @@ void Script::parse_file(std::string f)
             {
                 if ((i+1) >= tokens.size() || (i-1) < 0)
                 {
-                    std::cout << "error: line " << tokens[i].getLine() << ": unfinished decleration in build script." << std::endl;
+                    printf(Translation::get("script.parse_file.unfinished_declaration").c_str(), tokens[i].getLine());
                     Runtime::exit(1);
                 }
 
