@@ -1,9 +1,3 @@
-# fun
-
-fun.1: "Ok, das Setup ist wirklich schnell gemacht. Ich muss nur meine\nDateien kopieren, dann sind wir fertig und du kannst\nloslegen :)!"
-fun.2: "Fertig. Viel Spass beim Nutzen!"
-fun.3: "Ich brauche ab hier Rootrechte um fortfahren zu koennen. Darf ich bitten?"
-
 # cli
 
 # manager/dependencies
@@ -17,6 +11,30 @@ fun.3: "Ich brauche ab hier Rootrechte um fortfahren zu koennen. Darf ich bitten
 # script
 
 # std
+
+arguments.help.help: "shows this help page"
+arguments.help.install: "install a package"
+arguments.help.remove: "remove a package"
+arguments.help.update: "update a package"
+arguments.help.update_all: "update all installed packages"
+arguments.help.local: "installing a package from the source in the given directory"
+arguments.help.verbose: "show extended (verbose) output"
+arguments.help.insecure: "installing packages without asking security questions"
+arguments.help.server: "setting the server for all package arguments"
+arguments.help.user: "setting the user for all package arguments"
+arguments.help.version: "show the version of tridymite"
+
+arguments.usage.help: ""
+arguments.usage.install: "<package> ..."
+arguments.usage.remove: "<package> ..."
+arguments.usage.update: "<package> ..."
+arguments.usage.update_all: ""
+arguments.usage.local: "<path>"
+arguments.usage.verbose: ""
+arguments.usage.insecure: ""
+arguments.usage.server: "<server>"
+arguments.usage.user: "<username>"
+arguments.usage.version: ""
 
 # main
 
