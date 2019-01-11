@@ -20,14 +20,22 @@ also this will work:
     sudo tridy install triploit:tridymite"
 
 
-dependencies:
-    - arg: "user:repo@github"
-    - pkg: "https://github.com/user/repo.git"
-    - nopkg:
+dependencies: # declaring dependencies
+    - "user:repo@github"
+    - "https://github.com/user/repo.git"
+
+    - nopkg: # installing a repository (that is no tridymite package) with a shell command
         url: "https://github.com/user/repo.git"
-        type: "shellscript"
+        type: "command"
         arguments: "install.sh"
 
-products:
-    - ./tridy: /usr/bin/tridy
-    - ./pkg/conf: /usr/opt/
+    - nopkg: # installing a repository (that is no tridymite package) via cmake
+        url: "https://github.com/user/repo.git"
+        type: "cmake"
+
+products: # moving directories and binaries to their place
+    - ./config_direcotry: "/usr/opt/program/config_directory"
+    - ./binary: "/usr/opt/program/binary"
+
+links: # linking files if necessary
+    - /usr/opt/program/binary: "/usr/share/binary"

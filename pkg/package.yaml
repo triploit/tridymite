@@ -1,4 +1,5 @@
 name: "Tridymite"
+version: "0.0.1b"
 decription: "Tridymite package manager."
 information: |
 "Install packages from GitHub, GitLab or other Git-Servers using Tridymite!
@@ -13,8 +14,13 @@ also this will work:
     sudo tridy -i user:repo
     sudo tridy -i triploit:tridymite"
 
+authors:
+    - survari
+    - blobcodes
+    - romangraef
+
 products:
-    - ./tridymite_dir/*: /usr/share/tridymite/
+    - ./tridymite_dir/*: "/usr/share/tridymite/"
 
 links:
-    - /usr/share/tridymite/tridy: /usr/bin/tridy
+    - /usr/share/tridymite/tridy: "/usr/bin/tridy"
