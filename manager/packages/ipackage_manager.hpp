@@ -12,13 +12,12 @@
 class IPackagesManager
 {
 private:
-    static std::vector<Package> installed_packages;
+    static inline std::vector<Package> installed_packages;
 
 public:
-    void init();
-
-    const std::vector<Package> &getInstalledPackages();
-    bool isPackageInstalled(Package p);
+    static void load(std::string path);
+    static std::vector<Package> getInstalledPackages();
+    static bool isPackageInstalled(Package p);
 };
 
 
