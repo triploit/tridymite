@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 project(tridymite)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_LIBRARIES -lyaml-cpp)
 
 include_directories(.)
 include_directories(cli)
@@ -12,16 +13,11 @@ include_directories(lexer)
 include_directories(parser)
 include_directories(package)
 include_directories(script)
-include_directories(yaml/yaml)
 
 add_executable(tridymite
         main.cpp
         runtime.hpp
         version.hpp
-        fun.cpp
-
-        yaml/yaml/Yaml.cpp
-        yaml/yaml/Yaml.hpp
 
         cli/cli.cpp
         cli/cli.hpp
@@ -52,4 +48,6 @@ add_executable(tridymite
         manager/update/update_manager.hpp
 
         manager/packages/ipackage_manager.cpp
-        manager/packages/ipackage_manager.hpp)
+        manager/packages/ipackage_manager.hpp
+
+        translation/translation.cpp)
