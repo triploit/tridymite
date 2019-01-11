@@ -137,22 +137,38 @@ std::string tstd::create_url(Package p, std::string postfix)
     if (!postfix.empty())
         postfix = "/"+postfix;
 
-    return std::string("https://"+p.getServer()+"/"+p.getGitUser()+"/"+p.getName()+postfix);
+    return std::string("https://"+p.getServer()+"/"+p.getGitUser()+"/"+p.getRepoName()+postfix);
 }
 
-void tstd::dont_rush(std::string s)
+std::vector<std::string> tstd::read_cursive_all_files(std::string path)
 {
-    __useconds_t speed;
+    std::vector<std::string> files;
 
-    for (char c : s)
+    DIR* dirp = opendir(path.c_str());
+    struct dirent * dp;
+
+    while ((dp = readdir(dirp)) != NULL)
     {
-        speed = 40000;
+        if (dp->d_name[0] == '.')
+            continue;
 
-        if (c == '.')
-            speed = speed*5;
+        std::string p = path+dp->d_name;
+        struct stat s;
 
-        std::cout << c;
-        std::cin.sync();
-        usleep(speed);
+        if (stat(p.c_str(), &s) == 0)
+        {
+            if (s.st_mode & S_IFDIR)
+            {
+                std::vector<std::string> tmp = read_cursive_all_files(p+"/");
+                files.insert(files.end(), tmp.begin(), tmp.end());
+            }
+            else if (s.st_mode & S_IFREG)
+            {
+                files.push_back(p);
+            }
+        }
     }
+    closedir(dirp);
+
+    return files;
 }

@@ -5,6 +5,7 @@
 #include <vector>
 #include <package/package.hpp>
 #include <runtime.hpp>
+#include <dirent.h>
 
 namespace tstd
 {
@@ -16,8 +17,7 @@ namespace tstd
     std::vector<Package> parse_package_arguments(const std::vector<std::string> &packages);
     std::vector<std::string> split(std::string s, char delim); // Split a string by a delimiter
     std::vector<std::string> get_family(std::string arg, std::vector<std::string> arg_name); // Getting the family of an argument, e.g. "i" is contained in the family of "i,install"
-
-    void dont_rush(std::string s);
+    std::vector<std::string> read_cursive_all_files(std::string basic_string);
 };
 
 
