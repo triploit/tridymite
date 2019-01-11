@@ -4,6 +4,8 @@
 #include "cli/cli.hpp"
 
 #include <std/arguments.hpp>
+#include <manager/packages/ipackage_manager.hpp>
+#include <algorithm>
 
 int main(int argc, char* argv[])
 {
@@ -13,7 +15,6 @@ int main(int argc, char* argv[])
     cli.init(__ARG_NAME,
             __ARG_HELP,
             __ARG_LENGTH,
-            __ARG_USAGE,
             "tridymite",
             Version("0.0.1b"));
 
@@ -24,13 +25,45 @@ int main(int argc, char* argv[])
         if (!working)
             std::cout << std::endl;
 
+        if (cli.argumentGiven("lf"))
+            Translation::loadConfig(cli.getParameters("lf")[0]);
+
         cli.printHelp(argv[0]);
         Runtime::exit(1);
     }
     else
     {
+        if (cli.argumentGiven("lf"))
+            Translation::loadConfig(cli.getParameters("lf")[0]);
+
         if (cli.argumentGiven("h")) // Printing the help page
             cli.printHelp("");
+
+        if (cli.argumentGiven("lp"))
+        {
+            std::cout << "Packages installed: " << std::endl;
+            std::vector<std::string> msgs;
+
+            std::string author;
+
+            for (const Package &p : IPackagesManager::getInstalledPackages())
+            {
+                std::string prefix;
+
+                if (author != p.getGitUser())
+                {
+                    author = p.getGitUser();
+                    prefix = "\n";
+                }
+
+                msgs.push_back(prefix+"    - "+p.getGitUser()+" -> "+p.getRepoName()+" @ "+p.getServer()+" - v"+p.getVersion().str);
+            }
+
+            std::sort(msgs.begin(), msgs.end());
+
+            for (const std::string &s : msgs)
+                std::cout << s << std::endl;
+        }
 
         // Setting the variables
 
@@ -45,6 +78,11 @@ int main(int argc, char* argv[])
 
         if (cli.argumentGiven(("n")))
             Runtime::insecure = true;
+
+        if (cli.argumentGiven("t"))
+        {
+            // Testing argument
+        }
 
         // Adding the packages
 
