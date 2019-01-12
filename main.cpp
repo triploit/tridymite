@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
             {
                 std::string prefix;
 
-                if (author != p.getGitUser())
+                if (author != p.getGitUser() && !author.empty())
                 {
                     author = p.getGitUser();
                     prefix = "\n";
@@ -65,7 +65,26 @@ int main(int argc, char* argv[])
                 std::cout << s << std::endl;
         }
 
+        if (cli.argumentGiven("d"))
+        {
+            Package p = tstd::parse_package(cli.getParameters("d")[0]);
+
+            if (IPackagesManager::isPackageInstalled(p))
+                std::cout << IPackagesManager::getPackage(p) << std::endl;
+            else
+                std::cout << "error: show description: couldn't find package " << cli.getParameters("d")[0] << std::endl;
+        }
+
         // Setting the variables
+
+        if (cli.argumentGiven("ua"))
+        {
+            Runtime::update_all = true;
+
+            Runtime::to_update.insert(Runtime::to_update.end(),
+                    IPackagesManager::getInstalledPackages().begin(),
+                    IPackagesManager::getInstalledPackages().end());
+        }
 
         if (cli.argumentGiven("u"))
             Runtime::git_user = cli.getParameters("u")[0]; // Setting the standard git user
@@ -74,9 +93,9 @@ int main(int argc, char* argv[])
             Runtime::git_user = cli.getParameters("s")[0]; // Setting the standard git server
 
         if (cli.argumentGiven(("e")))
-            Runtime::verbose = true;
+            Runtime::verbose = true; // Show verbose output
 
-        if (cli.argumentGiven(("n")))
+        if (cli.argumentGiven(("n"))) // Don't ask security questions
             Runtime::insecure = true;
 
         if (cli.argumentGiven("t"))
@@ -92,20 +111,29 @@ int main(int argc, char* argv[])
             Runtime::to_install.insert(Runtime::to_install.end(), pkgs.begin(), pkgs.end()); // Add Packages to install.
         }
 
-        if (cli.argumentGiven("u"))
+        if (cli.argumentGiven("u") && !Runtime::update_all)
         {
-            std::vector<Package> pkgs = tstd::parse_package_arguments(cli.getParameters("i"));
+            std::vector<Package> pkgs = tstd::parse_package_arguments(cli.getParameters("u"));
             Runtime::to_update.insert(Runtime::to_update.end(), pkgs.begin(), pkgs.end());
         }
 
         if (cli.argumentGiven("r"))
         {
-            std::vector<Package> pkgs = tstd::parse_package_arguments(cli.getParameters("i"));
+            std::vector<Package> pkgs = tstd::parse_package_arguments(cli.getParameters("r"));
             Runtime::to_remove.insert(Runtime::to_remove.end(), pkgs.begin(), pkgs.end());
         }
 
         // Running the managers, doing installing, updating etc.
 
+        if (cli.argumentGiven("l"))
+        {
+
+        }
+
+        for (const Package &p : Runtime::to_update)
+        {
+
+        }
 
     }
 
