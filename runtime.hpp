@@ -18,6 +18,7 @@ class Runtime
 {
 public:
     inline static std::vector<Package> to_install;
+    inline static std::vector<Package> to_install_all;
     inline static std::vector<Package> to_remove;
     inline static std::vector<Package> to_update;
 
@@ -31,7 +32,10 @@ public:
     inline static std::string git_user;
 
     inline static bool verbose;
+    inline static bool reinstall;
     inline static bool insecure;
+    inline static bool update_all;
+    inline static bool no_dependencies;
 
     inline static std::string language;
 
@@ -44,8 +48,10 @@ public:
         struct stat info;
         if (stat(tridy_dir.c_str(), &info) != 0)
         {
-            printf(Translation::get("runtime.not_installed").c_str());
-            Runtime::exit(1);
+            std::cout << "error: it seems tridymite isn't installed yet." << std::endl;
+            std::cout << "If you have the source code here, try running the install.sh script as root." << std::endl;
+
+            Runtime::exit(0);
         }
 
         if (!std::ifstream(tridy_dir+"conf/config.yaml").is_open())
@@ -74,13 +80,14 @@ public:
 
     static bool cleanFiles()
     {
+        chdir("/");
         bool success = true;
 
-        for (const std::string &file : Runtime::files_to_clean)
+        for (int i = (Runtime::files_to_clean.size()-1); i >= 0; i--)
         {
-            if(std::remove(file.c_str()) != 0)
+            if(std::remove(Runtime::files_to_clean[i].c_str()) != 0)
             {
-                printf(Translation::get("runtime.clean_files.error").c_str(), file.c_str());
+                printf(Translation::get("runtime.clean_files.error").c_str(), Runtime::files_to_clean[i].c_str());
                 success = false;
             }
         }
@@ -90,13 +97,14 @@ public:
 
     static bool clearDirectories()
     {
+        chdir("/");
         bool success = true;
 
-        for (const std::string &file : Runtime::directories_to_clean)
+        for (int i = (Runtime::directories_to_clean.size()-1); i >= 0; i--)
         {
-            if(rmdir(file.c_str()) != 0)
+            if(system(std::string("rm -rf "+Runtime::directories_to_clean[i]).c_str()) != 0)
             {
-                printf(Translation::get("runtime.clean_files.error").c_str(), file.c_str());
+                printf(Translation::get("runtime.clean_directories.error").c_str(), Runtime::directories_to_clean[i].c_str());
                 success = false;
             }
         }
