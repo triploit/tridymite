@@ -28,12 +28,32 @@ void IPackagesManager::load(std::string path) // package = /usr/share/tridymite/
     }
 }
 
-bool IPackagesManager::isPackageInstalled(Package p)
+bool IPackagesManager::isPackageInstalled(const Package &p)
 {
+    for (const Package &tp : IPackagesManager::installed_packages)
+    {
+        Package p1 = p;
+        Package p2 = tp;
+
+        if (p1 == p2)
+            return true;
+    }
+
     return false;
 }
 
-std::vector<Package> IPackagesManager::getInstalledPackages()
+const std::vector<Package> &IPackagesManager::getInstalledPackages()
 {
     return IPackagesManager::installed_packages;
+}
+
+const Package& IPackagesManager::getPackage(Package &p)
+{
+    for (const Package &tp : IPackagesManager::installed_packages)
+    {
+        if (p == tp)
+            return tp;
+    }
+
+    return Package();
 }

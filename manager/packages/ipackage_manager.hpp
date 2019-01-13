@@ -16,8 +16,9 @@ private:
 
 public:
     static void load(std::string path);
-    static std::vector<Package> getInstalledPackages();
-    static bool isPackageInstalled(Package p);
+    static const std::vector<Package> &getInstalledPackages();
+    static const Package &getPackage(Package &p);
+    static bool isPackageInstalled(const Package &p);
 };
 
 
