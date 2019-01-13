@@ -9,12 +9,14 @@ THE WHOLE PACKAGE.SH CONTENT GOES HERE, WITH ALL FUNCTIONS
 
 #include <vector>
 #include <function.hpp>
+#include <package/package.hpp>
 
 class Script
 {
 private:
     std::vector<Function> functions;
     std::string file_name;
+    std::string file_content;
 
     Function null_function;
 
@@ -25,15 +27,17 @@ public:
     Script();
     Script(const std::string &file_name);
 
+    const std::vector<Function> &go();
     const std::vector<Function> &getFunctions();
-    Function &getFunction(const std::string &name);
 
-    bool existsFunction(const std::string &name);
-    void addFunction(Function f);
-
+    const std::string &getContent();
     const std::string &getFileName();
 
-    const std::vector<Function> &go();
+    Function &getFunction(const std::string &name);
+    bool existsFunction(const std::string &name);
+
+    void addFunction(Function f);
+    void runFunction(std::string f, const std::string &token);
 };
 
 #endif

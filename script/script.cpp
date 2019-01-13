@@ -64,6 +64,8 @@ void Script::parse_file(std::string f)
         std::string tmp;
         int line_count = 1;
 
+        file_content = code;
+
         for (const char &c : code)
         {
             if (c == '\n')
@@ -186,4 +188,34 @@ bool Script::existsFunction(const std::string &name)
 const std::string& Script::getFileName()
 {
     return file_name;
+}
+
+void Script::runFunction(std::string f, const std::string &token)
+{
+    if (existsFunction(f))
+    {
+        std::string file_name = Runtime::tmp_dir+"/_tmp"+token+"_"+std::to_string(getFunctions().size())+".sh";
+        std::fstream of(file_name, std::ios::out);
+
+        if (file_content.find("sudo") != std::string::npos || file_content.find("su root") != std::string::npos)
+        {
+            std::cout << "error: unsave script: script uses sudo command!" << std::endl;
+            Runtime::exit(1);
+        }
+
+        of << "#!/usr/bin/bash" << "\n\n" << file_content << std::endl;
+
+        std::system(std::string("source "+file_name+"; "+f).c_str());
+        Runtime::files_to_clean.push_back(file_name);
+    }
+    else
+    {
+        std::cout << "error: can't run function: " << f << ": function not found!" << std::endl;
+        Runtime::exit(1);
+    }
+}
+
+const std::string &Script::getContent()
+{
+    return file_content;
 }
