@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 project(tridymite)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_LIBRARIES -lyaml-cpp)
+set(CMAKE_CXX_STANDARD_LIBRARIES "-lyaml-cpp -lcurl")
 
 include_directories(.)
 include_directories(cli)
@@ -50,4 +50,4 @@ add_executable(tridymite
         manager/packages/ipackage_manager.cpp
         manager/packages/ipackage_manager.hpp
 
-        translation/translation.cpp)
+        translation/translation.cpp manager/dependencies/dependency_manager.cpp manager/dependencies/dependency_manager.hpp)
