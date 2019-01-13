@@ -4,6 +4,10 @@
 
 #include <tstd.hpp>
 #include <unistd.h>
+#include <curl/curl.h>
+
+#include <iostream>
+#include <memory>
 
 std::vector<std::string> tstd::split(std::string s, char delim) // split a string by a delimiter
 {
@@ -96,7 +100,7 @@ Package tstd::parse_package(const std::string &package)
 
         if (c == '@')
         {
-            p.setName(tmp);
+            p.setRepoName(tmp);
             tmp = "";
 
             server = true;
@@ -116,6 +120,8 @@ Package tstd::parse_package(const std::string &package)
 
     if (server)
         p.setServer(tmp);
+    else
+        p.setRepoName(tmp);
 
     return p;
 }
@@ -132,12 +138,12 @@ std::vector<Package> tstd::parse_package_arguments(const std::vector<std::string
     return to_ret;
 }
 
-std::string tstd::create_url(Package p, std::string postfix)
+std::string tstd::create_url(const Package &p, std::string postfix, std::string prefix)
 {
     if (!postfix.empty())
         postfix = "/"+postfix;
 
-    return std::string("https://"+p.getServer()+"/"+p.getGitUser()+"/"+p.getRepoName()+postfix);
+    return std::string("https://"+prefix+p.getServer()+"/"+p.getGitUser()+"/"+p.getRepoName()+postfix);
 }
 
 std::vector<std::string> tstd::read_cursive_all_files(std::string path)
@@ -171,4 +177,92 @@ std::vector<std::string> tstd::read_cursive_all_files(std::string path)
     closedir(dirp);
 
     return files;
+}
+
+bool tstd::download_file(const std::string &url, const std::string &destination)
+{
+    CURL *curl;
+    FILE *fp;
+    CURLcode res;
+    curl = curl_easy_init();
+
+    if (curl)
+    {
+        fp = fopen(destination.c_str(), "wb");
+        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, true);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+
+        res = curl_easy_perform(curl);
+        curl_easy_cleanup(curl);
+        fclose(fp);
+
+        return ((res >= 200 && res < 300) || res == 0);
+    }
+
+    return false;
+}
+
+std::string tstd::package_to_argument(const Package &p)
+{
+    return std::string(p.getGitUser()+":"+p.getRepoName()+"@"+p.getServer());
+}
+
+std::string tstd::exec(const char* cmd)
+{
+    std::array<char, 128> buffer{};
+    std::string result;
+    std::shared_ptr<FILE> pipe(popen(cmd, "r"), pclose);
+
+    if (!pipe) throw std::runtime_error("popen() failed!");
+
+    while (!feof(pipe.get()))
+    {
+        if (fgets(buffer.data(), 128, pipe.get()) != nullptr)
+            result += buffer.data();
+    }
+    return result;
+}
+
+int tstd::cursive_file_count(const std::string &path, int count)
+{
+    struct stat info;
+
+    if(stat(path.c_str(), &info) != 0)
+    {
+        std::cout << "error: object " << path << " not found!" << std::endl;
+        Runtime::exit(1);
+    }
+    else if( info.st_mode & S_IFDIR)
+        count++;
+    else
+        return 1;
+
+    DIR* dirp = opendir(path.c_str());
+    struct dirent * dp;
+
+    while ((dp = readdir(dirp)) != NULL)
+    {
+        if (dp->d_name[0] == '.')
+            continue;
+
+        std::string p = path+dp->d_name;
+        struct stat s;
+
+        if (stat(p.c_str(), &s) == 0)
+        {
+            if (s.st_mode & S_IFDIR)
+            {
+                count = cursive_file_count(p, count);
+            }
+            else if (s.st_mode & S_IFREG)
+            {
+                count++;
+            }
+        }
+    }
+    closedir(dirp);
+
+    return count;
 }
