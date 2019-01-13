@@ -24,6 +24,12 @@ private:
     std::vector<Package> dependencies;  // all dependencies
     std::vector<std::string> authors;   // authors and co-workers
 
+    std::vector<std::string> products_from;
+    std::vector<std::string> products_to;
+
+    std::vector<std::string> links_from;
+    std::vector<std::string> links_to;
+
     Version version;
 
 public:
@@ -37,10 +43,15 @@ public:
     const std::string &getInformation() const;
     const std::string &getServer() const;
     const Script &getBuildScript() const;
-    const std::vector<Package> &getDependencies() const;
-    const std::vector<std::string> &getAuthors() const;
     const Version &getVersion() const;
     const std::string &getRepoName() const;
+    const std::vector<Package> &getDependencies() const;
+    const std::vector<std::string> &getAuthors() const;
+    const std::vector<std::string> &getProductsFrom() const;
+    const std::vector<std::string> &getProductsTo() const;
+
+    const std::vector<std::string> &getLinksFrom() const;
+    const std::vector<std::string> &getLinksTo() const;
 
     void setGitUser(const std::string &gituser);
     void setName(const std::string &name);
@@ -54,5 +65,6 @@ public:
     void setRepoName(const std::string &repo);
 
     friend std::ostream &operator<<(std::ostream &os, const Package &p);
+    const bool operator==(const Package &p);
 };
 #endif

@@ -20,17 +20,32 @@ Package::Package(const std::string &argument_name)
 
 Package::Package(const YAML::Node &pkg)
 {
-    if (pkg["gituser"])
-        setGitUser(pkg["gituser"].as<std::string>());
-
     if (pkg["reponame"])
         setRepoName(pkg["reponame"].as<std::string>());
 
+    if (pkg["gituser"])
+        setGitUser(pkg["gituser"].as<std::string>());
+    else
+    {
+        std::cout << "error: package " << getRepoName() << ": no github user set!" << std::endl;
+        Runtime::exit(1);
+    }
+
     if (pkg["server"])
         setServer(pkg["server"].as<std::string>());
+    else
+    {
+        std::cout << "error: package " << getRepoName() << ": no server set!" << std::endl;
+        Runtime::exit(1);
+    }
 
     if (pkg["name"])
         setName(pkg["name"].as<std::string>());
+    else
+    {
+        std::cout << "error: package " << getRepoName() << ": no name set!" << std::endl;
+        Runtime::exit(1);
+    }
 
     if (pkg["description"])
         setDescription(pkg["description"].as<std::string>());
@@ -43,24 +58,84 @@ Package::Package(const YAML::Node &pkg)
 
     if (pkg["version"])
         setVersion(Version(pkg["version"].as<std::string>()));
+    else
+    {
+        std::cout << "error: package " << getRepoName() << ": no version set!" << std::endl;
+        Runtime::exit(1);
+    }
+
+    if (pkg["products"])
+    {
+        if (!pkg["products"].IsSequence())
+        {
+            std::cout << "error: package " << getRepoName() << ": products have to be a sequence!" << std::endl;
+            Runtime::exit(1);
+        }
+
+        for (YAML::Node n : pkg["products"])
+        {
+            std::stringstream ss;
+            ss << n;
+            std::string s = ss.str();
+
+            std::string from = tstd::split(s, ':')[0];
+            std::string to = std::string(s).substr(tstd::split(s, ':')[0].size()+1, s.size());
+
+            products_from.push_back(from);
+            products_to.push_back(to);
+        }
+    }
+
+    if (pkg["links"])
+    {
+        if (!pkg["links"].IsSequence())
+        {
+            std::cout << "error: package " << getRepoName() << ": links have to be a sequence!" << std::endl;
+            Runtime::exit(1);
+        }
+
+        for (YAML::Node n : pkg["links"])
+        {
+            std::stringstream ss;
+            ss << n;
+            std::string s = ss.str();
+
+            std::string from = tstd::split(s, ':')[0];
+            std::string to = std::string(s).substr(tstd::split(s, ':')[0].size()+1, s.size());
+
+            links_from.push_back(from);
+            links_to.push_back(to);
+        }
+    }
 
     for (const YAML::Node &n : pkg["dependencies"])
     {
         if (n.as<std::string>().rfind("https://", 0) == 0)
         {
-            std::cout << "URL" << std::endl;
-            // IS URL TO GIT REPOSITORY
+            std::string file = Runtime::tmp_dir+"/tmp.yaml";
+            std::string url = n.as<std::string>();
+
+            if (!tstd::download_file(url, file))
+            {
+                std::cout << "error: package " << tstd::package_to_argument(*this) << ": dependency " << url << " seens not to be a tridymite package!" << std::endl;
+                Runtime::exit(1);
+            }
+
+            std::ofstream _of(file, std::ios::app);
+            _of << "gituser: " << this->getGitUser() << std::endl;
+            _of << "reponame: " << this->getRepoName() << std::endl;
+            _of << "server: " << this->getServer() << std::endl;
+            _of.close();
+
+            dependencies.push_back(Package(YAML::LoadFile(file)));
         }
         else if (std::regex_match(n.as<std::string>(), std::regex("([a-zA-Z_0-9\-]*):([a-zA-Z_0-9\-]*)@([a-zA-Z_0-9\-]*)\.([a-zA-Z_0-9\-]*)")))
         {
-            std::cout << "PACKAGE" << std::endl;
-            // IS PACKAGE
+            dependencies.push_back(tstd::parse_package(n.as<std::string>()));
         }
         else if (n.as<std::string>() == "nopkg")
         {
-            std::cout << "NO_PACKAGE" << std::endl;
-            // IS NOT A PACKAGE
-            // CAN HAVE TYPES: url, type and arguments (for shell commands as a type)
+            std::cout << "error: package " << tstd::package_to_argument(*this) << ": dependencies: nopkg is not allowed yet." << std::endl;
         }
     }
 }
@@ -152,7 +227,7 @@ const Version &Package::getVersion() const
 
 void Package::setVersion(const Version &version)
 {
-    Package::version = version;
+    this->version = version;
 }
 
 void Package::setRepoName(const std::string &repo)
@@ -167,20 +242,62 @@ const std::string &Package::getRepoName() const
 
 std::ostream &operator<<(std::ostream &os, const Package &p)
 {
-    os << "Name        : " << p.getName() << std::endl;
+    if (!p.getName().empty())
+        os << "Name        : " << p.getName() << std::endl;
 
-    os << std::endl << "Version     : " << p.getVersion() << std::endl;
-    os << "Description : " << p.getDescription() << std::endl;
-    os << std::endl << "Information : " << p.getInformation() << std::endl;
+    if (!p.getVersion().str.empty())
+        os << std::endl << "Version     : " << p.getVersion() << std::endl;
 
-    os << std::endl << "Authors     : " << std::endl;
+    if (!p.getDescription().empty())
+        os << "Description : " << p.getDescription() << std::endl;
 
-    for (const std::string &s : p.getAuthors())
-        os << "    - " << s << std::endl;
+    if (!p.getInformation().empty())
+        os << std::endl << "Information : " << p.getInformation() << std::endl;
 
-    os << std::endl << "GitUser     : " << p.getGitUser() << std::endl;
-    os << "RepoName    : " << p.getRepoName() << std::endl;
-    os << "Server      : " << p.getServer() << std::endl;
+    if (!p.getAuthors().empty())
+    {
+        os << std::endl << "Authors     : " << std::endl;
+
+        for (const std::string &s : p.getAuthors())
+            os << "    - " << s << std::endl;
+    }
+
+    if (!p.getGitUser().empty())
+        os << std::endl << "GitUser     : " << p.getGitUser() << std::endl;
+
+    if (!p.getRepoName().empty())
+        os << "RepoName    : " << p.getRepoName() << std::endl;
+
+    if (!p.getServer().empty())
+        os << "Server      : " << p.getServer() << std::endl;
 
     return os;
+}
+
+const bool Package::operator==(const Package &p)
+{
+    return (p.getGitUser() == getGitUser() &&
+        p.getServer() == getServer() &&
+        p.getRepoName() == getRepoName() &&
+        p.getVersion() == getVersion());
+}
+
+const std::vector<std::string> &Package::getProductsFrom() const
+{
+    return products_from;
+}
+
+const std::vector<std::string> &Package::getProductsTo() const
+{
+    return products_to;
+}
+
+const std::vector<std::string> &Package::getLinksFrom() const
+{
+    return links_from;
+}
+
+const std::vector<std::string> &Package::getLinksTo() const
+{
+    return links_to;
 }
