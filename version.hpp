@@ -67,7 +67,7 @@ public:
 		return false;
 	}
 
-	bool operator == (const Version& other)
+	bool operator == (const Version& other) const
 	{
 		return major == other.major
 			&& minor == other.minor
