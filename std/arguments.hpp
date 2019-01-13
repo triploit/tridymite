@@ -8,53 +8,64 @@
 #include <string>
 #include <vector>
 
-const std::vector<std::string> __ARG_NAME{ // Names, two names of the same argument are written in the same string and will be splitted at a comma
-        "i,install",
-        "r,remove",
-        "u,update",
-        "ua,update-all",
-        "l,local",
-        "v,verbose",
-        "insecure",
-        "s,server",
-        "u,user"
+const std::vector<std::string> __ARG_NAME { // Names, two names of the same argument are written in the same string and will be splitted at a comma
+    "h,help",
+    "i,install",
+    "r,remove",
+    "u,update",
+    "ua,update-all",
+    "l,local",
+    "e,extended-output,verbose",
+    "n,not-secure",
+    "s,server",
+    "us,user",
+    "version",
+    "lf,language-file",
+    "lp,list-packages",
+    "d,description",
+    "a,already-installed",
+    "nc,no-dependency-checking",
+    "t,testing"
 };
 
 const std::vector<std::string> __ARG_HELP { // Help for the arguments
-        "Install a package",
-        "Remove a package",
-        "Update a package",
-        "Update all installed packages",
-        "A really long message, I think more than 20 characters. I hope it'll work. Let's look around...",
-        "Install a package from the source in the current directory.",
-        "Show verbose output.",
-        "Install packages without asking security questions.",
-        "Setting the server for all package arguments.",
-        "Setting the user for all package arguments."
-};
-
-const std::vector<std::string> __ARG_USAGE { // Help for the arguments
-        "<package> ...",
-        "<package> ...",
-        "<package> ...",
-        "",
-        "",
-        "",
-        "<path>",
-        "<server>",
-        "<user>"
+    "help",
+    "install",
+    "remove",
+    "update",
+    "update_all",
+    "local",
+    "verbose",
+    "insecure",
+    "server",
+    "user",
+    "version",
+    "language_file",
+    "list_packages",
+    "description",
+    "already_installed",
+    "no_deps",
+    "testing"
 };
 
 std::vector<int> __ARG_LENGTH { // How many arguments can an argument have? -1 = endless, 0 = 0, 1 = 1, ...
-        -1, // Endless arguments can be provided
-        -1,
-        -1,
-        0,
-        1,
-        0,
-        0,
-        1,
-        1
+    0,
+    -1, // Endless arguments can be provided
+    -1,
+    -1,
+    0,
+    1,
+    0,
+    0,
+    1,
+    1,
+    0,
+    1,
+    0,
+    1,
+    0,
+    0,
+    1
 };
 
 #endif //TRIDYMITE_ARGUMENTS_HPP

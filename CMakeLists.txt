@@ -1,11 +1,13 @@
 cmake_minimum_required(VERSION 3.12)
 project(tridymite)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_LIBRARIES "-lyaml-cpp -lcurl")
 
 include_directories(.)
 include_directories(cli)
 include_directories(std)
+include_directories(std/arguments/)
 include_directories(function)
 include_directories(lexer)
 include_directories(parser)
@@ -13,17 +15,39 @@ include_directories(package)
 include_directories(script)
 
 add_executable(tridymite
+        main.cpp
+        runtime.hpp
+        version.hpp
+
         cli/cli.cpp
         cli/cli.hpp
-        pkg/example_package.yaml
-        pkg/package.sh
-        pkg/package.yaml
+
         function/function.cpp
         function/function.hpp
-        main.cpp
+
         package/package.cpp
         package/package.hpp
-        runtime.hpp
+
+        std/tstd.cpp
+        std/tstd.hpp
+        std/arguments.hpp
+
+        script/token.cpp
+        script/token.hpp
+
         script/script.cpp
         script/script.hpp
-        version.hpp std/tstd.hpp std/arguments.hpp)
+
+        manager/install/installation_manager.cpp
+        manager/install/installation_manager.hpp
+
+        manager/remove/remove_manager.cpp
+        manager/remove/remove_manager.hpp
+
+        manager/update/update_manager.cpp
+        manager/update/update_manager.hpp
+
+        manager/packages/ipackage_manager.cpp
+        manager/packages/ipackage_manager.hpp
+
+        translation/translation.cpp manager/dependencies/dependency_manager.cpp manager/dependencies/dependency_manager.hpp)

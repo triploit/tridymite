@@ -1,3 +1,51 @@
+//
+// Created by survari on 01.01.19.
+//
+
+#include <iostream>
+#include <yaml-cpp/yaml.h>
+
+#include <runtime.hpp>
+
+std::string Translation::get(const std::string &s, const bool &nl, const bool &bnl)
+{
+    if (sentences[s])
+    {
+        std::string str = std::string(sentences[s].as<std::string>());
+
+        if (nl)
+            str = str + "\n";
+        if (bnl)
+            str = "\n" + str;
+
+        return str;
+    }
+    else
+    {
+        if (!fallback[s])
+        {
+            std::cout << "error: fatal error in tridymite: sentences \"" << s << "\" doesn't exist in fallback!" << std::endl;
+            Runtime::exit(1);
+        }
+        else
+        {
+            std::string str = std::string(fallback[s].as<std::string>());
+
+            if (nl)
+                str = str + "\n";
+            if (bnl)
+                str = "\n" + str;
+
+            return ("[?] "+str);
+        }
+    }
+
+    return "<NOT FOUND>";
+}
+
+void Translation::loadConfig(std::string path)
+{
+    fallback = YAML::Load(R"V0G0N(
 # cli
 
 cli.argument.not_found: "error: argument \"%s\" not found!"
@@ -37,9 +85,7 @@ arguments.help.language_file: "loading all messages from the given language file
 arguments.help.list_packages: "list all installed packages"
 arguments.help.packages: "get information of package"
 arguments.help.description: "shows description of a package"
-arguments.help.already_installed: "don't skip already installed packages"
 arguments.help.testing: "testing stuff"
-arguments.help.no_deps: "don't check dependencies"
 
 arguments.usage.help: ""
 arguments.usage.install: "<package> ..."
@@ -56,8 +102,6 @@ arguments.usage.language_file: "<file>"
 arguments.usage.list_packages: ""
 arguments.usage.packages: "<package>"
 arguments.usage.description: "<package>"
-arguments.usage.already_installed: ""
-arguments.usage.no_deps: ""
 arguments.usage.testing: "???"
 
 arguments.package: "<package> = <git-user>:<git-repo>[@<git-server>] (git-server is github.com in default)"
@@ -71,3 +115,17 @@ runtime.clean_directories.error: "error: couldn't delete directory: %s"
 
 runtime.clear_up_all_tmps: "error: error at cleaning up temporary files or directories."
 runtime.exit: "exiting with code %d"
+
+)V0G0N");
+
+    if (std::ifstream(path).is_open())
+    {
+        sentences = YAML::LoadFile(path);
+    }
+    else
+    {
+        std::cout << "warning: language file " << path << " not found!" << std::endl;
+        std::cout << "Using fallback..." << std::endl;
+    }
+}
+

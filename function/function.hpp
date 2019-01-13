@@ -11,6 +11,15 @@ private:
 
 public:
     Function();
+    Function(const std::string &name, const std::string &code);
+
+    const std::string &getName();
+    void setName(const std::string &name);
+
+    const std::string &getCode();
+    void setCode(const std::string &code);
+
+    bool operator!=(const Function &f);
 };
 
 #endif

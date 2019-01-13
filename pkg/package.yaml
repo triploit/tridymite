@@ -1,23 +1,33 @@
 name: "Tridymite"
+version: "0.0.2b"
 decription: "Tridymite package manager."
-information: |
-"Install packages from GitHub, GitLab or other Git-Servers using Tridymite!
-Try it:
+information: >
+    Install packages from GitHub, GitLab or other Git-Servers using Tridymite!
+    Try it:
 
-    sudo tridy -i user:repo@server
-    sudo tridy -i triploit:tridymite@github.com
+        sudo tridy -i user:repo@server
+        sudo tridy -i triploit:tridymite@github.com
 
-You can leave off the @server. GitHub is the standard Git server. So
-also this will work:
+    You can leave off the @server. GitHub is the standard Git server. So
+    also this will work:
 
-    sudo tridy -i user:repo
-    sudo tridy -i triploit:tridymite"
+        sudo tridy -i user:repo
+        sudo tridy -i triploit:tridymite
 
-dependencies:
-    - git:
-        url: "https://github.com/jbeder/yaml-cpp"
-        type: "cmake"
+authors:
+    - survari
+    - blobcodes
+    - romangraef
 
 products:
-    - ./tridy: /usr/bin/tridy
-    - ./pkg/conf: /usr/opt/tridy/conf
+    - ./tridymite: "/usr/share/tridymite/tridy"
+    - ./pkg/conf/lang/english.yaml: "/usr/share/tridymite/conf/lang"
+    - ./pkg/conf/lang/german.yaml: "/usr/share/tridymite/conf/lang"
+
+links:
+    - /usr/share/tridymite/tridy: "/usr/bin/tridy"
+
+
+gituser: triploit
+server: github.com
+reponame: tridymite

@@ -1,7 +1,4 @@
-function install {
-    make
-}
-
-function update {
+function build {
+    cmake .
     make
 }

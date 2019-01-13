@@ -1,34 +1,25 @@
-#include <vector>
-#include <string>
-#include <iostream>
-
-#include <std/tstd.hpp>
-
-#include <cli/cli.hpp>
 #include "cli.hpp"
 
 
 void CLI::init(const std::vector<std::string> &names,
         const std::vector<std::string> &helps,
         const std::vector<int> &argc,
-        const std::vector<std::string> &usage,
         const std::string &pname,
         const Version &v)
 {
     CLI::arg_name = names;
     CLI::arg_help = helps;
     CLI::arg_argc = argc;
-    CLI::arg_usage = usage;
 
     CLI::program_name = pname;
     CLI::version = v;
 }
 
-bool CLI::parseArguments(std::vector<std::string> args)
+bool CLI::parseArguments(std::vector<std::string> args) // parse the given arguments
 {
     std::string type;
 
-    for (std::string arg : args)
+    for (std::string arg : args) // iterate through every argument
     {
         std::vector<std::string> family;
 
@@ -81,7 +72,7 @@ bool CLI::parseArguments(std::vector<std::string> args)
 
             if (!found)
             {
-                std::cout << "error: argument \"" << arg << "\" not found!" << std::endl;
+                printf(Translation::get("cli.argument.not_found").c_str(), arg.c_str());
                 return false;
             }
 
@@ -96,7 +87,7 @@ bool CLI::parseArguments(std::vector<std::string> args)
         {
             if (type.empty())
             {
-                std::cout << "error: no argument passed! (\"" << arg << "\")" << std::endl;
+                std::cout << Translation::get("cli.argument.no_passed", false) << " (\"" << arg << "\")" << std::endl;
                 return false;
             }
             else
@@ -114,6 +105,7 @@ bool CLI::parseArguments(std::vector<std::string> args)
     for (int i = 0; i < arg_name.size(); i++)
     {
         std::string tmp;
+        int count = 0;
 
         for (char c : arg_name[i])
         {
@@ -121,7 +113,7 @@ bool CLI::parseArguments(std::vector<std::string> args)
             {
                 if (CLI::arg_values.find(tmp) != CLI::arg_values.end())
                 {
-                    int count = 0;
+                    count = 0;
 
                     for (const std::string &s : CLI::arg_values[tmp])
                     {
@@ -134,9 +126,10 @@ bool CLI::parseArguments(std::vector<std::string> args)
                         if (CLI::arg_argc[i] != -1)
                         {
                             if (count > CLI::arg_argc[i])
-                                std::cout << "error: to much parameters for argument \"" << tstd::add_prefix(tmp) << "\"" << std::endl;
+                                printf(Translation::get("cli.argument.too_many").c_str(), tstd::add_prefix(tmp).c_str());
                             else
-                                std::cout << "error: to few parameters for argument \"" << tstd::add_prefix(tmp) << "\"" << std::endl;
+                                printf(Translation::get("cli.argument.too_few").c_str(), tstd::add_prefix(tmp).c_str());
+
                             return false;
                         }
                     }
@@ -155,10 +148,17 @@ bool CLI::parseArguments(std::vector<std::string> args)
             {
                 if (CLI::arg_values[tmp].size() != CLI::arg_argc[i])
                 {
-                    if (CLI::arg_argc[i] != -1)
+                    if (count != CLI::arg_argc[i])
                     {
-                        std::cout << "error: to much parameters for argument \"" << tstd::add_prefix(tmp) << "\"" << std::endl;
-                        return false;
+                        if (CLI::arg_argc[i] != -1)
+                        {
+                            if (count > CLI::arg_argc[i])
+                                printf(Translation::get("cli.argument.too_many").c_str(), tstd::add_prefix(tmp).c_str());
+                            else
+                                printf(Translation::get("cli.argument.too_few").c_str(), tstd::add_prefix(tmp).c_str());
+
+                            return false;
+                        }
                     }
                 }
             }
@@ -170,9 +170,9 @@ bool CLI::parseArguments(std::vector<std::string> args)
     return true;
 }
 
-void CLI::printHelp(std::string arg0)
+void CLI::printHelp(std::string arg0) // Generating the help page from the defined arguments.
 {
-    std::cout << program_name << " version " << version << std::endl << std::endl;
+    std::cout << program_name << " " << Translation::get("cli.version", false) << " " << version << std::endl << std::endl;
     int max_len = 0;
     int tmp = 0;
 
@@ -182,9 +182,9 @@ void CLI::printHelp(std::string arg0)
             max_len = (int) s.size();
     }
 
-    for (const std::string &s : arg_usage)
+    for (const std::string &s : arg_help)
     {
-        if (s.size() > tmp)
+        if (Translation::get("arguments.usage."+s, false).size() > tmp)
             tmp = (int) s.size();
     }
 
@@ -205,7 +205,7 @@ void CLI::printHelp(std::string arg0)
             {
                 gen_help.push_back("<NOTHING!>");
 
-                gen_usage.push_back(arg_usage[x]);
+                gen_usage.push_back(Translation::get("arguments.usage."+arg_help[x], false));
                 gen_name.push_back(tmp);
                 tmp = "";
 
@@ -219,12 +219,14 @@ void CLI::printHelp(std::string arg0)
         if (!tmp.empty())
         {
 
-            if (x < arg_help.size())
-                gen_help.push_back(arg_help[x]);
+            if (x < Translation::get("arguments.help."+arg_help[x], false).size())
+                gen_help.push_back(Translation::get("arguments.help."+arg_help[x], false));
 
-            gen_usage.push_back(arg_usage[x]);
+            gen_usage.push_back(Translation::get("arguments.usage."+arg_help[x], false));
             gen_name.push_back(tmp);
             tmp = "";
+
+            found = true;
         }
 
         if (found)

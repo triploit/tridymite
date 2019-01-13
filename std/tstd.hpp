@@ -1,86 +1,28 @@
-//
-// Created by survari on 25.11.18.
-//
-
 #ifndef TRIDYMITE_TSTD_HPP
 #define TRIDYMITE_TSTD_HPP
 
 #include <iostream>
 #include <vector>
+#include <package/package.hpp>
+#include <runtime.hpp>
+#include <dirent.h>
 
 namespace tstd
 {
-    std::vector<std::string> split(std::string s, char delim) // split a string
-    {
-        std::vector<std::string> result;
-        std::string tmp = "";
+    Package parse_package(const std::string &package);
 
-        for (int i = 0; i < s.size(); i++)
-        {
-            if (s[i] == delim)
-            {
-                result.push_back(tmp);
-                tmp = "";
-            }
-            else
-                tmp += s[i];
-        }
+    std::string add_prefix(std::string arg); // Add a prefix (- or --) to argument (like "help" -> "--help"; "i" -> "-i")
+    std::string create_url(const Package &p, std::string postfix="", std::string prefix="");
+    std::string package_to_argument(const Package &p);
+    std::string exec(const char* cmd);
 
-        if (!tmp.empty())
-            result.push_back(tmp);
+    bool download_file(const std::string &url, const std::string &destination);
+    int cursive_file_count(const std::string &path, int count=1);
 
-        return result;
-    }
-
-    std::string add_prefix(std::string arg) // add a prefix (- or --) to argument (like "help" -> "--help")
-    {
-        if (arg.size() > 2)
-            return "--"+arg;
-        return "-"+arg;
-    }
-
-    std::vector<std::string> get_family(std::string arg, std::vector<std::string> arg_name)
-    {
-        std::vector<std::string> family;
-
-        for (int x = 0; x < arg_name.size(); x++)
-        {
-            std::string tmp;
-
-            for (char c : arg_name[x])
-            {
-                if (c == ',')
-                {
-                    family.push_back(tmp);
-                    tmp = "";
-                    continue;
-                }
-
-                tmp += c;
-            }
-
-            if (!tmp.empty())
-            {
-                family.push_back(tmp);
-                tmp = "";
-            }
-
-            bool found = false;
-
-            for (std::string s : family)
-            {
-                if (add_prefix(s) == arg)
-                    found = true;
-            }
-
-            if (found)
-                return family;
-
-            family.clear();
-        }
-
-        return family;
-    }
+    std::vector<Package> parse_package_arguments(const std::vector<std::string> &packages);
+    std::vector<std::string> split(std::string s, char delim); // Split a string by a delimiter
+    std::vector<std::string> get_family(std::string arg, std::vector<std::string> arg_name); // Getting the family of an argument, e.g. "i" is contained in the family of "i,install"
+    std::vector<std::string> read_cursive_all_files(std::string path);
 };
 
 

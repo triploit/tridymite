@@ -4,13 +4,20 @@
 #include <vector>
 #include <map>
 #include <package.hpp>
+#include <string>
+#include <iostream>
+
+#include <std/tstd.hpp>
+
+#ifndef ARGUMENT_COUNT
+#define ARGUMENT_COUNT 12
+#endif
 
 class CLI 
 {
 private:
     std::vector<std::string> arg_name;
     std::vector<std::string> arg_help;
-    std::vector<std::string> arg_usage;
     std::vector<int> arg_argc;
 
     std::map<std::string, std::vector<std::string>> arg_values;
@@ -18,11 +25,11 @@ private:
     std::string program_name;
     Version version;
 
+
 public:
     void init(const std::vector<std::string> &args,
             const std::vector<std::string> &helps,
             const std::vector<int> &argc,
-            const std::vector<std::string> &usage,
             const std::string &pname,
             const Version &v);
 
