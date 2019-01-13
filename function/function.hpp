@@ -20,7 +20,6 @@ public:
     void setCode(const std::string &code);
 
     bool operator!=(const Function &f);
-    void run();
 };
 
 #endif
