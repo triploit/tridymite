@@ -18,10 +18,13 @@ const std::vector<std::string> __ARG_NAME { // Names, two names of the same argu
     "e,extended-output,verbose",
     "n,not-secure",
     "s,server",
-    "u,user",
+    "us,user",
     "version",
     "lf,language-file",
     "lp,list-packages",
+    "d,description",
+    "a,already-installed",
+    "nc,no-dependency-checking",
     "t,testing"
 };
 
@@ -39,6 +42,9 @@ const std::vector<std::string> __ARG_HELP { // Help for the arguments
     "version",
     "language_file",
     "list_packages",
+    "description",
+    "already_installed",
+    "no_deps",
     "testing"
 };
 
@@ -55,6 +61,9 @@ std::vector<int> __ARG_LENGTH { // How many arguments can an argument have? -1 =
     1,
     0,
     1,
+    0,
+    1,
+    0,
     0,
     1
 };
