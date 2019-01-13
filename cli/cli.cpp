@@ -148,15 +148,17 @@ bool CLI::parseArguments(std::vector<std::string> args) // parse the given argum
             {
                 if (CLI::arg_values[tmp].size() != CLI::arg_argc[i])
                 {
-                    if (CLI::arg_argc[i] != -1)
+                    if (count != CLI::arg_argc[i])
                     {
-                        if (count > CLI::arg_argc[i])
-                            printf(Translation::get("cli.argument.too_many").c_str(), tstd::add_prefix(tmp).c_str());
-                        else
-                            printf(Translation::get("cli.argument.too_few").c_str(), tstd::add_prefix(tmp).c_str());
+                        if (CLI::arg_argc[i] != -1)
+                        {
+                            if (count > CLI::arg_argc[i])
+                                printf(Translation::get("cli.argument.too_many").c_str(), tstd::add_prefix(tmp).c_str());
+                            else
+                                printf(Translation::get("cli.argument.too_few").c_str(), tstd::add_prefix(tmp).c_str());
 
-                        if (count != CLI::arg_argc[i])
                             return false;
+                        }
                     }
                 }
             }
