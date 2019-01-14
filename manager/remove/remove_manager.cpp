@@ -55,7 +55,7 @@ void RemoveManager::uninstallPackage(const Package &p)
     if (IPackagesManager::isPackageInstalled(package))
     {
         std::string prefix = "[ " + package.getRepoName() + " ] ";
-        std::string dir = Runtime::tridy_dir+"/conf/packages/"+package.getGitUser()+"+"+package.getRepoName()+"+"+package.getServer();
+        std::string dir = Runtime::tridy_dir+"conf/packages/"+package.getGitUser()+"+"+package.getRepoName()+"+"+package.getServer();
 
         unlinkProducts(prefix, package);
         removeProducts(prefix, package);
