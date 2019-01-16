@@ -1,5 +1,5 @@
 name: "Tridymite"
-version: "0.0.2b"
+version: "0.1.1a"
 decription: "Tridymite package manager."
 information: >
     Install packages from GitHub, GitLab or other Git-Servers using Tridymite!
@@ -21,8 +21,7 @@ authors:
 
 products:
     - ./tridymite: "/usr/share/tridymite/tridy"
-    - ./pkg/conf/lang/english.yaml: "/usr/share/tridymite/conf/lang"
-    - ./pkg/conf/lang/german.yaml: "/usr/share/tridymite/conf/lang"
+    - ./pkg/conf/: "/usr/share/tridymite/conf/"
 
 links:
     - /usr/share/tridymite/tridy: "/usr/bin/tridy"
