@@ -51,6 +51,8 @@ void RemoveManager::uninstallPackage(const Package &p)
     _of << "server: " << p.getServer() << std::endl;
     _of.close();
 
+    std::cout << "[ remove ] now uninstalling " << tstd::package_to_argument(p) << std::endl;
+
     Package package(YAML::LoadFile(file));
     if (IPackagesManager::isPackageInstalled(package))
     {
