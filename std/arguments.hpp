@@ -25,6 +25,7 @@ const std::vector<std::string> __ARG_NAME { // Names, two names of the same argu
     "d,description",
     "a,already-installed",
     "nc,no-dependency-checking",
+    "f,force",
     "t,testing"
 };
 
@@ -45,6 +46,7 @@ const std::vector<std::string> __ARG_HELP { // Help for the arguments
     "description",
     "already_installed",
     "no_deps",
+    "force",
     "testing"
 };
 
@@ -63,6 +65,7 @@ std::vector<int> __ARG_LENGTH { // How many arguments can an argument have? -1 =
     1,
     0,
     1,
+    0,
     0,
     0,
     1
