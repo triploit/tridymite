@@ -51,7 +51,9 @@ const Package& IPackagesManager::getPackage(Package &p)
 {
     for (const Package &tp : IPackagesManager::installed_packages)
     {
-        if (p == tp)
+        if (p.getGitUser() == tp.getGitUser() &&
+            p.getRepoName() == tp.getRepoName() &&
+            p.getServer() == tp.getServer())
             return tp;
     }
 
