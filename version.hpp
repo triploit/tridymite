@@ -21,7 +21,7 @@ public:
 		std::sscanf(version.c_str(), "%d.%d.%d%c", &major, &minor, &revision, &build);
 	}
 
-	bool operator < (const Version& other)
+	bool operator < (const Version& other) const
 	{
 		if (major < other.major)
 			return true;
@@ -34,14 +34,14 @@ public:
 		return false;
 	}
 
-	bool operator != (const Version& other) // operator!= added by survari
+	bool operator != (const Version& other) const // operator!= added by survari
 	{
 		return major != other.major
 			|| minor != other.minor
 			|| revision != other.revision
 			|| build != other.build;
 	}
-	bool operator <= (const Version& other) // operator<= added by survari
+	bool operator <= (const Version& other) const // operator<= added by survari
 	{
 		if (major <= other.major)
 			return true;
@@ -54,7 +54,7 @@ public:
 		return false;
 	}
 
-	bool operator > (const Version& other) // operator> added by survari
+	bool operator > (const Version& other) const // operator> added by survari
 	{
 		if (major > other.major)
 			return true;
