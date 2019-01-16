@@ -8,6 +8,8 @@
 
 #include <iostream>
 #include <memory>
+#include <tgmath.h>
+#include <algorithm>
 
 std::vector<std::string> tstd::split(std::string s, char delim) // split a string by a delimiter
 {
@@ -81,6 +83,34 @@ std::vector<std::string> tstd::get_family(std::string arg, std::vector<std::stri
     return family;
 }
 
+std::string tstd::ltrim(const std::string &str)
+{
+    std::string s = str;
+
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int ch)
+    {
+        return !std::isspace(ch);
+    }));
+
+    return s;
+}
+
+std::string tstd::rtrim(const std::string &str)
+{
+    std::string s = str;
+    s.erase(std::find_if(s.rbegin(), s.rend(), [](int ch)
+    {
+        return !std::isspace(ch);
+    }).base(), s.end());
+
+    return s;
+}
+
+std::string tstd::trim(const std::string &s)
+{
+    return rtrim(ltrim(s));
+}
+
 Package tstd::parse_package(const std::string &package)
 {
     Package p;
@@ -122,6 +152,14 @@ Package tstd::parse_package(const std::string &package)
         p.setServer(tmp);
     else
         p.setRepoName(tmp);
+
+    if (p.getGitUser().empty() || p.getRepoName().empty() || p.getServer().empty())
+    {
+        std::cout << std::endl;
+        std::cout << "error: parsing package: \"" << package << "\" is incomplete." << std::endl;
+        std::cout << "info: packages are build like \"user:repository@gitserver.abc\"" << std::endl;
+        Runtime::exit(1);
+    }
 
     return p;
 }
@@ -179,15 +217,86 @@ std::vector<std::string> tstd::read_cursive_all_files(std::string path)
     return files;
 }
 
+bool tstd::yn_question(const std::string &q)
+{
+    std::cout << q << std::endl;
+    std::cout << "[y/n] : ";
+    std::string s;
+
+    while (s != "y" && s != "Y" && s != "n" && s != "N")
+    {
+        std::getline(std::cin, s);
+
+        if (s != "y" && s != "Y" && s != "n" && s != "N")
+        {
+            std::cout << "please type y or n!" << std::endl;
+            std::cout << "[y/n] : ";
+        }
+    }
+
+    return (s == "Y" || s == "y");
+}
+
+static size_t throw_away(void *ptr, size_t size, size_t nmemb, void *data)
+{
+    (void)ptr;
+    (void)data;
+    return (size_t)(size * nmemb);
+}
+
+double tstd::check_size(const std::string &url)
+{
+    CURL *curl = curl_easy_init();
+    CURLcode res;
+
+    if (curl)
+    {
+        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, true);
+
+        curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
+        curl_easy_setopt(curl, CURLOPT_FILETIME, 1L);
+        curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, throw_away);
+        curl_easy_setopt(curl, CURLOPT_HEADER, 0L);
+
+        res = curl_easy_perform(curl);
+
+        if (!res)
+        {
+            double filesize;
+            res = curl_easy_getinfo(curl, CURLINFO_CONTENT_LENGTH_DOWNLOAD, &filesize);
+
+            if (!res)
+            {
+                return filesize;
+            }
+        }
+    }
+
+    return -1;
+}
+
 bool tstd::download_file(const std::string &url, const std::string &destination)
 {
     CURL *curl;
     FILE *fp;
     CURLcode res;
+    double filesize = 0.0;
     curl = curl_easy_init();
 
     if (curl)
     {
+        double r = tstd::check_size(url);
+        if (r > 1000000000)
+        {
+            std::cout << "the file you want to download is really big (" << std::round(r/1000000000) << "GB)." << std::endl;
+            if(!tstd::yn_question("are you sure you want to continue?"))
+            {
+                std::cout << "okay. aborted." << std::endl;
+                return false;
+            }
+        }
+
         fp = fopen(destination.c_str(), "wb");
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, true);
@@ -198,7 +307,7 @@ bool tstd::download_file(const std::string &url, const std::string &destination)
         curl_easy_cleanup(curl);
         fclose(fp);
 
-        return ((res >= 200 && res < 300) || res == 0);
+        return ((res >= 200 && res < 300) || res == CURLE_OK);
     }
 
     return false;

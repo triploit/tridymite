@@ -16,8 +16,15 @@ namespace tstd
     std::string package_to_argument(const Package &p);
     std::string exec(const char* cmd);
 
+    std::string ltrim(const std::string &str);
+    std::string rtrim(const std::string &str);
+    std::string trim(const std::string &str);
+
     bool download_file(const std::string &url, const std::string &destination);
+    bool yn_question(const std::string &q);
+
     int cursive_file_count(const std::string &path, int count=1);
+    double check_size(const std::string &url);
 
     std::vector<Package> parse_package_arguments(const std::vector<std::string> &packages);
     std::vector<std::string> split(std::string s, char delim); // Split a string by a delimiter
