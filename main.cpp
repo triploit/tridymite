@@ -9,8 +9,9 @@
 #include <algorithm>
 #include <manager/dependencies/dependency_manager.hpp>
 #include <manager/remove/remove_manager.hpp>
+#include <manager/update/update_manager.hpp>
 
-#define _VERSION "0.0.3a"
+#define _VERSION "0.1.1a"
 
 int main(int argc, char* argv[])
 {
@@ -110,6 +111,9 @@ int main(int argc, char* argv[])
         if (cli.argumentGiven("a"))
             Runtime::reinstall = true;
 
+        if (cli.argumentGiven("f"))
+            Runtime::force = true;
+
         if (cli.argumentGiven("nc"))
             Runtime::no_dependencies = true;
 
@@ -142,50 +146,114 @@ int main(int argc, char* argv[])
             InstallationManager::localPackage(cli.getParameters("l")[0]);
         }
 
-        if (Runtime::to_install.size() == 0 &&
-            Runtime::to_update.size() == 0 &&
-            Runtime::to_remove.size() == 0)
+        if (Runtime::to_install.empty() &&
+            Runtime::to_update.empty() &&
+            Runtime::to_remove.empty())
             Runtime::exit(0);
+
+        Runtime::to_install = DependencyManager::getPackageConfig(Runtime::to_install);
+        Runtime::to_update = DependencyManager::getPackageConfig(Runtime::to_update);
+
+        if (Runtime::update_all)
+        {
+            for (const Package &p : IPackagesManager::getInstalledPackages())
+            {
+                for (int i = 0; i < Runtime::to_update.size(); i++)
+                {
+                    if (Runtime::to_update[i].getName() == p.getName() &&
+                        Runtime::to_update[i].getServer() == p.getServer() &&
+                        Runtime::to_update[i].getRepoName() == p.getRepoName())
+                    {
+                        if (Runtime::to_update[i].getVersion() <= p.getVersion())
+                        {
+                            if (Runtime::reinstall)
+                            {
+                                std::cout << "info: package " << tstd::package_to_argument(p) << " v" << p.getVersion() << " is already installed. reinstalling." << std::endl;
+                            }
+                            else
+                            {
+                                std::cout << "info: package " << tstd::package_to_argument(p) << " v" << p.getVersion() << " is already installed. skipping." << std::endl;
+                                Runtime::to_update.erase(Runtime::to_update.begin()+i);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Runtime::to_remove = DependencyManager::getPackageConfig(Runtime::to_remove);
+
+        for (int i = 0; i < Runtime::to_remove.size(); i++)
+        {
+            const Package &p = Runtime::to_remove[i];
+            bool found = false;
+
+            for (const Package &p2 : IPackagesManager::getInstalledPackages())
+            {
+                if (p2.getGitUser() == p.getGitUser() &&
+                    p2.getServer() == p.getServer() &&
+                    p2.getRepoName() == p.getRepoName())
+                {
+                    found = true;
+                    continue;
+                }
+            }
+
+            if (!found)
+            {
+                Runtime::to_remove.erase(Runtime::to_remove.begin()+i);
+                std::cout << "info: package " << tstd::package_to_argument(p) << " is not installed and can't be removed." << std::endl;
+            }
+        }
+
+        for (int i = 0; i < Runtime::to_remove.size(); i++)
+        {
+            Runtime::to_remove[i] = IPackagesManager::getPackage(Runtime::to_remove[i]);
+        }
 
         std::cout << "info: checking packages..." << std::endl;
 
-        for (int i = 0; i < Runtime::to_install.size(); i++) // Checking if package is already installed - https://github.com/user/repository/raw/branch/filename
+        for (int i = 0; i < Runtime::to_install.size(); i++)
         {
-            const Package &p = Runtime::to_install[i];
-
-            std::string file = Runtime::tmp_dir+"/tmp.yaml";
-            std::string url = tstd::create_url(p, "raw/master/pkg/package.yaml");
-
-            if (!tstd::download_file(url, file))
-            {
-                std::cout << "error: package " << tstd::package_to_argument(p) << " not found!" << std::endl;
-                Runtime::exit(1);
-            }
-
-            std::ofstream _of(file, std::ios::app);
-            _of << "gituser: " << p.getGitUser() << std::endl;
-            _of << "reponame: " << p.getRepoName() << std::endl;
-            _of << "server: " << p.getServer() << std::endl;
-            _of.close();
-
-            Package test(YAML::LoadFile(file));
+            const Package &test = Runtime::to_install[i];
 
             if (IPackagesManager::isPackageInstalled(test))
             {
                 if (Runtime::reinstall)
                 {
-                    std::cout << "info: package " << tstd::package_to_argument(p) << " v" << test.getVersion() << " is already installed. reinstalling." << std::endl;
+                    std::cout << "info: package " << tstd::package_to_argument(test) << " v" << test.getVersion() << " is already installed. reinstalling." << std::endl;
                 }
                 else
                 {
-                    std::cout << "info: package " << tstd::package_to_argument(p) << " v" << test.getVersion() << " is already installed. skipping." << std::endl;
+                    std::cout << "info: package " << tstd::package_to_argument(test) << " v" << test.getVersion() << " is already installed. skipping." << std::endl;
                     Runtime::to_install.erase(Runtime::to_install.begin()+i);
                 }
             }
-
-            Runtime::to_install[i] = test;
-            std::remove(file.c_str());
         }
+
+        if (!Runtime::update_all)
+        {
+            for (int i = 0; i < Runtime::to_update.size(); i++)
+            {
+                const Package &test = Runtime::to_update[i];
+
+                if (IPackagesManager::isPackageInstalled(test))
+                {
+                    if (Runtime::reinstall)
+                    {
+                        std::cout << "info: package " << tstd::package_to_argument(test) << " v" << test.getVersion() << " is already up-to-date. reinstalling." << std::endl;
+                    }
+                    else
+                    {
+                        std::cout << "info: package " << tstd::package_to_argument(test) << " v" << test.getVersion() << " is already up-to-date. skipping." << std::endl;
+                        Runtime::to_update.erase(Runtime::to_update.begin()+i);
+                    }
+                }
+            }
+        }
+
+        if (Runtime::to_update.size() > 0)
+            Runtime::update = true;
 
         std::cout << "info: searching for dependencies..." << std::endl;
 
@@ -211,29 +279,6 @@ int main(int argc, char* argv[])
 
             if (!cont)
                 DependencyManager::checkDependencies(p);
-        }
-
-        for (int i = 0; i < Runtime::to_remove.size(); i++)
-        {
-            const Package &p = Runtime::to_remove[i];
-            bool found = false;
-
-            for (const Package &p2 : IPackagesManager::getInstalledPackages())
-            {
-                if (p2.getGitUser() == p.getGitUser() &&
-                    p2.getServer() == p.getServer() &&
-                    p2.getRepoName() == p.getRepoName())
-                {
-                    found = true;
-                    continue;
-                }
-            }
-
-            if (!found)
-            {
-                Runtime::to_remove.erase(Runtime::to_remove.begin()+i);
-                std::cout << "info: package " << tstd::package_to_argument(p) << " is not installed and can't be removed." << std::endl;
-            }
         }
 
         if (Runtime::to_remove.size() > 0 ||
@@ -276,22 +321,7 @@ int main(int argc, char* argv[])
             Runtime::to_remove.size() == 0)
             Runtime::exit(0);
 
-        std::cout << "do you want to continue?" << std::endl;
-        std::cout << "[y/n] : ";
-        std::string s;
-
-        while (s != "y" && s != "Y" && s != "n" && s != "N")
-        {
-            std::getline(std::cin, s);
-
-            if (s != "y" && s != "Y" && s != "n" && s != "N")
-            {
-                std::cout << "please type y or n!" << std::endl;
-                std::cout << "[y/n] : ";
-            }
-        }
-
-        if (s == "N" || s == "n")
+        if (!tstd::yn_question("do you want to continue?"))
             Runtime::exit(0);
 
         // Installing/Updating/Removing
@@ -303,7 +333,7 @@ int main(int argc, char* argv[])
 
         for (const Package &p : Runtime::to_update) // Iterate through packages, that have to be updated
         {
-
+            UpdateManager::updatePackage(p);
         }
 
         for (const Package &p : Runtime::to_install) // Iterate through packages, that have to be installed
