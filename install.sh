@@ -6,7 +6,7 @@ if [ -d "/usr/share/tridymite" ]
 then
     sleep 1
 
-    echo -e "\e[32;1mWait... You have tridymite already installed! Are you shure to continue?!\e[00m"
+    echo -e "\e[31;1mWait... You have tridymite already installed! Are you shure to continue?!\e[00m"
     printf "[y/n] : "
     read cont
 
@@ -35,7 +35,7 @@ echo -e "\e[32;1m.\e[00m"
 cp -r pkg tridy_dir
 rm tridy_dir/*.sh tridy_dir/*.yaml
 
-if [[ german == "y" ]] || [[ german == "Y" ]]
+if [[ "$german" == "y" ]] || [[ "$german" == "Y" ]]
 then
     echo -e "language: \"german\"" > tridy_dir/conf/config.yaml
 fi
@@ -108,7 +108,7 @@ fi
 
 cmake .
 make
-sudo cp tridymite /usr/bin/tridy
+sudo cp tridymite tridy_dir/tridy
 
 if [ -d "/usr/share/tridymite" ]
 then
@@ -119,14 +119,20 @@ then
     printf "[y/n] : "
     read cont
 
-    if [[ cont == "y" || con == "Y" ]]
+    if [[ "$cont" == "y" || "$cont" == "Y" ]]
     then
         echo -e "\e[32;1mOkay then...\e[00m"
         sudo rm -rf /usr/share/tridymite
+    else
+        sudo rm -rf tridy_dir
+        sudo rm -rf yaml-cpp
+        echo -e "\e[31;1mAborted.\e[00m"
+        exit
     fi
 fi
 
 sudo cp -r tridy_dir /usr/share/tridymite/
+sudo ln -s /usr/share/tridymite/tridy /usr/bin/tridy
 
 sudo rm -rf tridy_dir/
 sudo rm -rf yaml-cpp/

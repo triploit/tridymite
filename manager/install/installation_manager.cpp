@@ -24,6 +24,8 @@ bool InstallationManager::linkProducts(const std::string &prefix, const Package 
         std::string from = package.getLinksFrom()[i];
         std::string to = package.getLinksTo()[i];
 
+
+
         std::cout << prefix << "linking " << package.getProductsTo()[i] << std::endl;
         system(std::string("ln -s "+from+" "+to).c_str());
     }
@@ -56,29 +58,16 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
         else
             std::cout << "moving " << count << " file..." << std::endl;
 
-        std::cout << "do you want to continue?" << std::endl;
-        std::cout << "[y/n] : ";
-        std::string s;
-
-        while (s != "y" && s != "Y" && s != "n" && s != "N")
-        {
-            std::getline(std::cin, s);
-
-            if (s != "y" && s != "Y" && s != "n" && s != "N")
-            {
-                std::cout << "please type y or n!" << std::endl;
-                std::cout << "[y/n] : ";
-            }
-        }
-
-        if (s == "N" || s == "n")
+        if (!tstd::yn_question("do you want to continue?"))
             return false;
     }
 
+    bool reinstall = IPackagesManager::isPackageInstalled(package);
+
     for (int i = 0; i < package.getProductsFrom().size(); i++)
     {
-        std::string from = package.getProductsFrom()[i];
-        std::string to = package.getProductsTo()[i];
+        std::string from = tstd::trim(package.getProductsFrom()[i]);
+        std::string to = tstd::trim(package.getProductsTo()[i]);
 
         bool from_file = false;
         bool to_file = false;
@@ -97,12 +86,27 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
             from_exists = false;
         else from_file = (info_from.st_mode & S_IFDIR) == 0;
 
-        std::cout << prefix << " => moving " << from << " to " << to << std::endl;
+        if (Runtime::force)
+            std::cout << prefix << " => moving (FORCE) " << from << " to " << to << std::endl;
+        else
+            std::cout << prefix << " => moving " << from << " to " << to << std::endl;
 
         if (!from_exists)
         {
             std::cout << "error: package " << tstd::package_to_argument(package) << ": products: \"" << from << "\" doesn't exists!" << std::endl;
             Runtime::exit(1);
+        }
+
+        if (to_exists && !Runtime::force && !Runtime::update)
+        {
+            if ((to == from ||
+                ((from_file && to_file) ||
+                (!from_file && !to_file)))
+                && !reinstall)
+            {
+                std::cout << "error: package " << tstd::package_to_argument(package) << ": products: conflict:\n    - \"" << to << "\" already exists in filesystem!" << std::endl;
+                Runtime::exit(1);
+            }
         }
 
         if ((from_file && to_file) ||
@@ -249,11 +253,12 @@ void InstallationManager::localPackage(std::string path)
     std::cout << prefix << "skipping..." << std::endl;
 }
 
-void InstallationManager::installPackage(const Package &arg)
+void InstallationManager::installPackage(const Package &arg, bool nl)
 {
     std::string prefix = "[ " + arg.getRepoName() + " ] ";
 
-    std::cout << std::endl;
+    if (nl)
+        std::cout << std::endl;
     std::cout << "[ new installation ] now installing " << tstd::package_to_argument(arg) << std::endl;
 
     std::string package_str = arg.getGitUser()+"+" + arg.getRepoName()+"+" + arg.getServer();
