@@ -11,7 +11,7 @@
 class InstallationManager
 {
 public:
-    static void installPackage(const Package &arg);
+    static void installPackage(const Package &arg, bool nl=true);
     static void localPackage(std::string path);
     static bool moveProducts(const std::string &prefix, const Package &package);
     static bool linkProducts(const std::string &prefix, const Package &package);
