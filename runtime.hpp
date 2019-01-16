@@ -12,10 +12,18 @@
 #include <yaml-cpp/yaml.h>
 #include <package.hpp>
 #include <manager/packages/ipackage_manager.hpp>
+#include <signal.h>
 #include "translation/translation.hpp"
 
 class Runtime
 {
+private:
+    static void handle_escape(int i)
+    {
+        std::cout << std::endl << "catched ^C " << std::endl << "don't do that again!" << std::endl;
+        Runtime::exit(1);
+    }
+
 public:
     inline static std::vector<Package> to_install;
     inline static std::vector<Package> to_install_all;
@@ -36,14 +44,30 @@ public:
     inline static bool insecure;
     inline static bool update_all;
     inline static bool no_dependencies;
+    inline static bool force;
+    inline static bool update;
 
     inline static std::string language;
 
     static void init()
     {
+        verbose = false;
+        reinstall = false;
+        insecure = false;
+        update_all = false;
+        no_dependencies = false;
+        force = false;
+        update = false;
+
         git_server =  "github.com";
         tridy_dir = "/usr/share/tridymite/";
         language = "english";
+
+        struct sigaction sigIntHandler;
+        sigIntHandler.sa_handler = handle_escape;
+        sigemptyset(&sigIntHandler.sa_mask);
+        sigIntHandler.sa_flags = 0;
+        sigaction(SIGINT, &sigIntHandler, NULL);
 
         struct stat info;
         if (stat(tridy_dir.c_str(), &info) != 0)
