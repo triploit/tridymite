@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+pfli="${HOME}/.local/bin"
+
 echo -e "\e[32;1mWelcome to the Installer :)!\e[00m"
 
 if [ -d "/usr/share/tridymite" ]
@@ -29,8 +31,7 @@ fi
 echo -e "\e[32;1mThere's also a German language pack. Do you want to activate it?\e[00m"
 printf "[y/n] : "
 read german
-echo -e "\e[32;1mOkay. Now let's install it!\e[00m"
-echo -e "\e[32;1m.\e[00m"
+echo -e "\e[32;1mOkay.\e[00m"
 
 cp -r pkg tridy_dir
 rm tridy_dir/*.sh tridy_dir/*.yaml
@@ -38,6 +39,38 @@ rm tridy_dir/*.sh tridy_dir/*.yaml
 if [[ "$german" == "y" ]] || [[ "$german" == "Y" ]]
 then
     echo -e "language: \"german\"" > tridy_dir/conf/config.yaml
+fi
+
+if [[ "$PATH" == *"${pfli}"* ]]
+then
+    printf ""
+else
+    echo -e "\e[32;1mDo you want to add a directory to your path to make local installations of packages possible?\e[00m";
+    printf "[y/n] : "
+
+    read yn
+    echo -e "\e[32;1mOkay.\e[00m"
+
+    if [[ "$german" == "y" ]] || [[ "$german" == "Y" ]]
+    then
+        echo -e "Are you using (1) bash, (2) zsh or (3) something else?"
+        printf "> "
+        read wsh
+
+        if [[ "$wsh" == "1" ]]
+        then
+            shdir="$HOME/.bashrc"
+        elif [[ "$wsh" == "2" ]]
+        then
+            shdir="$HOME/.zshrc"
+        else
+            echo -e "Then please give me the \e[1mcomplete\e[00m path of the autoload script (for bash it's $HOME/.bashrc, for zsh $HOME/.zshrc)."
+            printf "> "
+            read shdir
+        fi
+
+        echo -e "PATH=\"$HOME/.local/bin/:\$PATH\"" >> "${shdir}"
+    fi
 fi
 
 if [ ! -d "/usr/include/yaml-cpp" ] && [ ! -d "/usr/local/include/yaml-cpp" ]
