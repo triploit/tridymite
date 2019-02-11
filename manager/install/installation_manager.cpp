@@ -66,8 +66,50 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
 
     for (int i = 0; i < package.getProductsFrom().size(); i++)
     {
+        if (!Runtime::local_folder && Runtime::try_local)
+        {
+            std::cout << "error: couldn't find the directory for local packages." << std::endl;
+
+            if (!tstd::yn_question("do you want to continue and install it globally?"))
+            {
+                std::cout << "aborted package installation." << std::endl;
+                return 0;
+            }
+        }
+
         std::string from = tstd::trim(package.getProductsFrom()[i]);
+
+        if (Runtime::try_local && Runtime::local_folder)
+        {
+            from = tstd::replace(from, "$usr", "~/.local");
+            from = tstd::replace(from, "$share", "~/.local/share");
+            from = tstd::replace(from, "$bin", "~/.local/bin");
+            from = tstd::replace(from, "$lib", "~/.local/lib");
+        }
+        else
+        {
+            from = tstd::replace(from, "$usr", "/usr");
+            from = tstd::replace(from, "$share", "/usr/share");
+            from = tstd::replace(from, "$bin", "/usr/bin");
+            from = tstd::replace(from, "$lib", "/usr/lib");
+        }
+
         std::string to = tstd::trim(package.getProductsTo()[i]);
+
+        if (Runtime::try_local && Runtime::local_folder)
+        {
+            to = tstd::replace(to, "$usr", "~/.local");
+            to = tstd::replace(to, "$share", "~/.local/share");
+            to = tstd::replace(to, "$bin", "~/.local/bin");
+            to = tstd::replace(to, "$lib", "~/.local/lib");
+        }
+        else
+        {
+            to = tstd::replace(to, "$usr", "/usr");
+            to = tstd::replace(to, "$share", "/usr/share");
+            to = tstd::replace(to, "$bin", "/usr/bin");
+            to = tstd::replace(to, "$lib", "/usr/lib");
+        }
 
         bool from_file = false;
         bool to_file = false;
@@ -157,6 +199,10 @@ std::string InstallationManager::downloadPackage(const std::string &prefix, cons
     if (system(std::string("unzip " + package_zip + " > /dev/null").c_str()) != 0)
     {
         std::cout << "error: couldn't unzip file!" << std::endl;
+
+        if (system("unzip > /dev/null") != 0)
+            std::cout << "info: install the unzip tool.";
+
         Runtime::exit(1);
     }
 
@@ -166,6 +212,14 @@ std::string InstallationManager::downloadPackage(const std::string &prefix, cons
 
 void InstallationManager::localPackage(std::string path)
 {
+    std::cout << std::endl;
+
+    if (!tstd::yn_question("do you want to continue?"))
+    {
+        std::cout << "aborted." << std::endl;
+        return;
+    }
+
     if (path[path.size()-1] != '/')
         path += "/";
 
@@ -242,7 +296,11 @@ void InstallationManager::localPackage(std::string path)
     {
         std::string dir = Runtime::tridy_dir+"/conf/packages/"+package_str;
         system(std::string("if [ ! -d "+dir+" ]; then sudo mkdir -p "+dir+"; fi").c_str());
-        system(std::string("sudo cp "+path+"pkg/package.sh "+dir+"; sudo cp "+path+"pkg/package.yaml "+dir).c_str());
+
+        system(std::string("sudo cp "+path+"pkg/package.yaml package.yaml.bkp").c_str());
+        std::string c = std::string("sudo cp "+path+"pkg/package.sh "+dir+"; sudo echo -e \"\\nlocal: "+(Runtime::try_local ? "true" : "false")+"\\n\" >> "+file+"; sudo cp "+path+"pkg/package.yaml "+dir);
+        system(c.c_str());
+        system(std::string("sudo cp package.yaml.bkp "+path+"pkg/package.yaml").c_str());
 
         chdir(Runtime::tmp_dir.c_str());
         return;
@@ -294,7 +352,11 @@ void InstallationManager::installPackage(const Package &arg, bool nl)
 
         std::string dir = Runtime::tridy_dir+"/conf/packages/"+package_str;
         system(std::string("if [ ! -d "+dir+" ]; then sudo mkdir -p "+dir+"; fi").c_str());
-        system(std::string("sudo cp "+package_dir+"pkg/package.sh "+dir+"; sudo cp "+package_dir+"pkg/package.yaml "+dir).c_str());
+
+        system(std::string("sudo cp "+package_dir+"pkg/package.yaml package.yaml.bkp").c_str());
+        std::string c = std::string("sudo cp "+package_dir+"pkg/package.sh "+dir+"; sudo echo -e \"\\nlocal: "+(Runtime::try_local ? "true" : "false")+"\\n\" >> "+file+"; sudo cp "+package_dir+"pkg/package.yaml "+dir);
+        system(c.c_str());
+        system(std::string("sudo cp package.yaml.bkp "+package_dir+"pkg/package.yaml").c_str());
 
         chdir(Runtime::tmp_dir.c_str());
         return;
