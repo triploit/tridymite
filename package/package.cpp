@@ -18,126 +18,15 @@ Package::Package(const std::string &argument_name)
     setName(p.getRepoName());
 }
 
+Package::Package(const YAML::Node &pkg, std::string path)
+{
+    load_package_from_nodes(pkg);
+    yaml_path = path;
+}
+
 Package::Package(const YAML::Node &pkg)
 {
-    if (pkg["reponame"])
-        setRepoName(pkg["reponame"].as<std::string>());
-
-    if (pkg["gituser"])
-        setGitUser(pkg["gituser"].as<std::string>());
-    else
-    {
-        std::cout << "error: package " << getRepoName() << ": no github user set!" << std::endl;
-        Runtime::exit(1);
-    }
-
-    if (pkg["server"])
-        setServer(pkg["server"].as<std::string>());
-    else
-    {
-        std::cout << "error: package " << getRepoName() << ": no server set!" << std::endl;
-        Runtime::exit(1);
-    }
-
-    if (pkg["name"])
-        setName(pkg["name"].as<std::string>());
-    else
-    {
-        std::cout << "error: package " << getRepoName() << ": no name set!" << std::endl;
-        Runtime::exit(1);
-    }
-
-    if (pkg["description"])
-        setDescription(pkg["description"].as<std::string>());
-
-    if (pkg["information"])
-        setInformation(pkg["information"].as<std::string>());
-
-    if (pkg["authors"])
-        setAuthors(pkg["authors"].as<std::vector<std::string>>());
-
-    if (pkg["version"])
-        setVersion(Version(pkg["version"].as<std::string>()));
-    else
-    {
-        std::cout << "error: package " << getRepoName() << ": no version set!" << std::endl;
-        Runtime::exit(1);
-    }
-
-    if (pkg["products"])
-    {
-        if (!pkg["products"].IsSequence())
-        {
-            std::cout << "error: package " << getRepoName() << ": products have to be a sequence!" << std::endl;
-            Runtime::exit(1);
-        }
-
-        for (YAML::Node n : pkg["products"])
-        {
-            std::stringstream ss;
-            ss << n;
-            std::string s = ss.str();
-
-            std::string from = tstd::split(s, ':')[0];
-            std::string to = std::string(s).substr(tstd::split(s, ':')[0].size()+1, s.size());
-
-            products_from.push_back(from);
-            products_to.push_back(to);
-        }
-    }
-
-    if (pkg["links"])
-    {
-        if (!pkg["links"].IsSequence())
-        {
-            std::cout << "error: package " << getRepoName() << ": links have to be a sequence!" << std::endl;
-            Runtime::exit(1);
-        }
-
-        for (YAML::Node n : pkg["links"])
-        {
-            std::stringstream ss;
-            ss << n;
-            std::string s = ss.str();
-
-            std::string from = tstd::split(s, ':')[0];
-            std::string to = std::string(s).substr(tstd::split(s, ':')[0].size()+1, s.size());
-
-            links_from.push_back(from);
-            links_to.push_back(to);
-        }
-    }
-
-    for (const YAML::Node &n : pkg["dependencies"])
-    {
-        if (n.as<std::string>().rfind("https://", 0) == 0)
-        {
-            std::string file = Runtime::tmp_dir+"/tmp.yaml";
-            std::string url = n.as<std::string>();
-
-            if (!tstd::download_file(url, file))
-            {
-                std::cout << "error: package " << tstd::package_to_argument(*this) << ": dependency " << url << " seens not to be a tridymite package!" << std::endl;
-                Runtime::exit(1);
-            }
-
-            std::ofstream _of(file, std::ios::app);
-            _of << "gituser: " << this->getGitUser() << std::endl;
-            _of << "reponame: " << this->getRepoName() << std::endl;
-            _of << "server: " << this->getServer() << std::endl;
-            _of.close();
-
-            dependencies.push_back(Package(YAML::LoadFile(file)));
-        }
-        else if (std::regex_match(n.as<std::string>(), std::regex("([a-zA-Z_0-9\-]*):([a-zA-Z_0-9\-]*)@([a-zA-Z_0-9\-]*)\.([a-zA-Z_0-9\-]*)")))
-        {
-            dependencies.push_back(tstd::parse_package(n.as<std::string>()));
-        }
-        else if (n.as<std::string>() == "nopkg")
-        {
-            std::cout << "error: package " << tstd::package_to_argument(*this) << ": dependencies: nopkg is not allowed yet." << std::endl;
-        }
-    }
+    load_package_from_nodes(pkg);
 }
 
 const std::string &Package::getGitUser() const
@@ -300,4 +189,139 @@ const std::vector<std::string> &Package::getLinksFrom() const
 const std::vector<std::string> &Package::getLinksTo() const
 {
     return links_to;
+}
+
+void Package::setYamlPath(std::string path)
+{
+    yaml_path = path;
+}
+
+const std::string &Package::getYamlPath() const
+{
+    return yaml_path;
+}
+
+void Package::load_package_from_nodes(const YAML::Node &pkg)
+{
+    if (pkg["reponame"])
+        setRepoName(pkg["reponame"].as<std::string>());
+
+    if (pkg["gituser"])
+        setGitUser(pkg["gituser"].as<std::string>());
+    else
+    {
+        std::cout << "error: package " << getRepoName() << ": no github user set!" << std::endl;
+        Runtime::exit(1);
+    }
+
+    if (pkg["server"])
+        setServer(pkg["server"].as<std::string>());
+    else
+    {
+        std::cout << "error: package " << getRepoName() << ": no server set!" << std::endl;
+        Runtime::exit(1);
+    }
+
+    if (pkg["name"])
+        setName(pkg["name"].as<std::string>());
+    else
+    {
+        std::cout << "error: package " << getRepoName() << ": no name set!" << std::endl;
+        Runtime::exit(1);
+    }
+
+    if (pkg["description"])
+        setDescription(pkg["description"].as<std::string>());
+
+    if (pkg["information"])
+        setInformation(pkg["information"].as<std::string>());
+
+    if (pkg["authors"])
+        setAuthors(pkg["authors"].as<std::vector<std::string>>());
+
+    if (pkg["version"])
+        setVersion(Version(pkg["version"].as<std::string>()));
+    else
+    {
+        std::cout << "error: package " << getRepoName() << ": no version set!" << std::endl;
+        Runtime::exit(1);
+    }
+
+    if (pkg["products"])
+    {
+        if (!pkg["products"].IsSequence())
+        {
+            std::cout << "error: package " << getRepoName() << ": products have to be a sequence!" << std::endl;
+            Runtime::exit(1);
+        }
+
+        for (YAML::Node n : pkg["products"])
+        {
+            std::stringstream ss;
+            ss << n;
+            std::string s = ss.str();
+
+            std::string from = tstd::split(s, ':')[0];
+            std::string to = std::string(s).substr(tstd::split(s, ':')[0].size()+1, s.size());
+
+            products_from.push_back(from);
+            products_to.push_back(to);
+        }
+    }
+
+    if (pkg["links"])
+    {
+        if (!pkg["links"].IsSequence())
+        {
+            std::cout << "error: package " << getRepoName() << ": links have to be a sequence!" << std::endl;
+            Runtime::exit(1);
+        }
+
+        for (YAML::Node n : pkg["links"])
+        {
+            std::stringstream ss;
+            ss << n;
+            std::string s = ss.str();
+
+            std::string from = tstd::split(s, ':')[0];
+            std::string to = std::string(s).substr(tstd::split(s, ':')[0].size()+1, s.size());
+
+            links_from.push_back(from);
+            links_to.push_back(to);
+        }
+    }
+
+    for (const YAML::Node &n : pkg["dependencies"])
+    {
+        if (n.as<std::string>().rfind("https://", 0) == 0)
+        {
+            std::string file = Runtime::tmp_dir + "/tmp.yaml";
+            std::string url = n.as<std::string>();
+
+            if (!tstd::download_file(url, file))
+            {
+                std::cout << "error: package " << tstd::package_to_argument(*this) << ": dependency " << url
+                          << " seens not to be a tridymite package!" << std::endl;
+                Runtime::exit(1);
+            }
+
+            std::ofstream _of(file, std::ios::app);
+            _of << "gituser: " << this->getGitUser() << std::endl;
+            _of << "reponame: " << this->getRepoName() << std::endl;
+            _of << "server: " << this->getServer() << std::endl;
+            _of.close();
+
+            dependencies.push_back(Package(YAML::LoadFile(file)));
+        }
+        else if (std::regex_match(n.as<std::string>(), std::regex(
+                "([a-zA-Z_0-9\-]*):([a-zA-Z_0-9\-]*)@([a-zA-Z_0-9\-]*)\.([a-zA-Z_0-9\-]*)")))
+        {
+            dependencies.push_back(tstd::parse_package(n.as<std::string>()));
+        }
+        else if (n.as<std::string>() == "nopkg")
+        {
+            std::cout << "error: package " << tstd::package_to_argument(*this)
+                      << ": dependencies: nopkg is not allowed yet." << std::endl;
+        }
+    }
 }
