@@ -14,7 +14,7 @@ const std::vector<std::string> __ARG_NAME { // Names, two names of the same argu
     "r,remove",
     "u,update",
     "ua,update-all",
-    "l,local",
+    "p,path",
     "e,extended-output,verbose",
     "n,not-secure",
     "s,server",
@@ -26,7 +26,8 @@ const std::vector<std::string> __ARG_NAME { // Names, two names of the same argu
     "a,already-installed",
     "nc,no-dependency-checking",
     "f,force",
-    "t,testing"
+    "t,testing",
+    "l"
 };
 
 const std::vector<std::string> __ARG_HELP { // Help for the arguments
@@ -35,7 +36,7 @@ const std::vector<std::string> __ARG_HELP { // Help for the arguments
     "remove",
     "update",
     "update_all",
-    "local",
+    "path",
     "verbose",
     "insecure",
     "server",
@@ -47,7 +48,8 @@ const std::vector<std::string> __ARG_HELP { // Help for the arguments
     "already_installed",
     "no_deps",
     "force",
-    "testing"
+    "testing",
+    "local"
 };
 
 std::vector<int> __ARG_LENGTH { // How many arguments can an argument have? -1 = endless, 0 = 0, 1 = 1, ...
@@ -68,7 +70,8 @@ std::vector<int> __ARG_LENGTH { // How many arguments can an argument have? -1 =
     0,
     0,
     0,
-    1
+    1,
+    0
 };
 
 #endif //TRIDYMITE_ARGUMENTS_HPP

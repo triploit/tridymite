@@ -22,7 +22,7 @@ void IPackagesManager::load(std::string path) // package = /usr/share/tridymite/
             (s.substr(s.size()-5, s.size()) == ".yaml" ||
             s.substr(s.size()-4, s.size()) == ".yml"))
         {
-            Package p(YAML::LoadFile(s));
+            Package p(YAML::LoadFile(s), s);
             IPackagesManager::installed_packages.push_back(p);
         }
     }
@@ -58,4 +58,9 @@ const Package& IPackagesManager::getPackage(Package &p)
     }
 
     return Package();
+}
+
+std::string IPackagesManager::getPackageFile(const Package &p)
+{
+    return std::__cxx11::string();
 }

@@ -13,6 +13,7 @@
 #include <package.hpp>
 #include <manager/packages/ipackage_manager.hpp>
 #include <signal.h>
+#include <pwd.h>
 #include "translation/translation.hpp"
 
 class Runtime
@@ -46,7 +47,9 @@ public:
     inline static bool no_dependencies;
     inline static bool force;
     inline static bool update;
+    inline static bool try_local;
 
+    inline static bool local_folder;
     inline static std::string language;
 
     static void init()
@@ -58,6 +61,19 @@ public:
         no_dependencies = false;
         force = false;
         update = false;
+        try_local = false;
+        local_folder = true;
+
+        std::string homedir = getenv("HOME");
+
+        if (homedir.c_str() == NULL || homedir.empty())
+        {
+            homedir = getpwuid(getuid())->pw_dir;
+        }
+
+        struct stat info_local;
+        if(stat(std::string(homedir+"/.local/").c_str(), &info_local) != 0)
+            local_folder = false;
 
         git_server =  "github.com";
         tridy_dir = "/usr/share/tridymite/";

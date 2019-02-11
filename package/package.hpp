@@ -19,6 +19,7 @@ private:
     std::string name;           // name of project
     std::string description;    // long description
     std::string information;    // short description
+    std::string yaml_path;      // path were the yaml file lies
     Script build_script;        // build script
 
     std::vector<Package> dependencies;  // all dependencies
@@ -32,16 +33,21 @@ private:
 
     Version version;
 
+    void load_package_from_nodes(const YAML::Node &pkg);
+
 public:
     Package();
     Package(const std::string &argument_name);
     Package(const YAML::Node &pkg);
+    Package(const YAML::Node &pkg, std::string path);
 
     const std::string &getGitUser() const;
     const std::string &getName() const;
     const std::string &getDescription() const;
     const std::string &getInformation() const;
     const std::string &getServer() const;
+    const std::string &getYamlPath() const;
+
     const Script &getBuildScript() const;
     const Version &getVersion() const;
     const std::string &getRepoName() const;
@@ -63,8 +69,11 @@ public:
     void setAuthors(const std::vector<std::string> &authors);
     void setVersion(const Version &version);
     void setRepoName(const std::string &repo);
+    void setYamlPath(std::string path);
 
     friend std::ostream &operator<<(std::ostream &os, const Package &p);
     const bool operator==(const Package &p);
+
+
 };
 #endif
