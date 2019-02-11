@@ -117,6 +117,9 @@ int main(int argc, char* argv[])
         if (cli.argumentGiven("nc"))
             Runtime::no_dependencies = true;
 
+        if (cli.argumentGiven("l"))
+            Runtime::try_local = true;
+
         // Adding the packages
 
         if (cli.argumentGiven("i")) // Check if argument -i/--install is used
@@ -139,11 +142,11 @@ int main(int argc, char* argv[])
 
         // Running the managers, doing installing, updating etc.
 
-        if (cli.argumentGiven("l")) // Install local path
+        if (cli.argumentGiven("p")) // Install local path
         {
-            std::cout << "info: installing local path: " << cli.getParameters("l")[0] << std::endl;
-            chdir(cli.getParameters("l")[0].c_str());
-            InstallationManager::localPackage(cli.getParameters("l")[0]);
+            std::cout << "info: installing local path: " << cli.getParameters("p")[0] << std::endl;
+            chdir(cli.getParameters("p")[0].c_str());
+            InstallationManager::localPackage(cli.getParameters("p")[0]);
         }
 
         if (Runtime::to_install.empty() &&
