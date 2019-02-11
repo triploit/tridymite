@@ -19,6 +19,7 @@ namespace tstd
     std::string ltrim(const std::string &str);
     std::string rtrim(const std::string &str);
     std::string trim(const std::string &str);
+    std::string replace(std::string str, const std::string &from, const std::string &to);
 
     bool download_file(const std::string &url, const std::string &destination);
     bool yn_question(const std::string &q);

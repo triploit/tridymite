@@ -111,6 +111,22 @@ std::string tstd::trim(const std::string &s)
     return rtrim(ltrim(s));
 }
 
+std::string tstd::replace(std::string str, const std::string &from, const std::string &to)
+{
+    if(from.empty())
+        return "";
+
+    size_t start_pos = 0;
+
+    while((start_pos = str.find(from, start_pos)) != std::string::npos)
+    {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length();
+    }
+
+    return str;
+}
+
 Package tstd::parse_package(const std::string &package)
 {
     Package p;
@@ -304,6 +320,7 @@ bool tstd::download_file(const std::string &url, const std::string &destination)
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
 
         res = curl_easy_perform(curl);
+
         curl_easy_cleanup(curl);
         fclose(fp);
 
