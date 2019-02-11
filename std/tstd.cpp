@@ -318,10 +318,7 @@ bool tstd::url_exists(const std::string &url)
         tstd::read_buf.clear();
         res = curl_easy_perform(curl);
 
-        if (tstd::read_buf.find("Status: 404 Not Found") != std::string::npos)
-            return false;
-
-        return true;
+        return tstd::read_buf.find("Status: 404 Not Found") == std::string::npos;
     }
 
     return false;
@@ -430,4 +427,13 @@ int tstd::cursive_file_count(const std::string &path, int count)
     closedir(dirp);
 
     return count;
+}
+
+std::string tstd::replace_quotation_marks(std::string from)
+{
+    from = tstd::replace(from, "\\\"", "<¬BSAFZ"+std::to_string(getpid())+">");
+    from = tstd::replace(from, "\"", "\\\"");
+    from = tstd::replace(from, "<¬BSAFZ"+std::to_string(getpid())+">", "\\\"");
+
+    return from;
 }

@@ -22,12 +22,53 @@ bool InstallationManager::linkProducts(const std::string &prefix, const Package 
     for (int i = 0; i < package.getLinksFrom().size(); i++)
     {
         std::string from = package.getLinksFrom()[i];
+
+        if (Runtime::try_local && Runtime::local_folder)
+        {
+            from = tstd::replace(from, "$usr", std::string(getenv("HOME"))+"/.local");
+            from = tstd::replace(from, "$share", std::string(getenv("HOME"))+"/.local/share");
+            from = tstd::replace(from, "$bin", std::string(getenv("HOME"))+"/.local/bin");
+            from = tstd::replace(from, "$lib", std::string(getenv("HOME"))+"/.local/lib");
+        }
+        else
+        {
+            from = tstd::replace(from, "$usr", "/usr");
+            from = tstd::replace(from, "$share", "/usr/share");
+            from = tstd::replace(from, "$bin", "/usr/bin");
+            from = tstd::replace(from, "$lib", "/usr/lib");
+        }
+
         std::string to = package.getLinksTo()[i];
 
+        if (Runtime::try_local && Runtime::local_folder)
+        {
+            to = tstd::replace(to, "$usr", std::string(getenv("HOME"))+"/.local");
+            to = tstd::replace(to, "$share", std::string(getenv("HOME"))+"/.local/share");
+            to = tstd::replace(to, "$bin", std::string(getenv("HOME"))+"/.local/bin");
+            to = tstd::replace(to, "$lib", std::string(getenv("HOME"))+"/.local/lib");
+        }
+        else
+        {
+            to = tstd::replace(to, "$usr", "/usr");
+            to = tstd::replace(to, "$share", "/usr/share");
+            to = tstd::replace(to, "$bin", "/usr/bin");
+            to = tstd::replace(to, "$lib", "/usr/lib");
+        }
 
+        to = tstd::replace_quotation_marks(to);
+        from = tstd::replace_quotation_marks(from);
+
+        std::string from_var = "_"+std::to_string(getpid())+"_tridy_pfrom";
+        std::string to_var = "_"+std::to_string(getpid())+"_tridy_pto";
+
+        setenv(from_var.c_str(), from.c_str(), true);
+        setenv(to_var.c_str(), to.c_str(), true);
+
+        from_var = "$"+from_var;
+        to_var = "$"+to_var;
 
         std::cout << prefix << "linking " << package.getProductsTo()[i] << std::endl;
-        system(std::string("ln -s "+from+" "+to).c_str());
+        system(std::string("ln -s "+from_var+" "+to_var).c_str());
     }
 
     return true;
@@ -81,10 +122,10 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
 
         if (Runtime::try_local && Runtime::local_folder)
         {
-            from = tstd::replace(from, "$usr", "~/.local");
-            from = tstd::replace(from, "$share", "~/.local/share");
-            from = tstd::replace(from, "$bin", "~/.local/bin");
-            from = tstd::replace(from, "$lib", "~/.local/lib");
+            from = tstd::replace(from, "$usr", std::string(getenv("HOME"))+"/.local");
+            from = tstd::replace(from, "$share", std::string(getenv("HOME"))+"/.local/share");
+            from = tstd::replace(from, "$bin", std::string(getenv("HOME"))+"/.local/bin");
+            from = tstd::replace(from, "$lib", std::string(getenv("HOME"))+"/.local/lib");
         }
         else
         {
@@ -98,10 +139,10 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
 
         if (Runtime::try_local && Runtime::local_folder)
         {
-            to = tstd::replace(to, "$usr", "~/.local");
-            to = tstd::replace(to, "$share", "~/.local/share");
-            to = tstd::replace(to, "$bin", "~/.local/bin");
-            to = tstd::replace(to, "$lib", "~/.local/lib");
+            to = tstd::replace(to, "$usr", std::string(getenv("HOME"))+"/.local");
+            to = tstd::replace(to, "$share", std::string(getenv("HOME"))+"/.local/share");
+            to = tstd::replace(to, "$bin", std::string(getenv("HOME"))+"/.local/bin");
+            to = tstd::replace(to, "$lib", std::string(getenv("HOME"))+"/.local/lib");
         }
         else
         {
@@ -127,6 +168,18 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
         if(stat(from.c_str(), &info_from) != 0)
             from_exists = false;
         else from_file = (info_from.st_mode & S_IFDIR) == 0;
+
+        to = tstd::replace_quotation_marks(to);
+        from = tstd::replace_quotation_marks(from);
+
+        std::string from_var = "_"+std::to_string(getpid())+"_tridy_pfrom";
+        std::string to_var = "_"+std::to_string(getpid())+"_tridy_pto";
+
+        setenv(from_var.c_str(), from.c_str(), true);
+        setenv(to_var.c_str(), to.c_str(), true);
+
+        from_var = "$"+from_var;
+        to_var = "$"+to_var;
 
         if (Runtime::force)
             std::cout << prefix << " => moving (FORCE) " << from << " to " << to << std::endl;
@@ -154,9 +207,9 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
         if ((from_file && to_file) ||
             (from_file && !to_file))
         {
-            if (system(std::string("sudo cp "+from+" "+to).c_str()) != 0)
+            if (system(std::string("sudo cp "+from_var+" "+to_var).c_str()) != 0)
             {
-                std::cout << "error: moving products: \"" << from << "\": unknown error!" << std::endl;
+                std::cout << "error: moving products: \"" << getenv(from_var.substr(1, from_var.size()).c_str()) << "\": unknown error!" << std::endl;
                 Runtime::exit(1);
             }
         }
@@ -167,7 +220,7 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
         }
         else if (!to_file && !to_file)
         {
-            if (system(std::string("if [ ! -d "+to+" ]; then sudo mkdir -p "+to+"; fi; sudo mv "+from+"/* "+to).c_str()) != 0)
+            if (system(std::string("if [ ! -d "+to_var+" ]; then sudo mkdir -p "+to_var+"; fi; sudo mv "+from_var+"/* "+to_var).c_str()) != 0)
             {
                 std::cout << "error: moving products: \"" << from << "\": unknown error!" << std::endl;
                 Runtime::exit(1);

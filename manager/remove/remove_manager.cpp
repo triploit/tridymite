@@ -30,10 +30,10 @@ bool RemoveManager::unlinkProducts(const std::string &prefix, const Package &pac
 
         if (Runtime::try_local && Runtime::local_folder)
         {
-            to = tstd::replace(to, "$usr", "~/.local");
-            to = tstd::replace(to, "$share", "~/.local/share");
-            to = tstd::replace(to, "$bin", "~/.local/bin");
-            to = tstd::replace(to, "$lib", "~/.local/lib");
+            to = tstd::replace(to, "$usr", std::string(getenv("HOME"))+"/.local");
+            to = tstd::replace(to, "$share", std::string(getenv("HOME"))+"/.local/share");
+            to = tstd::replace(to, "$bin", std::string(getenv("HOME"))+"/.local/bin");
+            to = tstd::replace(to, "$lib", std::string(getenv("HOME"))+"/.local/lib");
         }
         else
         {
@@ -43,8 +43,13 @@ bool RemoveManager::unlinkProducts(const std::string &prefix, const Package &pac
             to = tstd::replace(to, "$lib", "/usr/lib");
         }
 
-        std::cout << prefix << "unlinking " << package.getLinksTo()[i] << std::endl;
-        system(std::string("if [ -f "+package.getLinksTo()[i]+" ]; then sudo unlink "+package.getLinksTo()[i]+"; fi").c_str());
+        to = "_"+tstd::replace_quotation_marks(to);
+        std::string to_var = std::to_string(getpid())+"_tridy_pto";
+        setenv(to_var.c_str(), to.c_str(), true);
+        to_var = "$"+to_var;
+
+        std::cout << prefix << "unlinking " << to << std::endl;
+        system(std::string("if [ -f "+to_var+" ]; then sudo unlink "+to_var+"; fi").c_str());
     }
 
     return true;
@@ -74,10 +79,10 @@ bool RemoveManager::removeProducts(const std::string &prefix, const Package &pac
 
         if (Runtime::try_local && Runtime::local_folder)
         {
-            to = tstd::replace(to, "$usr", "~/.local");
-            to = tstd::replace(to, "$share", "~/.local/share");
-            to = tstd::replace(to, "$bin", "~/.local/bin");
-            to = tstd::replace(to, "$lib", "~/.local/lib");
+            to = tstd::replace(to, "$usr", std::string(getenv("HOME"))+"/.local");
+            to = tstd::replace(to, "$share", std::string(getenv("HOME"))+"/.local/share");
+            to = tstd::replace(to, "$bin", std::string(getenv("HOME"))+"/.local/bin");
+            to = tstd::replace(to, "$lib", std::string(getenv("HOME"))+"/.local/lib");
         }
         else
         {
@@ -87,8 +92,13 @@ bool RemoveManager::removeProducts(const std::string &prefix, const Package &pac
             to = tstd::replace(to, "$lib", "/usr/lib");
         }
 
+        to = tstd::replace_quotation_marks(to);
+        std::string to_var = "_"+std::to_string(getpid())+"_tridy_pto";
+        setenv(to_var.c_str(), to.c_str(), true);
+        to_var = "$"+to_var;
+
         std::cout << prefix << "removing " << to << std::endl;
-        system(std::string("sudo rm -rf "+to).c_str());
+        system(std::string("sudo rm -rf "+to_var).c_str());
     }
 
     return true;
