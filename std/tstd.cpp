@@ -292,6 +292,41 @@ double tstd::check_size(const std::string &url)
     return -1;
 }
 
+static size_t write_buf(void *contents, size_t size, size_t nmemb, void *userp)
+{
+    size_t realsize = size * nmemb;
+    tstd::read_buf.append((char*) contents, realsize);
+    return realsize;
+}
+
+bool tstd::url_exists(const std::string &url)
+{
+    CURL *curl;
+    FILE *fp;
+    CURLcode res;
+    curl = curl_easy_init();
+
+    if (curl)
+    {
+        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, true);
+
+        curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
+        curl_easy_setopt(curl, CURLOPT_HEADER, 1L);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_buf);
+
+        tstd::read_buf.clear();
+        res = curl_easy_perform(curl);
+
+        if (tstd::read_buf.find("Status: 404 Not Found") != std::string::npos)
+            return false;
+
+        return true;
+    }
+
+    return false;
+}
+
 bool tstd::download_file(const std::string &url, const std::string &destination)
 {
     CURL *curl;
@@ -303,6 +338,10 @@ bool tstd::download_file(const std::string &url, const std::string &destination)
     if (curl)
     {
         double r = tstd::check_size(url);
+
+        if (!url_exists(url))
+            return false;
+
         if (r > 1000000000)
         {
             std::cout << "the file you want to download is really big (" << std::round(r/1000000000) << "GB)." << std::endl;

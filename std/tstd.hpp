@@ -9,6 +9,7 @@
 
 namespace tstd
 {
+    static std::string read_buf;
     Package parse_package(const std::string &package);
 
     std::string add_prefix(std::string arg); // Add a prefix (- or --) to argument (like "help" -> "--help"; "i" -> "-i")
@@ -23,6 +24,7 @@ namespace tstd
 
     bool download_file(const std::string &url, const std::string &destination);
     bool yn_question(const std::string &q);
+    bool url_exists(const std::string &url);
 
     int cursive_file_count(const std::string &path, int count=1);
     double check_size(const std::string &url);
