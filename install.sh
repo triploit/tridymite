@@ -1,8 +1,20 @@
 #!/usr/bin/env bash
 
+if [[ `whoami` == "root" ]]
+then
+    echo "You shouldn't run this installer as root.";
+fi
+
 pfli="${HOME}/.local/bin"
+_local=false
 
 echo -e "\e[32;1mWelcome to the Installer :)!\e[00m"
+
+if [ -d "/usr/share/tridymite/conf/packages" ]
+then
+    mkdir bkp_pkg
+    sudo cp -rf /usr/share/tridymite/conf/packages/* bkp_pkg/
+fi
 
 if [ -d "/usr/share/tridymite" ]
 then
@@ -15,6 +27,7 @@ then
     if [[ "$cont" != "y" ]] && [[ "$cont" != "Y" ]]
     then
         echo -e "\e[32;1mOkay, good :).\e[00m"
+        rm -rf bkp_pkg
         exit
     fi
 fi
@@ -41,7 +54,7 @@ then
     echo -e "language: \"german\"" > tridy_dir/conf/config.yaml
 fi
 
-if [[ "$PATH" == *"${pfli}"* ]]
+if [[ "$PATH" == *"${pfli}"* ]] && [[ "$1" != "-l" ]]
 then
     printf ""
 else
@@ -49,9 +62,10 @@ else
     printf "[y/n] : "
 
     read yn
+    _local=true
     echo -e "\e[32;1mOkay.\e[00m"
 
-    if [[ "$german" == "y" ]] || [[ "$german" == "Y" ]]
+    if [[ "$yn" == "y" ]] || [[ "$yn" == "Y" ]]
     then
         echo -e "Are you using (1) bash, (2) zsh or (3) something else?"
         printf "> "
@@ -69,7 +83,8 @@ else
             read shdir
         fi
 
-        echo -e "PATH=\"$HOME/.local/bin/:\$PATH\"" >> "${shdir}"
+        echo -e "\nPATH=\"$HOME/.local/bin/:\$PATH\"" >> "${shdir}"
+        mkdir -p ${HOME}/.local/share/tridymite/conf/packages
     fi
 fi
 
@@ -166,6 +181,17 @@ fi
 
 sudo cp -r tridy_dir /usr/share/tridymite/
 sudo ln -s /usr/share/tridymite/tridy /usr/bin/tridy
+
+if [[ "$_local" == "true" ]]
+then
+    mkdir -p ~/.local/share/tridymite/packages/
+fi
+
+if [ -d "bkp_pkg" ]
+then
+    sudo cp -rf bkp_pkg/* /usr/share/tridymite/conf/packages/
+    sudo rm -rf bkp_pkg
+fi
 
 sudo rm -rf tridy_dir/
 sudo rm -rf yaml-cpp/

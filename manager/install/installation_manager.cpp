@@ -235,7 +235,7 @@ std::string InstallationManager::downloadPackage(const std::string &prefix, cons
 {
     std::cout << prefix << "downloading ..." << std::endl;
 
-    if (!tstd::download_file(tstd::create_url(arg, "archive/master.zip"), package_zip))
+    if (!tstd::download_file(tstd::create_zip_url(arg), package_zip))
     {
         std::cout << "error: package not found: " << tstd::package_to_argument(arg) << std::endl;
         Runtime::exit(1);
@@ -259,8 +259,42 @@ std::string InstallationManager::downloadPackage(const std::string &prefix, cons
         Runtime::exit(1);
     }
 
-    chdir(std::string(package_dir+arg.getRepoName()+"-master/").c_str());
-    return package_dir+arg.getRepoName()+"-master/";
+    std::string s;
+
+    if (Runtime::config["servers"][arg.getServer()]["path"])
+        s = Runtime::config["servers"][arg.getServer()]["path"].as<std::string>();
+
+    s = tstd::trim(tstd::replace_git_vars(s, arg));
+
+    if (s.size() >= 1)
+    {
+        if (s[s.size()-1] == '*')
+        {
+            s = s.substr(0, s.size()-1);
+
+            for (std::string dir : tstd::get_all_directories("./"))
+            {
+                std::cout << "] " << dir << std::endl;
+
+                if (s.size() <= dir.size())
+                {
+                    if (dir.substr(0, s.size()) == s)
+                    {
+                        s = dir+"/";
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (s[0] == '*')
+        {
+            s = s.substr(1, s.size());
+        }
+    }
+
+    chdir(s.c_str());
+    return package_dir+s;
 }
 
 void InstallationManager::localPackage(std::string path)
@@ -370,6 +404,7 @@ void InstallationManager::installPackage(const Package &arg, bool nl)
 
     if (nl)
         std::cout << std::endl;
+
     std::cout << "[ new installation ] now installing " << tstd::package_to_argument(arg) << std::endl;
 
     std::string package_str = arg.getGitUser()+"+" + arg.getRepoName()+"+" + arg.getServer();
@@ -390,6 +425,36 @@ void InstallationManager::installPackage(const Package &arg, bool nl)
     _of.close();
 
     Package package(YAML::LoadFile(file));
+
+    std::string td_b = Runtime::tridy_dir;
+    bool tl_b = Runtime::try_local;
+    bool l = false;
+
+    if (Runtime::try_local)
+    {
+        for (const std::string &s : package.getProductsTo())
+        {
+            if (s.find("$usr") != std::string::npos &&
+                s.find("share") != std::string::npos &&
+                s.find("bin") != std::string::npos &&
+                s.find("lib") != std::string::npos)
+                l = true;
+        }
+
+        if (!l)
+        {
+            std::cout << "error: this package doesn't supports local installations!" << std::endl;
+
+            if (!tstd::yn_question("do you want to continue and install it globally?"))
+            {
+                std::cout << "aborted." << std::endl;
+                return;
+            }
+
+            Runtime::tridy_dir = Runtime::backup_tridy_dir;
+            Runtime::try_local = false;
+        }
+    }
 
     std::cout << prefix << "building..." << std::endl;
 
@@ -413,6 +478,12 @@ void InstallationManager::installPackage(const Package &arg, bool nl)
 
         chdir(Runtime::tmp_dir.c_str());
         return;
+    }
+
+    if (!l)
+    {
+        Runtime::tridy_dir = td_b;
+        Runtime::try_local = tl_b;
     }
 
     std::cout << prefix << "skipping..." << std::endl;

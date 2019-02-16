@@ -36,6 +36,7 @@ public:
 
     inline static std::string tmp_dir;
     inline static std::string tridy_dir;
+    inline static std::string backup_tridy_dir;
 
     inline static std::string git_server;
     inline static std::string git_user;
@@ -51,6 +52,8 @@ public:
 
     inline static bool local_folder;
     inline static std::string language;
+
+    inline static YAML::Node config;
 
     static void init()
     {
@@ -77,6 +80,7 @@ public:
 
         git_server =  "github.com";
         tridy_dir = "/usr/share/tridymite/";
+        backup_tridy_dir = tridy_dir;
         language = "english";
 
         struct sigaction sigIntHandler;
@@ -100,7 +104,9 @@ public:
             Runtime::exit(1);
         }
 
-        language = YAML::LoadFile(tridy_dir+"conf/config.yaml")["language"].as<std::string>();
+        config = YAML::LoadFile(tridy_dir+"conf/config.yaml");
+
+        language = config["language"].as<std::string>();
         tmp_dir = std::string("/tmp/tridy-"+std::to_string(getpid()));
 
         if (mkdir(tmp_dir.c_str(), 0777) == -1)
@@ -112,10 +118,12 @@ public:
         Runtime::directories_to_clean.push_back(tmp_dir);
         Translation::loadConfig(tridy_dir+"conf/lang/"+language+".yaml");
 
-
-        // Loading managers
-
         IPackagesManager::load(tridy_dir+"conf/packages/");
+    }
+
+    static void reloadManagers()
+    {
+        IPackagesManager::load(tridy_dir+"/conf/packages/");
     }
 
     static bool cleanFiles()
@@ -152,7 +160,7 @@ public:
         return success;
     }
 
-    static void exit(int i)
+    static void exit(int i, bool lang_exit=true)
     {
         if (!Runtime::cleanFiles() ||
             !Runtime::clearDirectories())
@@ -160,8 +168,16 @@ public:
             std::cout << Translation::get("runtime.clear_up_all_tmps");
         }
 
-        if (i != 0)
-            printf(Translation::get("runtime.exit").c_str(), i);
+        if (lang_exit)
+        {
+            if (i != 0)
+                printf(Translation::get("runtime.exit").c_str(), i);
+        }
+        else
+        {
+            if (i != 0)
+                std::cout << "exiting with code " << i << std::endl;
+        }
 
         std::exit(i);
     }

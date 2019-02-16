@@ -11,6 +11,7 @@
 
 void IPackagesManager::load(std::string path) // package = /usr/share/tridymite/conf/user+name+server.xyz/
 {
+    IPackagesManager::installed_packages.clear();
     std::vector<std::string> files = tstd::read_cursive_all_files(path);
 
     for (const std::string &s : files)
