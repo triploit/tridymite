@@ -1,1 +1,14 @@
 language: "english"
+
+servers:
+    github.com:
+        zip: "https://github.com/$git_user/$git_repository/archive/master.zip"
+        path: "$git_repository-master/"
+
+    gitlab.com:
+        zip: "https://gitlab.com/$git_user/$git_repository/-/archive/master/$git_repository-master.zip"
+        path: "$git_repository-master/"
+
+    bitbucket.org:
+        zip: "https://bitbucket.org/$git_user/$git_repository/get/master.zip"
+        path: "$git_user-$git_repository-*"
