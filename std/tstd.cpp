@@ -192,6 +192,36 @@ std::vector<Package> tstd::parse_package_arguments(const std::vector<std::string
     return to_ret;
 }
 
+std::string tstd::replace_git_vars(std::string arg, const Package &p)
+{
+    arg = tstd::replace(arg, "$git_user", p.getGitUser());
+    arg = tstd::replace(arg, "$git_server", p.getServer());
+    arg = tstd::replace(arg, "$git_repository", p.getRepoName());
+
+    return arg;
+}
+
+std::string tstd::create_zip_url(const Package &p, std::string postfix, std::string prefix)
+{
+    if (!postfix.empty())
+        postfix = "/"+postfix;
+
+    if (!Runtime::config["servers"])
+    {
+        std::cout << "error: no git servers specified in config file!" << std::endl;
+        Runtime::exit(1);
+    }
+
+    if (!Runtime::config["servers"][p.getServer()] || !Runtime::config["servers"][p.getServer()]["zip"])
+    {
+        std::cout << "error: git server \"" << p.getServer() << "\" is not configured in config file!" << std::endl;
+        Runtime::exit(1);
+    }
+
+    std::string s = Runtime::config["servers"][p.getServer()]["zip"].as<std::string>()+postfix;
+    return replace_git_vars(s, p);
+}
+
 std::string tstd::create_url(const Package &p, std::string postfix, std::string prefix)
 {
     if (!postfix.empty())
@@ -231,6 +261,33 @@ std::vector<std::string> tstd::read_cursive_all_files(std::string path)
     closedir(dirp);
 
     return files;
+}
+
+std::vector<std::string> tstd::get_all_directories(const std::string &path)
+{
+    std::vector<std::string> dirs;
+
+    DIR* dirp = opendir(path.c_str());
+    struct dirent * dp;
+
+    while ((dp = readdir(dirp)) != NULL)
+    {
+        if (dp->d_name[0] == '.')
+            continue;
+
+        struct stat s;
+
+        if (stat(std::string(path+dp->d_name).c_str(), &s) == 0)
+        {
+            if (s.st_mode & S_IFDIR)
+            {
+                dirs.push_back(dp->d_name);
+            }
+        }
+    }
+
+    closedir(dirp);
+    return dirs;
 }
 
 bool tstd::yn_question(const std::string &q)
