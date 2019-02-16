@@ -25,7 +25,7 @@ std::string Translation::get(const std::string &s, const bool &nl, const bool &b
         if (!fallback[s])
         {
             std::cout << "error: fatal error in tridymite: sentences \"" << s << "\" doesn't exist in fallback!" << std::endl;
-            Runtime::exit(1);
+            Runtime::exit(1, false);
         }
         else
         {
@@ -75,7 +75,7 @@ arguments.help.install: "install a package"
 arguments.help.remove: "remove a package"
 arguments.help.update: "update a package"
 arguments.help.update_all: "update all installed packages"
-arguments.help.local: "installing a package from the source in the given directory"
+arguments.help.path: "installing a package from the source in the given directory"
 arguments.help.verbose: "show extended (verbose) output"
 arguments.help.insecure: "installing packages without asking security questions"
 arguments.help.server: "setting the server for all package arguments"
@@ -85,14 +85,18 @@ arguments.help.language_file: "loading all messages from the given language file
 arguments.help.list_packages: "list all installed packages"
 arguments.help.packages: "get information of package"
 arguments.help.description: "shows description of a package"
+arguments.help.already_installed: "don't skip already installed packages"
 arguments.help.testing: "testing stuff"
+arguments.help.no_deps: "don't check dependencies"
+arguments.help.force: "don't look for file conflicts"
+arguments.help.local: "if possible, try to install a package locally"
 
 arguments.usage.help: ""
 arguments.usage.install: "<package> ..."
 arguments.usage.remove: "<package> ..."
 arguments.usage.update: "<package> ..."
 arguments.usage.update_all: ""
-arguments.usage.local: "<path>"
+arguments.usage.path: "<path>"
 arguments.usage.verbose: ""
 arguments.usage.insecure: ""
 arguments.usage.server: "<server>"
@@ -102,7 +106,11 @@ arguments.usage.language_file: "<file>"
 arguments.usage.list_packages: ""
 arguments.usage.packages: "<package>"
 arguments.usage.description: "<package>"
+arguments.usage.already_installed: ""
+arguments.usage.no_deps: ""
+arguments.usage.force: ""
 arguments.usage.testing: "???"
+arguments.usage.local: ""
 
 arguments.package: "<package> = <git-user>:<git-repo>[@<git-server>] (git-server is github.com in default)"
 
@@ -115,7 +123,6 @@ runtime.clean_directories.error: "error: couldn't delete directory: %s"
 
 runtime.clear_up_all_tmps: "error: error at cleaning up temporary files or directories."
 runtime.exit: "exiting with code %d"
-
 )V0G0N");
 
     if (std::ifstream(path).is_open())
