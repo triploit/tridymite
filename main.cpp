@@ -45,6 +45,21 @@ int main(int argc, char* argv[])
     }
     else
     {
+        if (cli.argumentGiven("l"))
+        {
+            struct stat info;
+            if(stat((std::string(getenv("HOME"))+"/.local/").c_str(), &info) != 0)
+            {
+                std::cout << "error: can't use operator \"-l/--local\": no local installation module in setup activated!" << std::endl;
+                Runtime::exit(1);
+            }
+
+            Runtime::try_local = true;
+            Runtime::tridy_dir = std::string(getenv("HOME")) + "/.local/share/tridymite";
+
+            Runtime::reloadManagers();
+        }
+
         if (cli.argumentGiven("lf")) // Set language file
             Translation::loadConfig(cli.getParameters("lf")[0]); // Loading the language file
 
@@ -57,14 +72,33 @@ int main(int argc, char* argv[])
 
             for (const Package &p : IPackagesManager::getInstalledPackages())
             {
-                msgs.push_back("    - "+p.getGitUser()+" -> "+p.getRepoName()+" @ "+p.getServer()+" - v"+p.getVersion().str); // Add every message to vector
+                std::string s;
+                if (Runtime::try_local)
+                    s = " (local)";
+
+                msgs.push_back("   "+s+" - "+p.getGitUser()+" -> "+p.getRepoName()+" @ "+p.getServer()+" - v"+p.getVersion().str); // Add every message to vector
             }
 
             std::sort(msgs.begin(), msgs.end()); // Sort messages alphabet
 
-            std::cout << "Packages installed: " << std::endl;
-            for (const std::string &s : msgs) // Printing all messages
-                std::cout << s << std::endl;
+            if (msgs.size() > 0)
+            {
+                if (Runtime::try_local)
+                    std::cout << "Local packages installed: " << std::endl;
+                else
+                    std::cout << "Packages installed: " << std::endl;
+
+
+                for (const std::string &s : msgs) // Printing all messages
+                    std::cout << s << std::endl;
+            }
+            else
+            {
+                if (Runtime::try_local)
+                    std::cout << "No local packages installed." << std::endl;
+                else
+                    std::cout << "No packages installed." << std::endl;
+            }
         }
 
         if (cli.argumentGiven("d"))
@@ -75,8 +109,11 @@ int main(int argc, char* argv[])
                 std::cout << IPackagesManager::getPackage(p) << std::endl;
             else
             {
-                std::cout << "error: show description: couldn't find package " << cli.getParameters("d")[0] << std::endl;
-                Runtime::exit(1);
+                std::cout << "info: show description: couldn't find package " << cli.getParameters("d")[0] << std::endl;
+                std::cout << "info: trying to find it online..." << std::endl;
+
+                Package package = DependencyManager::getPackageConfig({p})[0];
+                std::cout << package << std::endl;
             }
         }
 
@@ -100,7 +137,7 @@ int main(int argc, char* argv[])
             Runtime::git_user = cli.getParameters("us")[0]; // Setting the standard git user
 
         if (cli.argumentGiven("s"))
-            Runtime::git_user = cli.getParameters("s")[0]; // Setting the standard git server
+            Runtime::git_server = cli.getParameters("s")[0]; // Setting the standard git server
 
         if (cli.argumentGiven(("e")))
             Runtime::verbose = true; // Show verbose output
@@ -116,9 +153,6 @@ int main(int argc, char* argv[])
 
         if (cli.argumentGiven("nc"))
             Runtime::no_dependencies = true;
-
-        if (cli.argumentGiven("l"))
-            Runtime::try_local = true;
 
         // Adding the packages
 
