@@ -70,13 +70,17 @@ int main(int argc, char* argv[])
         {
             std::vector<std::string> msgs; // Vector of messages
 
-            for (const Package &p : IPackagesManager::getInstalledPackages())
+            for (const Package &installed_package : IPackagesManager::getInstalledPackages())
             {
                 std::string s;
                 if (Runtime::try_local)
                     s = " (local)";
 
-                msgs.push_back("   "+s+" - "+p.getGitUser()+" -> "+p.getRepoName()+" @ "+p.getServer()+" - v"+p.getVersion().str); // Add every message to vector
+                msgs.push_back(
+                        "   "+s+" - "+installed_package.getGitUser()+
+                        " -> "+installed_package.getRepoName()+
+                        " @ "+installed_package.getServer()+
+                        " - v"+installed_package.getVersion().str); // Add every message to vector
             }
 
             std::sort(msgs.begin(), msgs.end()); // Sort messages alphabet
@@ -193,23 +197,23 @@ int main(int argc, char* argv[])
 
         if (Runtime::update_all)
         {
-            for (const Package &p : IPackagesManager::getInstalledPackages())
+            for (const Package &installed_package : IPackagesManager::getInstalledPackages())
             {
                 for (int i = 0; i < Runtime::to_update.size(); i++)
                 {
-                    if (Runtime::to_update[i].getName() == p.getName() &&
-                        Runtime::to_update[i].getServer() == p.getServer() &&
-                        Runtime::to_update[i].getRepoName() == p.getRepoName())
+                    if (Runtime::to_update[i].getName() == installed_package.getName() &&
+                        Runtime::to_update[i].getServer() == installed_package.getServer() &&
+                        Runtime::to_update[i].getRepoName() == installed_package.getRepoName())
                     {
-                        if (Runtime::to_update[i].getVersion() <= p.getVersion())
+                        if (Runtime::to_update[i].getVersion() <= installed_package.getVersion())
                         {
                             if (Runtime::reinstall)
                             {
-                                std::cout << "info: package " << tstd::package_to_argument(p) << " v" << p.getVersion() << " is already installed. reinstalling." << std::endl;
+                                std::cout << "info: package " << tstd::package_to_argument(installed_package) << " v" << installed_package.getVersion() << " is already installed. reinstalling." << std::endl;
                             }
                             else
                             {
-                                std::cout << "info: package " << tstd::package_to_argument(p) << " v" << p.getVersion() << " is already installed. skipping." << std::endl;
+                                std::cout << "info: package " << tstd::package_to_argument(installed_package) << " v" << installed_package.getVersion() << " is already installed. skipping." << std::endl;
                                 Runtime::to_update.erase(Runtime::to_update.begin()+i);
                             }
                         }
@@ -222,14 +226,14 @@ int main(int argc, char* argv[])
 
         for (int i = 0; i < Runtime::to_remove.size(); i++)
         {
-            const Package &p = Runtime::to_remove[i];
+            const Package &to_remove = Runtime::to_remove[i];
             bool found = false;
 
             for (const Package &p2 : IPackagesManager::getInstalledPackages())
             {
-                if (p2.getGitUser() == p.getGitUser() &&
-                    p2.getServer() == p.getServer() &&
-                    p2.getRepoName() == p.getRepoName())
+                if (p2.getGitUser() == to_remove.getGitUser() &&
+                    p2.getServer() == to_remove.getServer() &&
+                    p2.getRepoName() == to_remove.getRepoName())
                 {
                     found = true;
                     continue;
@@ -239,7 +243,7 @@ int main(int argc, char* argv[])
             if (!found)
             {
                 Runtime::to_remove.erase(Runtime::to_remove.begin()+i);
-                std::cout << "info: package " << tstd::package_to_argument(p) << " is not installed and can't be removed." << std::endl;
+                std::cout << "info: package " << tstd::package_to_argument(to_remove) << " is not installed and can't be removed." << std::endl;
             }
         }
 
@@ -303,11 +307,11 @@ int main(int argc, char* argv[])
         {
             bool cont = false;
 
-            for (const Package &i : Runtime::to_install) // Check for dependencies
+            for (const Package &package_to_install : Runtime::to_install) // Check for dependencies
             {
-                if (i.getGitUser() == p.getGitUser() &&
-                    i.getServer() == p.getServer() &&
-                    i.getRepoName() == p.getRepoName())
+                if (package_to_install.getGitUser() == p.getGitUser() &&
+                    package_to_install.getServer() == p.getServer() &&
+                    package_to_install.getRepoName() == p.getRepoName())
                 {
                     cont = true;
                     break;
@@ -363,19 +367,19 @@ int main(int argc, char* argv[])
 
         // Installing/Updating/Removing
 
-        for (const Package &p : Runtime::to_remove) // Iterate through packages, that have to be removed
+        for (const Package &remove_me : Runtime::to_remove) // Iterate through packages, that have to be removed
         {
-            RemoveManager::uninstallPackage(p);
+            RemoveManager::uninstallPackage(remove_me);
         }
 
-        for (const Package &p : Runtime::to_update) // Iterate through packages, that have to be updated
+        for (const Package &update_me : Runtime::to_update) // Iterate through packages, that have to be updated
         {
-            UpdateManager::updatePackage(p);
+            UpdateManager::updatePackage(update_me);
         }
 
-        for (const Package &p : Runtime::to_install) // Iterate through packages, that have to be installed
+        for (const Package &install_me : Runtime::to_install) // Iterate through packages, that have to be installed
         {
-            InstallationManager::installPackage(p);
+            InstallationManager::installPackage(install_me);
         }
 
     }

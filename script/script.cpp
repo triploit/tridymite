@@ -32,7 +32,7 @@ bool Script::isdelim(char c)
     return false;
 }
 
-void Script::parse_file(std::string f)
+void Script::parse_file(const std::string &f)
 {
     std::vector<Function> fs;
 
@@ -55,11 +55,10 @@ void Script::parse_file(std::string f)
             code += line + "\n";
         }
 
+        bool delim = false;
+
         bool brackets = false;
         int bracket_count = 0;
-
-        bool delim = false;
-        bool str = false;
 
         std::string tmp;
         int line_count = 1;
@@ -175,7 +174,7 @@ Function &Script::getFunction(const std::string &name)
     return null_function;
 }
 
-void Script::addFunction(Function f)
+void Script::addFunction(const Function &f)
 {
     functions.push_back(f);
 }
@@ -190,9 +189,9 @@ const std::string& Script::getFileName()
     return file_name;
 }
 
-void Script::runFunction(std::string f, const std::string &token)
+void Script::runFunction(const std::string &function, const std::string &token)
 {
-    if (existsFunction(f))
+    if (existsFunction(function))
     {
         std::string file_name = Runtime::tmp_dir+"/_tmp"+token+"_"+std::to_string(getFunctions().size())+".sh";
         std::fstream of(file_name, std::ios::out);
@@ -205,12 +204,12 @@ void Script::runFunction(std::string f, const std::string &token)
 
         of << "#!/usr/bin/bash" << "\n\n" << file_content << std::endl;
 
-        std::system(std::string("source "+file_name+"; "+f).c_str());
+        std::system(std::string("source "+file_name+"; "+function).c_str());
         Runtime::files_to_clean.push_back(file_name);
     }
     else
     {
-        std::cout << "error: can't run function: " << f << ": function not found!" << std::endl;
+        std::cout << "error: can't run function: " << function << ": function not found!" << std::endl;
         Runtime::exit(1);
     }
 }

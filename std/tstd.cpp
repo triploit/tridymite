@@ -40,7 +40,7 @@ std::string tstd::add_prefix(std::string arg) // add a prefix (- or --) to argum
     return "-"+arg;
 }
 
-std::vector<std::string> tstd::get_family(std::string arg, std::vector<std::string> arg_name) // getting the family of an argument, e.g. "i" is contained in the family of "i,install"
+std::vector<std::string> tstd::get_family(const std::string &arg, const std::vector<std::string> &arg_name) // getting the family of an argument, e.g. "i" is contained in the family of "i,install"
 {
     std::vector<std::string> family;
 
@@ -386,7 +386,6 @@ bool tstd::download_file(const std::string &url, const std::string &destination)
     CURL *curl;
     FILE *fp;
     CURLcode res;
-    double filesize = 0.0;
     curl = curl_easy_init();
 
     if (curl)

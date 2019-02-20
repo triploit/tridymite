@@ -250,4 +250,4 @@ version: "0.0.1a"
 build: make
 ```
 
-In the folder `pkg/conf/deptypes` you can see files, with predefined content for make and cmake files. These will be put into the `package.sh` and that will be then executed. So the `build: <type>` option will take the file in the configuration folder of tridymite, take it's contents and put it into the `package.sh` (if none exists). This would add the possibility to add more predefined build-scripts.
+In the folder `pkg/conf/pretypes` you can see files, with predefined content for make and cmake files. These will be put into the `package.sh` and that will be then executed. So the `build: <type>` option will take the file in the configuration folder of tridymite, take it's contents and put it into the `package.sh` (if none exists). This would add the possibility to add more predefined build-scripts.

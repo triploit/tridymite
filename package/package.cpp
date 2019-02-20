@@ -18,7 +18,7 @@ Package::Package(const std::string &argument_name)
     setName(p.getRepoName());
 }
 
-Package::Package(const YAML::Node &pkg, std::string path)
+Package::Package(const YAML::Node &pkg, const std::string &path)
 {
     load_package_from_nodes(pkg);
     yaml_path = path;
@@ -163,7 +163,7 @@ std::ostream &operator<<(std::ostream &os, const Package &p)
     return os;
 }
 
-const bool Package::operator==(const Package &p)
+const bool Package::operator==(const Package &p) const
 {
     return (p.getGitUser() == getGitUser() &&
         p.getServer() == getServer() &&
@@ -191,7 +191,7 @@ const std::vector<std::string> &Package::getLinksTo() const
     return links_to;
 }
 
-void Package::setYamlPath(std::string path)
+void Package::setYamlPath(const std::string &path)
 {
     yaml_path = path;
 }

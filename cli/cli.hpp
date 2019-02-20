@@ -33,12 +33,12 @@ public:
             const std::string &pname,
             const Version &v);
 
-    void printHelp(std::string arg0);
+    void printHelp(const std::string &arg0);
 
-    bool parseArguments(std::vector<std::string> arguments);
-    bool argumentGiven(std::string name);
+    bool parseArguments(const std::vector<std::string> &arguments);
+    bool argumentGiven(const std::string &name);
 
-    std::vector<std::string> getParameters(std::string argument);
+    std::vector<std::string> getParameters(const std::string &argument);
     
     CLI() {}
 };

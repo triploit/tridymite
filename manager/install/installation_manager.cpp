@@ -218,11 +218,11 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
             std::cout << "error: package " << tstd::package_to_argument(package) << ": products: \"" << from << "\": cant move a directory into a file!" << std::endl;
             Runtime::exit(1);
         }
-        else if (!to_file && !to_file)
+        else if (!to_file && !from_file)
         {
             if (system(std::string("if [ ! -d "+to_var+" ]; then sudo mkdir -p "+to_var+"; fi; sudo mv "+from_var+"/* "+to_var).c_str()) != 0)
             {
-                std::cout << "error: moving products: \"" << from << "\": unknown error!" << std::endl;
+                std::cout << "error: moving products: \"" << from << "\": unknown error! both files (\"" << from_file << "\" and \"" << to_file << "\") don't exist!" << std::endl;
                 Runtime::exit(1);
             }
         }
@@ -259,42 +259,42 @@ std::string InstallationManager::downloadPackage(const std::string &prefix, cons
         Runtime::exit(1);
     }
 
-    std::string s;
+    std::string source_path;
 
     if (Runtime::config["servers"][arg.getServer()]["path"])
-        s = Runtime::config["servers"][arg.getServer()]["path"].as<std::string>();
+        source_path = Runtime::config["servers"][arg.getServer()]["path"].as<std::string>();
 
-    s = tstd::trim(tstd::replace_git_vars(s, arg));
+    source_path = tstd::trim(tstd::replace_git_vars(source_path, arg));
 
-    if (s.size() >= 1)
+    if (source_path.size() >= 1)
     {
-        if (s[s.size()-1] == '*')
+        if (source_path[source_path.size()-1] == '*')
         {
-            s = s.substr(0, s.size()-1);
+            source_path = source_path.substr(0, source_path.size()-1);
 
             for (std::string dir : tstd::get_all_directories("./"))
             {
                 std::cout << "] " << dir << std::endl;
 
-                if (s.size() <= dir.size())
+                if (source_path.size() <= dir.size())
                 {
-                    if (dir.substr(0, s.size()) == s)
+                    if (dir.substr(0, source_path.size()) == source_path)
                     {
-                        s = dir+"/";
+                        source_path = dir+"/";
                         break;
                     }
                 }
             }
         }
 
-        if (s[0] == '*')
+        if (source_path[0] == '*')
         {
-            s = s.substr(1, s.size());
+            source_path = source_path.substr(1, source_path.size());
         }
     }
 
-    chdir(s.c_str());
-    return package_dir+s;
+    chdir(source_path.c_str());
+    return package_dir+source_path;
 }
 
 void InstallationManager::localPackage(std::string path)
@@ -321,6 +321,7 @@ void InstallationManager::localPackage(std::string path)
         std::string user;
         std::cout << "on which git account will it lie? : " << std::endl;
         std::getline(std::cin, user);
+
         _of << "gituser: " << user << std::endl;
         std::cout << "added!" << std::endl;
     }
@@ -426,8 +427,8 @@ void InstallationManager::installPackage(const Package &arg, bool nl)
 
     Package package(YAML::LoadFile(file));
 
-    std::string td_b = Runtime::tridy_dir;
-    bool tl_b = Runtime::try_local;
+    std::string tridy_dir_backup = Runtime::tridy_dir;
+    bool try_local_backup = Runtime::try_local;
     bool l = false;
 
     if (Runtime::try_local)
@@ -472,8 +473,8 @@ void InstallationManager::installPackage(const Package &arg, bool nl)
         system(std::string("if [ ! -d "+dir+" ]; then sudo mkdir -p "+dir+"; fi").c_str());
 
         system(std::string("sudo cp "+package_dir+"pkg/package.yaml package.yaml.bkp").c_str());
-        std::string c = std::string("sudo cp "+package_dir+"pkg/package.sh "+dir+"; sudo echo -e \"\\nlocal: "+(Runtime::try_local ? "true" : "false")+"\\n\" >> "+file+"; sudo cp "+package_dir+"pkg/package.yaml "+dir);
-        system(c.c_str());
+
+        system(std::string("sudo cp "+package_dir+"pkg/package.sh "+dir+"; sudo echo -e \"\\nlocal: "+(Runtime::try_local ? "true" : "false")+"\\n\" >> "+file+"; sudo cp "+package_dir+"pkg/package.yaml "+dir).c_str());
         system(std::string("sudo cp package.yaml.bkp "+package_dir+"pkg/package.yaml").c_str());
 
         chdir(Runtime::tmp_dir.c_str());
@@ -482,8 +483,8 @@ void InstallationManager::installPackage(const Package &arg, bool nl)
 
     if (!l)
     {
-        Runtime::tridy_dir = td_b;
-        Runtime::try_local = tl_b;
+        Runtime::tridy_dir = tridy_dir_backup;
+        Runtime::try_local = try_local_backup;
     }
 
     std::cout << prefix << "skipping..." << std::endl;
