@@ -107,7 +107,7 @@ tridy -ua
 
 **Note:** Use `-l` in combination with `-u` or `-ua` to uptdate locally installed packages.
 
-### Intalling Packages from Source
+### Installing Packages from Source
 
 If you have the source code of a tridymite package, you can just use the option `-p` or `--path`:
 
