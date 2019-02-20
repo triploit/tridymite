@@ -39,7 +39,7 @@ public:
     Package();
     Package(const std::string &argument_name);
     Package(const YAML::Node &pkg);
-    Package(const YAML::Node &pkg, std::string path);
+    Package(const YAML::Node &pkg, const std::string &path);
 
     const std::string &getGitUser() const;
     const std::string &getName() const;
@@ -69,10 +69,10 @@ public:
     void setAuthors(const std::vector<std::string> &authors);
     void setVersion(const Version &version);
     void setRepoName(const std::string &repo);
-    void setYamlPath(std::string path);
+    void setYamlPath(const std::string &path);
 
     friend std::ostream &operator<<(std::ostream &os, const Package &p);
-    const bool operator==(const Package &p);
+    const bool operator==(const Package &p) const;
 
 
 };

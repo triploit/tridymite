@@ -21,7 +21,7 @@ private:
     Function null_function;
 
     bool isdelim(char c);
-    void parse_file(std::string f);
+    void parse_file(const std::string &f);
 
 public:
     Script();
@@ -36,8 +36,8 @@ public:
     Function &getFunction(const std::string &name);
     bool existsFunction(const std::string &name);
 
-    void addFunction(Function f);
-    void runFunction(std::string f, const std::string &token);
+    void addFunction(const Function &f);
+    void runFunction(const std::string &function, const std::string &token);
 };
 
 #endif

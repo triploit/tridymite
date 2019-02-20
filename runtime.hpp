@@ -83,6 +83,7 @@ public:
         backup_tridy_dir = tridy_dir;
         language = "english";
 
+        // Handle escape sequence ^C (Ctrl+C)
         struct sigaction sigIntHandler;
         sigIntHandler.sa_handler = handle_escape;
         sigemptyset(&sigIntHandler.sa_mask);

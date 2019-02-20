@@ -8,7 +8,7 @@
 class UpdateManager
 {
 public:
-    static void updatePackage(const Package &p);
+    static void updatePackage(const Package &to_update);
 };
 
 

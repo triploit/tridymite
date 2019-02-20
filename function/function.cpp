@@ -5,11 +5,7 @@
 
 #include <runtime.hpp>
 
-Function::Function()
-{
-    name = "";
-    code = "";
-}
+Function::Function() {}
 
 Function::Function(const std::string &name, const std::string &code)
 {

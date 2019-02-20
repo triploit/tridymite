@@ -9,21 +9,22 @@
 #include <sys/types.h>
 #include <dirent.h>
 
-void IPackagesManager::load(std::string path) // package = /usr/share/tridymite/conf/user+name+server.xyz/
+void IPackagesManager::load(std::string path, bool clear_all) // package = /usr/share/tridymite/conf/user+name+server.xyz/
 {
-    IPackagesManager::installed_packages.clear();
+    if (clear_all)
+        IPackagesManager::installed_packages.clear();
     std::vector<std::string> files = tstd::read_cursive_all_files(path);
 
-    for (const std::string &s : files)
+    for (const std::string &file : files)
     {
-        if (s[0] == '.')
+        if (file[0] == '.')
             continue;
 
-        if (s.size() >= 5 &&
-            (s.substr(s.size()-5, s.size()) == ".yaml" ||
-            s.substr(s.size()-4, s.size()) == ".yml"))
+        if (file.size() >= 5 &&
+            (file.substr(file.size()-5, file.size()) == ".yaml" ||
+            file.substr(file.size()-4, file.size()) == ".yml"))
         {
-            Package p(YAML::LoadFile(s), s);
+            Package p(YAML::LoadFile(file), file);
             IPackagesManager::installed_packages.push_back(p);
         }
     }
@@ -31,13 +32,9 @@ void IPackagesManager::load(std::string path) // package = /usr/share/tridymite/
 
 bool IPackagesManager::isPackageInstalled(const Package &p)
 {
-    for (const Package &tp : IPackagesManager::installed_packages)
+    for (const Package &installed_package : IPackagesManager::installed_packages)
     {
-        Package p1 = p;
-        Package p2 = tp;
-
-        if (p1 == p2)
-            return true;
+        return (p == installed_package);
     }
 
     return false;
@@ -50,12 +47,12 @@ const std::vector<Package> &IPackagesManager::getInstalledPackages()
 
 const Package& IPackagesManager::getPackage(Package &p)
 {
-    for (const Package &tp : IPackagesManager::installed_packages)
+    for (const Package &installed_package : IPackagesManager::installed_packages)
     {
-        if (p.getGitUser() == tp.getGitUser() &&
-            p.getRepoName() == tp.getRepoName() &&
-            p.getServer() == tp.getServer())
-            return tp;
+        if (p.getGitUser() == installed_package.getGitUser() &&
+            p.getRepoName() == installed_package.getRepoName() &&
+            p.getServer() == installed_package.getServer())
+            return installed_package;
     }
 
     return Package();

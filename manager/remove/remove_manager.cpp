@@ -112,10 +112,10 @@ void RemoveManager::uninstallPackage(const Package &p)
     std::cout << "[ remove ] now uninstalling " << tstd::package_to_argument(p) << std::endl;
 
     Package package = p;
-    YAML::Node n;
+    YAML::Node node;
 
     if (IPackagesManager::isPackageInstalled(p))
-        n = YAML::LoadFile(IPackagesManager::getPackage(package).getYamlPath());
+        node = YAML::LoadFile(IPackagesManager::getPackage(package).getYamlPath());
     else
     {
         if (!tstd::download_file(url, file))
@@ -130,19 +130,19 @@ void RemoveManager::uninstallPackage(const Package &p)
         _of << "server: " << p.getServer() << std::endl;
         _of.close();
 
-        n = YAML::LoadFile(file);
+        node = YAML::LoadFile(file);
     }
 
-    package = Package(n);
+    package = Package(node);
     bool local = false;
-    bool r = false;
+    bool reset_try_local = false;
 
-    if (n["local"])
-        local = n["local"].as<bool>();
+    if (node["local"])
+        local = node["local"].as<bool>();
 
     if (!Runtime::try_local)
     {
-        r = true;
+        reset_try_local = true;
         Runtime::try_local = local;
     }
 
@@ -162,6 +162,6 @@ void RemoveManager::uninstallPackage(const Package &p)
         std::cout << "warning: removing: package " << tstd::package_to_argument(package) << " not found. skipping." << std::endl;
     }
 
-    if (r)
+    if (reset_try_local)
         Runtime::try_local = false;
 }

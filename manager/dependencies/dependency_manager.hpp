@@ -11,7 +11,7 @@
 class DependencyManager
 {
 public:
-    static void checkDependencies(const Package &p);
+    static void checkDependencies(const Package &package_to_check);
 
     static std::vector<Package> getPackageConfig(std::vector<Package> packages);
 };
