@@ -6,24 +6,23 @@ Tridymite is a package manager for github repositories. It allows developers and
 
 ### To-Do
 
-* fill the documentation for tridymite source
-* add implementation for predefined types of `package.sh`
+  * fill the documentation for tridymite source
+  * add implementation for predefined types of `package.sh`
 
 ## Table of Contents
 
--   [Introduction for Users](#introduction-for-users)
-    -   [Installing Tridymite](#installing-tridymite)
-    -   [Installing Packages](#installing-packages)
-        -   [Installing Packages from Different Servers](#installing-packages-from-different-servers)
-        -   [Installing Packages Locally](#installing-packages-locally)
-    -   [Removing Packages](#removing-packages)
-    -   [Updating Packages](#updating-packages)
-    -   [Installing Packages from Source](#installing-packages-from-source)
-    -   [Extra Features](#extra-features)
--   [Tridymite for Package Developers](#tridymite-for-package-developers)
--   [Tridymite for Developers](#tridymite-for-developers)
+  * [Introduction for Users](#introduction-for-users)
+    * [Installing Tridymite](#installing-tridymite)
+    * [Installing Packages](#installing-packages)
+      * [Installing Packages from Different Servers](#installing-packages-from-different-servers)
+      * [Installing Packages Locally](#installing-packages-locally)
+    * [Removing Packages](#removing-packages)
+    * [Updating Packages](#updating-packages)
+    * [Installing Packages from Source](#installing-packages-from-source)
+    * [Extra Features](#extra-features)
+  * [Tridymite for Package Developers](#tridymite-for-package-developers)
+  * [Tridymite for Developers](#tridymite-for-developers)
     
-
 ## Introduction for Users
 
 ### Installing Tridymite
@@ -143,7 +142,7 @@ Before you install a package (or after you installed a package) you can view all
 tridy -d triploit:tridymite
 ```
 
-# Tridymite for Package Developers
+## Tridymite for Package Developers
 
 Creating packages is really easy. You just have to add 2 files to your project. First, you have to add a `pkg/` directory **to the root directory of your project**. In this directory, you have to create 2 files:
 
@@ -183,7 +182,7 @@ The field `name` contains the written out name of the projects (please don't use
 
 The version has the following syntax: `[main version].[subversion].[revision][build]` Notice that `build` is always a letter, like in:
 
-```
+```bash
 0.0.1a
 0.0.1b
 0.1.2a
@@ -215,11 +214,11 @@ products:
 
 You can also use "relative paths". That allows the user, to install the package locally, not globally. Let's say, we have a package with only one binary file. Then, you should let the user decide if he want's to install it locally, or not. For this, we added some variables for paths:
 
-| Variable | Redirection |
-| --- | --- |
-| `$usr` | `/usr/ for global` installations, `~/.local/usr/` for local ones |
+| Variable | Redirection                                                                  |
+| -------- | ---------------------------------------------------------------------------- |
+| `$usr`   | `/usr/ for global` installations, `~/.local/usr/` for local ones             |
 | `$share` | `/usr/share/` for global installations, `~/.local/usr/share/` for local ones |
-| `$bin` | `/usr/bin/` for global installations, `~/.local/usr/bin/` for local ones |
+| `$bin`   | `/usr/bin/` for global installations, `~/.local/usr/bin/` for local ones     |
 
 Tridymite prepares this option at the installation.
 

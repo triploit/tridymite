@@ -4,11 +4,7 @@
 
 #include "token.hpp"
 
-Token::Token(const std::string &value, const int &line)
-{
-    this->value = value;
-    this->line = line;
-}
+Token::Token(const std::string &_value, const int &_line) : value(_value), line(_line) {}
 
 const int& Token::getLine()
 {

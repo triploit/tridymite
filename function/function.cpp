@@ -7,11 +7,7 @@
 
 Function::Function() {}
 
-Function::Function(const std::string &name, const std::string &code)
-{
-    this->name = name;
-    this->code = code;
-}
+Function::Function(const std::string &_name, const std::string &_code) : name(_name), code(_code) {}
 
 const std::string &Function::getCode()
 {
