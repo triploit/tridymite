@@ -11,6 +11,8 @@
 #include <manager/remove/remove_manager.hpp>
 #include <manager/update/update_manager.hpp>
 
+#error TODO: YAML STAMDARD GIT EINBAUEN
+
 #define _VERSION "0.1.1a"
 
 int main(int argc, char* argv[])
