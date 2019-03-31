@@ -27,7 +27,7 @@ const std::vector<std::string> __ARG_NAME { // Names, two names of the same argu
     "nc,no-dependency-checking",
     "f,force",
     "t,testing",
-    "l"
+    "l,local"
 };
 
 const std::vector<std::string> __ARG_HELP { // Help for the arguments
