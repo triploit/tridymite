@@ -20,6 +20,8 @@ public:
     static const Package &getPackage(Package &p);
     static bool isPackageInstalled(const Package &p);
     static std::string getPackageFile(const Package &p);
+
+    static void setInstalledPackages(const std::vector<Package> &packages);
 };
 
 
