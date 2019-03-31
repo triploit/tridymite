@@ -110,6 +110,9 @@ public:
         language = config["language"].as<std::string>();
         tmp_dir = std::string("/tmp/tridy-"+std::to_string(getpid()));
 
+        if (config["standard_git_server"])
+            git_server = config["standard_git_server"].as<std::string>();
+
         if (mkdir(tmp_dir.c_str(), 0777) == -1)
         {
             std::cout << Translation::get("tmp_permission_error") << strerror(errno) << std::endl;

@@ -48,7 +48,9 @@ int main(int argc, char* argv[])
         if (cli.argumentGiven("l"))
         {
             struct stat info;
-            if(stat((std::string(getenv("HOME"))+"/.local/").c_str(), &info) != 0)
+            std::string path = std::string(getenv("HOME"))+"/.local/";
+
+            if(stat(path.c_str(), &info) != 0)
             {
                 std::cout << "error: can't use operator \"-l/--local\": no local installation module in setup activated!" << std::endl;
                 Runtime::exit(1);
@@ -116,7 +118,7 @@ int main(int argc, char* argv[])
                 std::cout << "info: show description: couldn't find package " << cli.getParameters("d")[0] << std::endl;
                 std::cout << "info: trying to find it online..." << std::endl;
 
-                Package package = DependencyManager::getPackageConfig({p})[0];
+                Package package = DependencyManager::getPackagesConfig({p})[0];
                 std::cout << package << std::endl;
             }
         }
@@ -192,8 +194,8 @@ int main(int argc, char* argv[])
             Runtime::to_remove.empty())
             Runtime::exit(0);
 
-        Runtime::to_install = DependencyManager::getPackageConfig(Runtime::to_install);
-        Runtime::to_update = DependencyManager::getPackageConfig(Runtime::to_update);
+        Runtime::to_install = DependencyManager::getPackagesConfig(Runtime::to_install);
+        Runtime::to_update = DependencyManager::getPackagesConfig(Runtime::to_update);
 
         if (Runtime::update_all)
         {
@@ -222,7 +224,7 @@ int main(int argc, char* argv[])
             }
         }
 
-        // Runtime::to_remove = DependencyManager::getPackageConfig(Runtime::to_remove);
+        // Runtime::to_remove = DependencyManager::getPackagesConfig(Runtime::to_remove);
 
         for (int i = 0; i < Runtime::to_remove.size(); i++)
         {

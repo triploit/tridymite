@@ -62,3 +62,9 @@ std::string IPackagesManager::getPackageFile(const Package &p)
 {
     return std::__cxx11::string();
 }
+
+void IPackagesManager::setInstalledPackages(const std::vector<Package> &packages)
+{
+    IPackagesManager::installed_packages.clear();
+    IPackagesManager::installed_packages = packages;
+}

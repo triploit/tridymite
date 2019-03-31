@@ -274,8 +274,6 @@ std::string InstallationManager::downloadPackage(const std::string &prefix, cons
 
             for (std::string dir : tstd::get_all_directories("./"))
             {
-                std::cout << "] " << dir << std::endl;
-
                 if (source_path.size() <= dir.size())
                 {
                     if (dir.substr(0, source_path.size()) == source_path)
@@ -435,10 +433,10 @@ void InstallationManager::installPackage(const Package &arg, bool nl)
     {
         for (const std::string &s : package.getProductsTo())
         {
-            if (s.find("$usr") != std::string::npos &&
-                s.find("share") != std::string::npos &&
-                s.find("bin") != std::string::npos &&
-                s.find("lib") != std::string::npos)
+            if (s.find("$usr") != std::string::npos ||
+                s.find("$share") != std::string::npos ||
+                s.find("$bin") != std::string::npos ||
+                s.find("$lib") != std::string::npos)
                 l = true;
         }
 

@@ -1,4 +1,5 @@
 language: "english"
+standard_git_server: "github.com"
 
 servers:
     github.com:
