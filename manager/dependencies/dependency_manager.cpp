@@ -65,7 +65,7 @@ void DependencyManager::checkDependencies(const Package &package_to_check)
     }
 }
 
-std::vector<Package> DependencyManager::getPackageConfig(std::vector<Package> packages)
+std::vector<Package> DependencyManager::getPackagesConfig(std::vector<Package> packages)
 {
     for (int i = 0; i < packages.size(); i++)
     {
