@@ -237,6 +237,9 @@ std::vector<std::string> tstd::read_cursive_all_files(std::string path)
     DIR* dirp = opendir(path.c_str());
     struct dirent * dp;
 
+    if (dirp == NULL)
+        return files;
+
     while ((dp = readdir(dirp)) != NULL)
     {
         if (dp->d_name[0] == '.')

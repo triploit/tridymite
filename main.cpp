@@ -11,7 +11,7 @@
 #include <manager/remove/remove_manager.hpp>
 #include <manager/update/update_manager.hpp>
 
-#define _VERSION "0.1.1a"
+#define _VERSION "0.1.1b"
 
 int main(int argc, char* argv[])
 {
