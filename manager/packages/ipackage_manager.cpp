@@ -34,7 +34,8 @@ bool IPackagesManager::isPackageInstalled(const Package &p)
 {
     for (const Package &installed_package : IPackagesManager::installed_packages)
     {
-        return (p == installed_package);
+        if (p == installed_package)
+            return true;
     }
 
     return false;
