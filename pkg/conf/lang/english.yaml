@@ -80,7 +80,7 @@ script.parse_file.file_not_found: "error: can't go on without a file."
 script.parse_file.to_many_brackets: "error: line %d: to many \"}\" in file %s!"
 script.parse_file.unfinished_declaration: "error: line %d: unfinished declaration of function in build script."
 script.unsave_script: "error: unsave script: script uses sudo command!"
-script.function_not_found: "error: can't run function: \"%s\"": function not found!"
+script.function_not_found: "error: can't run function: \"%s\": function not found!"
 
 # std
 
@@ -172,8 +172,6 @@ main.package_up_to_date_reinstall: "info: package %s v%s is already up-to-date. 
 main.package_up_to_date_skipping: "info: package %s v%s is up-to-date. skipping."
 main.not_installed_cant_removed: "info: package %s is not installed and can't be removed."
 main.checking_packages: "info: checking packages..."
-main.package_up_to_date_reinstall: "info: package %s v%s is up-to-date. reinstalling."
-main.package_up_to_date_skipping: "info: package %s v%s is up-to-date. skipping."
 main.searching_dependencies: "info: searching for dependencies..."
 main.following_removed: "info: following packages will be removed" # "info: following packages will be removed (<number>):" will be printed
 main.following_updated: "info: following packages will be updated" # "info: following packages will be updated (<number>):" will be printed
