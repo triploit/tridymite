@@ -18,7 +18,7 @@
 bool InstallationManager::linkProducts(const std::string &prefix, const Package &package)
 {
     if (package.getLinksTo().size() > 0)
-        std::cout << prefix << Translation::get("manager.install.linking") << std::endl;
+        std::cout << prefix << Translation::get("manager.install.linking", false) << std::endl;
 
     for (int i = 0; i < package.getLinksFrom().size(); i++)
     {
@@ -68,7 +68,7 @@ bool InstallationManager::linkProducts(const std::string &prefix, const Package 
         from_var = "$"+from_var;
         to_var = "$"+to_var;
 
-        std::cout << prefix << Translation::get("manager.install.linking") << package.getProductsTo()[i] << std::endl;
+        std::cout << prefix << Translation::get("manager.install.linking", false) << package.getProductsTo()[i] << std::endl;
         system(std::string("ln -s "+from_var+" "+to_var).c_str());
     }
 
@@ -79,15 +79,15 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
 {
     int count = 0;
 
-    std::cout << prefix << Translation::get("manager.install.counting_files") << std::endl;
+    std::cout << prefix << Translation::get("manager.install.counting_files", false) << std::endl;
     for (const std::string &s : package.getProductsFrom())
     {
         count += tstd::cursive_file_count(s);
 
         if (count >= 100)
         {
-            std::cout << Translation::get("manager.install.file_warning") << std::endl;
-            std::cout << prefix << Translation::get("manager.install.continue_counting") << std::endl;
+            std::cout << Translation::get("manager.install.file_warning", false) << std::endl;
+            std::cout << prefix << Translation::get("manager.install.continue_counting", false) << std::endl;
         }
     }
 
@@ -110,11 +110,11 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
     {
         if (!Runtime::local_folder && Runtime::try_local)
         {
-            std::cout << Translation::get("manager.install.local_directory_not_found") << std::endl;
+            std::cout << Translation::get("manager.install.local_directory_not_found", false) << std::endl;
 
             if (!tstd::yn_question(Translation::get("manager.install.global_installation_question")))
             {
-                std::cout << Translation::get("manager.install.aborting_installation") << std::endl;
+                std::cout << Translation::get("manager.install.aborting_installation", false) << std::endl;
                 return 0;
             }
         }
@@ -609,5 +609,5 @@ void InstallationManager::installPackage(const Package &arg, bool nl)
         Runtime::try_local = try_local_backup;
     }
 
-    std::cout << prefix << Translation::get("manager.install.skipping") << std::endl;
+    std::cout << prefix << Translation::get("manager.install.skipping", false) << std::endl;
 }
