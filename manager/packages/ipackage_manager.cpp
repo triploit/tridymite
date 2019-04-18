@@ -56,7 +56,7 @@ const Package& IPackagesManager::getPackage(Package &p)
             return installed_package;
     }
 
-    return Package();
+    return p;
 }
 
 std::string IPackagesManager::getPackageFile(const Package &p)

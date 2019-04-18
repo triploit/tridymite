@@ -264,14 +264,13 @@ int main(int argc, char* argv[])
                             {
                                 printf(Translation::get("main.package_up_to_date_skipping").c_str(), tstd::package_to_argument(installed_package).c_str(), installed_package.getVersion().str.c_str());
                                 Runtime::to_update.erase(Runtime::to_update.begin()+i);
+                                i--;
                             }
                         }
                     }
                 }
             }
         }
-
-        // Runtime::to_remove = DependencyManager::getPackagesConfig(Runtime::to_remove);
 
         for (int i = 0; i < Runtime::to_remove.size(); i++)
         {
@@ -285,26 +284,29 @@ int main(int argc, char* argv[])
                     p2.getRepoName() == to_remove.getRepoName())
                 {
                     found = true;
-                    continue;
                 }
             }
 
             if (!found)
             {
-                Runtime::to_remove.erase(Runtime::to_remove.begin()+i);
                 printf(Translation::get("main.not_installed_cant_removed").c_str(), tstd::package_to_argument(to_remove).c_str());
+                Runtime::to_remove.erase(Runtime::to_remove.begin()+i);
+                i--;
             }
-        }
-
-        for (int i = 0; i < Runtime::to_remove.size(); i++)
-        {
-            Runtime::to_remove[i] = IPackagesManager::getPackage(Runtime::to_remove[i]);
         }
 
         if (Runtime::to_install.size() > 0 || 
             Runtime::to_remove.size() > 0 || 
             Runtime::to_update.size() > 0)
             std::cout << Translation::get("main.checking_packages", false) << std::endl;
+        else
+            Runtime::exit(0);
+
+
+        for (int i = 0; i < Runtime::to_remove.size(); i++)
+        {
+            Runtime::to_remove[i] = IPackagesManager::getPackage(Runtime::to_remove[i]);
+        }
 
         for (int i = 0; i < Runtime::to_install.size(); i++)
         {
@@ -320,6 +322,7 @@ int main(int argc, char* argv[])
                 {
                     printf(Translation::get("main.package_installed_skipping").c_str(), tstd::package_to_argument(test).c_str(), test.getVersion().str.c_str());
                     Runtime::to_install.erase(Runtime::to_install.begin()+i);
+                    i--;
                 }
             }
         }
@@ -340,6 +343,7 @@ int main(int argc, char* argv[])
                     {
                         printf(Translation::get("main.package_up_to_date_skipping").c_str(), tstd::package_to_argument(test).c_str(), test.getVersion().str.c_str());
                         Runtime::to_update.erase(Runtime::to_update.begin()+i);
+                        i--;
                     }
                 }
             }
