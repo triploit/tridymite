@@ -10,6 +10,8 @@ THE WHOLE PACKAGE.SH CONTENT GOES HERE, WITH ALL FUNCTIONS
 #include <vector>
 #include <function.hpp>
 #include <package/package.hpp>
+#include <variable/variable.hpp>
+#include <pretype/pretype.hpp>
 
 class Script
 {
@@ -38,6 +40,7 @@ public:
 
     void addFunction(const Function &f);
     void runFunction(const std::string &function, const std::string &token);
+    static void pureRunWithVariables(const PreType &p, const std::vector<Variable> &variables, const std::string &token);
 };
 
 #endif

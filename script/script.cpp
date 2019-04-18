@@ -1,6 +1,7 @@
 #include <function.hpp>
 #include <fstream>
 #include <runtime.hpp>
+#include <std/tstd.hpp>
 #include "script.hpp"
 #include "token.hpp"
 
@@ -198,7 +199,7 @@ void Script::runFunction(const std::string &function, const std::string &token)
 
         if (file_content.find("sudo") != std::string::npos || file_content.find("su root") != std::string::npos)
         {
-            std::cout << "error: unsave script: script uses sudo command!" << std::endl;
+            std::cout << Translation::get("script.unsave_script", false) << std::endl;
             Runtime::exit(1);
         }
 
@@ -209,7 +210,7 @@ void Script::runFunction(const std::string &function, const std::string &token)
     }
     else
     {
-        std::cout << "error: can't run function: " << function << ": function not found!" << std::endl;
+        printf(Translation::get("script.function_not_found").c_str(), function.c_str());
         Runtime::exit(1);
     }
 }
@@ -217,4 +218,30 @@ void Script::runFunction(const std::string &function, const std::string &token)
 const std::string &Script::getContent()
 {
     return file_content;
+}
+
+void Script::pureRunWithVariables(const PreType &p, const std::vector<Variable> &variables, const std::string &token)
+{
+    std::ifstream t(p.getFullFileName());
+    std::string content((std::istreambuf_iterator<char>(t)),
+                    std::istreambuf_iterator<char>());
+
+    std::string file_name = Runtime::tmp_dir+"/_GENtmp"+std::to_string(variables.size())+"_"+token+"_"+p.getName()+".sh";
+    std::fstream of(file_name, std::ios::out);
+
+    if (content.find("sudo") != std::string::npos || content.find("su root") != std::string::npos)
+    {
+        std::cout << Translation::get("script.unsave_script", false) << std::endl;
+        Runtime::exit(1);
+    }
+
+    for (const Variable &v : variables)
+    {
+        content = tstd::replace(content, std::string("${"+v.getName()+"}"), v.getValue());
+    }
+
+    of << "#!/usr/bin/bash" << "\n\n" << content << std::endl;
+
+    std::system(std::string("bash "+file_name).c_str());
+    Runtime::files_to_clean.push_back(file_name);
 }
