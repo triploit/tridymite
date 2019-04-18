@@ -1,0 +1,3 @@
+#% input_file,output_file,arguments
+
+g++ ${input_file} -o ${output_file} ${arguments}
