@@ -21,7 +21,7 @@ void DependencyManager::checkDependencies(const Package &package_to_check)
                 x.getGitUser() == dependency.getGitUser() &&
                 x.getServer() == dependency.getServer())
             {
-                printf(std::string(Translation::get("manager.dependencies.cant_remove_dependency", false)+" "+tstd::package_to_argument(package_to_check)+"\n").c_str(), tstd::package_to_argument(Runtime::to_remove[i]));
+                printf(std::string(Translation::get("manager.dependencies.cant_remove_dependency", false)+" "+tstd::package_to_argument(package_to_check)+"\n").c_str(), tstd::package_to_argument(Runtime::to_remove[i]).c_str());
                 Runtime::to_remove.erase(Runtime::to_remove.begin()+i);
             }
 
