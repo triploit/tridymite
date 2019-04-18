@@ -19,6 +19,7 @@ private:
     std::string name;           // name of project
     std::string description;    // long description
     std::string information;    // short description
+    YAML::Node type;    // short description
     std::string yaml_path;      // path were the yaml file lies
     Script build_script;        // build script
 
@@ -50,12 +51,13 @@ public:
 
     const Script &getBuildScript() const;
     const Version &getVersion() const;
+    const YAML::Node &getType() const;
+
     const std::string &getRepoName() const;
     const std::vector<Package> &getDependencies() const;
     const std::vector<std::string> &getAuthors() const;
     const std::vector<std::string> &getProductsFrom() const;
     const std::vector<std::string> &getProductsTo() const;
-
     const std::vector<std::string> &getLinksFrom() const;
     const std::vector<std::string> &getLinksTo() const;
 
@@ -64,12 +66,14 @@ public:
     void setDescription(const std::string &description);
     void setInformation(const std::string &information);
     void setServer(const std::string &server);
+    void setRepoName(const std::string &repo);
+    void setYamlPath(const std::string &path);
+    void setVersion(const Version &version);
+
+    void setType(const YAML::Node &type);
     void setBuildScript(const Script &functions);
     void setDependencies(const std::vector<Package> &dependencies);
     void setAuthors(const std::vector<std::string> &authors);
-    void setVersion(const Version &version);
-    void setRepoName(const std::string &repo);
-    void setYamlPath(const std::string &path);
 
     friend std::ostream &operator<<(std::ostream &os, const Package &p);
     const bool operator==(const Package &p) const;
