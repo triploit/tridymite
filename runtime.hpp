@@ -14,6 +14,7 @@
 #include <manager/packages/ipackage_manager.hpp>
 #include <signal.h>
 #include <pwd.h>
+#include <manager/pretypes/pretype_manager.hpp>
 #include "translation/translation.hpp"
 
 class Runtime
@@ -21,7 +22,7 @@ class Runtime
 private:
     static void handle_escape(int i)
     {
-        std::cout << std::endl << "catched ^C " << std::endl << "don't do that again!" << std::endl;
+        std::cout << Translation::get("runtime.catch_ctrl_c", false) << std::endl;
         Runtime::exit(1);
     }
 
@@ -93,15 +94,15 @@ public:
         struct stat info;
         if (stat(tridy_dir.c_str(), &info) != 0)
         {
-            std::cout << "error: it seems tridymite isn't installed yet." << std::endl;
-            std::cout << "If you have the source code here, try running the install.sh script as root." << std::endl;
+            std::cout << Translation::get("runtime.tridy_not_installed", false) << std::endl;
+            std::cout << Translation::get("runtime.run_installer", false) << std::endl;
 
             Runtime::exit(0);
         }
 
         if (!std::ifstream(tridy_dir+"conf/config.yaml").is_open())
         {
-            std::cout << "error: tridymite's config file wasn't found!" << std::endl;
+            std::cout << Translation::get("runtime.config_not_found", false) << std::endl;
             Runtime::exit(1);
         }
 
@@ -115,7 +116,7 @@ public:
 
         if (mkdir(tmp_dir.c_str(), 0777) == -1)
         {
-            std::cout << Translation::get("tmp_permission_error") << strerror(errno) << std::endl;
+            std::cout << Translation::get("tmp_permission_error") << " " << strerror(errno) << std::endl;
             Runtime::exit(1);
         }
 
@@ -123,6 +124,7 @@ public:
         Translation::loadConfig(tridy_dir+"conf/lang/"+language+".yaml");
 
         IPackagesManager::load(tridy_dir+"conf/packages/");
+        PreTypeManager::load(tridy_dir+"conf/pretypes/");
     }
 
     static void reloadManagers()

@@ -9,17 +9,17 @@
 bool RemoveManager::unlinkProducts(const std::string &prefix, const Package &package)
 {
     if (package.getLinksTo().size() > 0)
-        std::cout << prefix << "removing links..." << std::endl;
+        std::cout << prefix << Translation::get("manager.remove.removing_links", false) << std::endl;
     else
         return true;
 
     if (!Runtime::local_folder && Runtime::try_local)
     {
-        std::cout << "error: couldn't find the directory for local packages." << std::endl;
+        std::cout << Translation::get("manager.remove.local_directory_not_found", false).c_str() << std::endl;
 
-        if (!tstd::yn_question("do you want to continue and remove it globally?"))
+        if (!tstd::yn_question(Translation::get("manager.remove.remove_globally_instead", false)))
         {
-            std::cout << "aborted package installation." << std::endl;
+            std::cout << Translation::get("general.aborted", false) << std::endl;
             return false;
         }
     }
@@ -48,7 +48,7 @@ bool RemoveManager::unlinkProducts(const std::string &prefix, const Package &pac
         setenv(to_var.c_str(), to.c_str(), true);
         to_var = "$"+to_var;
 
-        std::cout << prefix << "unlinking " << to << std::endl;
+        std::cout << prefix << Translation::get("manager.remove.unlinking", false) << " " << to << std::endl;
         system(std::string("if [ -f "+to_var+" ]; then sudo unlink "+to_var+"; fi").c_str());
     }
 
@@ -58,17 +58,17 @@ bool RemoveManager::unlinkProducts(const std::string &prefix, const Package &pac
 bool RemoveManager::removeProducts(const std::string &prefix, const Package &package)
 {
     if (package.getProductsTo().size() > 0)
-        std::cout << prefix << "removing products..." << std::endl;
+        std::cout << prefix << Translation::get("manager.remove.removing_products", false) << std::endl;
     else
         return true;
 
     if (!Runtime::local_folder && Runtime::try_local)
     {
-        std::cout << "error: couldn't find the directory for local packages." << std::endl;
+        std::cout << Translation::get("manager.remove.local_directory_not_found", false) << std::endl;
 
-        if (!tstd::yn_question("do you want to continue and remove it globally?"))
+        if (!tstd::yn_question(Translation::get("manager.remove.remove_globally_instead", false)))
         {
-            std::cout << "aborted of removing the package." << std::endl;
+            std::cout << Translation::get("general.aborted", false) << std::endl;
             return false;
         }
     }
@@ -109,7 +109,7 @@ void RemoveManager::uninstallPackage(const Package &p)
     std::string file = Runtime::tmp_dir+"/tmp.yaml";
     std::string url = tstd::create_url(p, "raw/master/pkg/package.yaml");
 
-    std::cout << "[ remove ] now uninstalling " << tstd::package_to_argument(p) << std::endl;
+    std::cout << "[ " << Translation::get("manager.remove.removing", false) << " ] " << Translation::get("manager.remove.now_uninstalling", false) << " " << tstd::package_to_argument(p) << std::endl;
 
     Package package = p;
     YAML::Node node;
@@ -120,7 +120,7 @@ void RemoveManager::uninstallPackage(const Package &p)
     {
         if (!tstd::download_file(url, file))
         {
-            std::cout << "error: package " << tstd::package_to_argument(p) << " not found!" << std::endl;
+            printf(Translation::get("general.package_not_found").c_str(), tstd::package_to_argument(p).c_str());
             Runtime::exit(1);
         }
 
@@ -161,12 +161,12 @@ void RemoveManager::uninstallPackage(const Package &p)
         unlinkProducts(prefix, package);
         removeProducts(prefix, package);
 
-        std::cout << prefix << "removing " << dir << std::endl;
+        std::cout << prefix << Translation::get("manager.remove.removing_path", false) << " " << dir << std::endl;
         system(std::string("sudo rm -rf "+dir).c_str());
     }
     else
     {
-        std::cout << "warning: removing: package " << tstd::package_to_argument(package) << " not found. skipping." << std::endl;
+        printf(Translation::get("manager.remove.package_not_found").c_str(), tstd::package_to_argument(package).c_str());
     }
 
     if (reset_try_local)

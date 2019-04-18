@@ -239,6 +239,9 @@ void Package::load_package_from_nodes(const YAML::Node &pkg)
     if (pkg["authors"])
         setAuthors(pkg["authors"].as<std::vector<std::string>>());
 
+    if (pkg["type"])
+        setType(pkg["type"]);
+
     if (pkg["version"])
         setVersion(Version(pkg["version"].as<std::string>()));
     else
@@ -324,4 +327,14 @@ void Package::load_package_from_nodes(const YAML::Node &pkg)
                       << ": dependencies: nopkg is not allowed yet." << std::endl;
         }
     }
+}
+
+const YAML::Node &Package::getType() const
+{
+    return type;
+}
+
+void Package::setType(const YAML::Node &type)
+{
+    this->type = type;
 }

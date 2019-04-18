@@ -41,18 +41,40 @@ then
     rm -rf tridy_dir
 fi
 
-echo -e "\e[32;1mThere's also a German language pack. Do you want to activate it?\e[00m"
-printf "[y/n] : "
-read german
-echo -e "\e[32;1mOkay.\e[00m"
-
 cp -r pkg tridy_dir
 rm tridy_dir/*.sh tridy_dir/*.yaml
 
-if [[ "$german" == "y" ]] || [[ "$german" == "Y" ]]
-then
-    echo -e "language: \"german\"" > tridy_dir/conf/config.yaml
-fi
+echo "Following language packs are installed in `pwd`:"
+
+count=0
+cur=`pwd`
+cd ./pkg/conf/lang/
+lang_names=()
+lang_count=()
+
+for filename in *.yaml; do
+    ((count+=1))
+    echo "${count}.) ${filename/.yaml/}"
+
+    lang_names+=(${filename/.yaml/})
+done
+
+cd $cur
+
+echo -e "\e[32;1mWhich language pack do you want to use?\e[00m"
+printf "(1-${count}) : "
+read language
+
+while (( $language > $count )) || (( $language <= 0 )) 
+do
+    echo "Wrong input. Numbers available: 1-${count}."
+    printf "(1-${count}) : "
+    read language
+done
+
+echo "You chose ${lang_names[@]:(($language-1))}."
+echo "language: \"${lang_names[@]:(($language-1))}\"" >> tridy_dir/conf/config.yaml
+echo -e "\e[32;1mOkay.\e[00m"
 
 if [[ "$PATH" == *"${pfli}"* ]] && [[ "$1" != "-l" ]]
 then

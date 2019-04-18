@@ -9,6 +9,7 @@
 #include <zip.h>
 #include <yaml-cpp/yaml.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 #include <std/tstd.hpp>
 #include <runtime.hpp>
@@ -17,7 +18,7 @@
 bool InstallationManager::linkProducts(const std::string &prefix, const Package &package)
 {
     if (package.getLinksTo().size() > 0)
-        std::cout << prefix << "linking files..." << std::endl;
+        std::cout << prefix << Translation::get("manager.install.linking") << std::endl;
 
     for (int i = 0; i < package.getLinksFrom().size(); i++)
     {
@@ -67,7 +68,7 @@ bool InstallationManager::linkProducts(const std::string &prefix, const Package 
         from_var = "$"+from_var;
         to_var = "$"+to_var;
 
-        std::cout << prefix << "linking " << package.getProductsTo()[i] << std::endl;
+        std::cout << prefix << Translation::get("manager.install.linking") << package.getProductsTo()[i] << std::endl;
         system(std::string("ln -s "+from_var+" "+to_var).c_str());
     }
 
@@ -78,15 +79,15 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
 {
     int count = 0;
 
-    std::cout << prefix << "counting files..." << std::endl;
+    std::cout << prefix << Translation::get("manager.install.counting_files") << std::endl;
     for (const std::string &s : package.getProductsFrom())
     {
         count += tstd::cursive_file_count(s);
 
         if (count >= 100)
         {
-            std::cout << "warning: this package contains more than 100 files." << std::endl;
-            std::cout << prefix << "continue counting..." << std::endl;
+            std::cout << Translation::get("manager.install.file_warning") << std::endl;
+            std::cout << prefix << Translation::get("manager.install.continue_counting") << std::endl;
         }
     }
 
@@ -95,11 +96,11 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
         std::cout << std::endl;
 
         if (count != 1)
-            std::cout << "moving " << count << " files..." << std::endl;
+            printf(Translation::get("manager.install.moving_files").c_str(), count);
         else
-            std::cout << "moving " << count << " file..." << std::endl;
+            printf(Translation::get("manager.install.moving_files").c_str(), count);
 
-        if (!tstd::yn_question("do you want to continue?"))
+        if (!tstd::yn_question(Translation::get("general.continue_question")))
             return false;
     }
 
@@ -109,11 +110,11 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
     {
         if (!Runtime::local_folder && Runtime::try_local)
         {
-            std::cout << "error: couldn't find the directory for local packages." << std::endl;
+            std::cout << Translation::get("manager.install.local_directory_not_found") << std::endl;
 
-            if (!tstd::yn_question("do you want to continue and install it globally?"))
+            if (!tstd::yn_question(Translation::get("manager.install.global_installation_question")))
             {
-                std::cout << "aborted package installation." << std::endl;
+                std::cout << Translation::get("manager.install.aborting_installation") << std::endl;
                 return 0;
             }
         }
@@ -182,13 +183,13 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
         to_var = "$"+to_var;
 
         if (Runtime::force)
-            std::cout << prefix << " => moving (FORCE) " << from << " to " << to << std::endl;
+            printf(Translation::get("manager.install.moving_force").c_str(), from.c_str(), to.c_str());
         else
-            std::cout << prefix << " => moving " << from << " to " << to << std::endl;
+            printf(Translation::get("manager.install.moving").c_str(), from.c_str(), to.c_str());
 
         if (!from_exists)
         {
-            std::cout << "error: package " << tstd::package_to_argument(package) << ": products: \"" << from << "\" doesn't exists!" << std::endl;
+            printf(Translation::get("manager.install.product_not_existing").c_str(), tstd::package_to_argument(package).c_str(), from.c_str());
             Runtime::exit(1);
         }
 
@@ -199,7 +200,7 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
                 (!from_file && !to_file)))
                 && !reinstall)
             {
-                std::cout << "error: package " << tstd::package_to_argument(package) << ": products: conflict:\n    - \"" << to << "\" already exists in filesystem!" << std::endl;
+                printf(Translation::get("manager.install.file_conflict").c_str(), tstd::package_to_argument(package).c_str(), to.c_str());
                 Runtime::exit(1);
             }
         }
@@ -207,22 +208,22 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
         if ((from_file && to_file) ||
             (from_file && !to_file))
         {
-            if (system(std::string("sudo cp "+from_var+" "+to_var).c_str()) != 0)
+            if (system(std::string("if [ -f "+to_var+" ]; then sudo rm "+to_var+"; fi; sudo cp "+from_var+" "+to_var).c_str()) != 0)
             {
-                std::cout << "error: moving products: \"" << getenv(from_var.substr(1, from_var.size()).c_str()) << "\": unknown error!" << std::endl;
+                printf(Translation::get("manager.install.moving_error_unknown").c_str(), getenv(from_var.substr(1, from_var.size()).c_str()));
                 Runtime::exit(1);
             }
         }
         else if (!from_file && to_file)
         {
-            std::cout << "error: package " << tstd::package_to_argument(package) << ": products: \"" << from << "\": cant move a directory into a file!" << std::endl;
+            printf(Translation::get("manager.install.directory_into_file").c_str(), tstd::package_to_argument(package).c_str(), from.c_str());
             Runtime::exit(1);
         }
         else if (!to_file && !from_file)
         {
-            if (system(std::string("if [ ! -d "+to_var+" ]; then sudo mkdir -p "+to_var+"; fi; sudo mv "+from_var+"/* "+to_var).c_str()) != 0)
+            if (system(std::string("if [ ! -d "+to_var+" ]; then sudo mkdir -p "+to_var+"; fi; sudo cp -rf "+from_var+"/* "+to_var).c_str()) != 0)
             {
-                std::cout << "error: moving products: \"" << from << "\": unknown error! both files (\"" << from_file << "\" and \"" << to_file << "\") don't exist!" << std::endl;
+                printf(Translation::get("manager.install.file_neither_exists").c_str(), from.c_str(), from.c_str(), to.c_str());
                 Runtime::exit(1);
             }
         }
@@ -233,28 +234,28 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
 
 std::string InstallationManager::downloadPackage(const std::string &prefix, const std::string &package_dir, const std::string &package_zip, const Package &arg)
 {
-    std::cout << prefix << "downloading ..." << std::endl;
+    std::cout << prefix << Translation::get("manager.install.downloading", false) << std::endl;
 
     if (!tstd::download_file(tstd::create_zip_url(arg), package_zip))
     {
-        std::cout << "error: package not found: " << tstd::package_to_argument(arg) << std::endl;
+        std::cout << Translation::get("general.package_not_found_good", false) << " " << tstd::package_to_argument(arg) << std::endl;
         Runtime::exit(1);
     }
 
     Runtime::directories_to_clean.push_back(package_dir);
     Runtime::files_to_clean.push_back(package_zip);
 
-    std::cout << prefix << "unzipping ..." << std::endl;
+    std::cout << prefix << Translation::get("manager.install.unzipping", false) << std::endl;
 
     mkdir(package_dir.c_str(), 0777);
     chdir(package_dir.c_str());
 
     if (system(std::string("unzip " + package_zip + " > /dev/null").c_str()) != 0)
     {
-        std::cout << "error: couldn't unzip file!" << std::endl;
+        std::cout << Translation::get("manager.install.couldnt_unzip", false) << std::endl;
 
         if (system("unzip > /dev/null") != 0)
-            std::cout << "info: install the unzip tool.";
+            std::cout << Translation::get("manager.install.install_unzip", false) << std::endl;
 
         Runtime::exit(1);
     }
@@ -299,9 +300,9 @@ void InstallationManager::localPackage(std::string path)
 {
     std::cout << std::endl;
 
-    if (!tstd::yn_question("do you want to continue?"))
+    if (!tstd::yn_question(Translation::get("general.continue_question", false)))
     {
-        std::cout << "aborted." << std::endl;
+        std::cout << Translation::get("general.aborted", false) << std::endl;
         return;
     }
 
@@ -317,64 +318,123 @@ void InstallationManager::localPackage(std::string path)
     {
         _of << std::endl;
         std::string user;
-        std::cout << "on which git account will it lie? : " << std::endl;
+        std::cout << Translation::get("manager.install.on_which_account", false) << " : " << std::endl;
         std::getline(std::cin, user);
 
         _of << "gituser: " << user << std::endl;
-        std::cout << "added!" << std::endl;
+        std::cout << Translation::get("manager.install.added", false) << std::endl;
     }
 
     if (!YAML::LoadFile(file)["reponame"])
     {
         std::string server;
-        std::cout << "on which git server will it lie? : " << std::endl;
+        std::cout << Translation::get("manager.install.on_which_server", false) << " : " << std::endl;
         std::getline(std::cin, server);
         _of << "server: " << server << std::endl;
-        std::cout << "added!" << std::endl;
+        std::cout << Translation::get("manager.install.added", false) << std::endl;
     }
 
     if (!YAML::LoadFile(file)["reponame"])
     {
         std::string repo;
-        std::cout << "what's the name of the repository? : " << std::endl;
+        std::cout << Translation::get("manager.install.what_name", false) << " : " << std::endl;
         std::getline(std::cin, repo);
         _of << "reponame: " << repo << std::endl;
-        std::cout << "added!" << std::endl;
+        std::cout << Translation::get("manager.install.added", false) << std::endl;
     }
 
     _of.close();
 
     Package package(YAML::LoadFile(file));
 
-    std::cout << "info: searching for dependencies..." << std::endl;
+    std::cout << Translation::get("manager.install.dependency_searching", false) << std::endl;
     DependencyManager::checkDependencies(package);
 
     if (IPackagesManager::isPackageInstalled(package))
     {
         if (Runtime::reinstall)
         {
-            std::cout << "info: (local) package " << tstd::package_to_argument(package) << " v" << package.getVersion() << " is already installed. reinstalling." << std::endl;
+            printf(Translation::get("manager.install.local_reinstall").c_str(), tstd::package_to_argument(package).c_str(), package.getVersion().str.c_str());
         }
         else
         {
-            std::cout << "info: (local) package " << tstd::package_to_argument(package) << " v" << package.getVersion() << " is already installed. skipping." << std::endl;
+            printf(Translation::get("manager.install.local_skip").c_str(), tstd::package_to_argument(package).c_str(), package.getVersion().str.c_str());
             return;
         }
     }
 
     std::string prefix = "[ " + package.getRepoName() + " ] ";
     std::cout << std::endl;
-    std::cout << "[ new local installation ] now installing " << tstd::package_to_argument(package) << std::endl;
+    std::cout << "[ " << Translation::get("manager.install.new_local_installation", false) << " ] " << Translation::get("manager.install.now_installing", false) << " " << tstd::package_to_argument(package) << std::endl;
 
     chdir(path.c_str());
 
-    std::cout << prefix << "building..." << std::endl;
+    std::cout << prefix << Translation::get("manager.install.building", false) << std::endl;
 
-    Script s(Script(path+"pkg/package.sh"));
-    s.go();
-    s.runFunction("build", package.getGitUser()+"_"+package.getRepoName()+"_"+package.getServer());
+    if (std::ifstream(path+"pkg/package.sh"))
+    {
+        Script s(Script(path+"pkg/package.sh"));
+        s.go();
+        s.runFunction("build", package.getGitUser()+"_"+package.getRepoName()+"_"+package.getServer());
+    }
+    else if (package.getType()["name"])
+    {
+        if (PreTypeManager::existsPreType(package.getType()["name"].as<std::string>()))
+        {
+            PreType pre = PreTypeManager::getPreType(package.getType()["name"].as<std::string>());
+            std::vector<Variable> variables;
 
-    std::cout << prefix << "installing version " << package.getVersion() << " ..." << std::endl;
+            for (const std::string &s : pre.getNeededVariables())
+            {
+                if (package.getType()[s])
+                    variables.push_back(Variable(s, package.getType()[s].as<std::string>()));
+            }
+
+            char curdir[256];
+            getcwd(curdir, sizeof(curdir));
+
+            variables.push_back(Variable("current_directory", std::string(curdir)));
+            variables.push_back(Variable("package_name", package.getRepoName()));
+            variables.push_back(Variable("package_version", package.getVersion().str));
+            variables.push_back(Variable("package_server", package.getServer()));
+            variables.push_back(Variable("package_user", package.getGitUser()));
+
+            pre.runScript(variables,
+                          package.getGitUser() + "_" + package.getRepoName() + "_" + package.getServer());
+        }
+        else
+        {
+            printf(Translation::get("manager.install.pretype_doesnt_exit").c_str(),
+                   package.getType()["name"].as<std::string>().c_str());
+
+            if (Runtime::to_install.size() <= 1)
+                return;
+
+            if (!tstd::yn_question(Translation::get("manager.install.skip_and_continue", false)))
+            {
+                std::cout << Translation::get("general.aborted", false) << std::endl;
+                Runtime::exit(0);
+            }
+            return;
+        }
+    }
+    else
+    {
+        std::cout << Translation::get("manager.install.no_build_script", false) << std::endl;
+
+        if (Runtime::to_install.size() <= 1)
+            return;
+
+        if (!tstd::yn_question(Translation::get("manager.install.skip_and_continue", false)))
+        {
+            std::cout << "aborted." << std::endl;
+            Runtime::exit(0);
+        }
+
+        return;
+    }
+
+    std::cout << prefix << Translation::get("manager.install.installing_version", false) << " " << package.getVersion() << " ..." << std::endl;
 
     std::string package_str = package.getGitUser()+"+" + package.getRepoName()+"+" + package.getServer();
 
@@ -384,7 +444,11 @@ void InstallationManager::localPackage(std::string path)
         system(std::string("if [ ! -d "+dir+" ]; then sudo mkdir -p "+dir+"; fi").c_str());
 
         system(std::string("sudo cp "+path+"pkg/package.yaml package.yaml.bkp").c_str());
-        std::string c = std::string("sudo cp "+path+"pkg/package.sh "+dir+"; sudo echo -e \"\\nlocal: "+(Runtime::try_local ? "true" : "false")+"\\n\" >> "+file+"; sudo cp "+path+"pkg/package.yaml "+dir);
+
+        if (std::ifstream(path+"pkg/package.sh"+dir).is_open())
+            system(std::string("sudo cp "+path+"pkg/package.sh "+dir).c_str());
+
+        std::string c = std::string("sudo echo -e \"\\nlocal: "+std::string(Runtime::try_local ? "true" : "false")+"\\n\" >> "+file+"; sudo cp "+path+"pkg/package.yaml "+dir);
         system(c.c_str());
         system(std::string("sudo cp package.yaml.bkp "+path+"pkg/package.yaml").c_str());
 
@@ -394,7 +458,7 @@ void InstallationManager::localPackage(std::string path)
 
     InstallationManager::linkProducts(prefix, package);
 
-    std::cout << prefix << "skipping..." << std::endl;
+    std::cout << prefix << Translation::get("manager.install.skipping", false) << std::endl;
 }
 
 void InstallationManager::installPackage(const Package &arg, bool nl)
@@ -404,7 +468,7 @@ void InstallationManager::installPackage(const Package &arg, bool nl)
     if (nl)
         std::cout << std::endl;
 
-    std::cout << "[ new installation ] now installing " << tstd::package_to_argument(arg) << std::endl;
+    std::cout << "[ " << Translation::get("manager.install.new_installation", false) << " ] " << Translation::get("manager.install.now_installing", false) << " " << tstd::package_to_argument(arg) << std::endl;
 
     std::string package_str = arg.getGitUser()+"+" + arg.getRepoName()+"+" + arg.getServer();
     std::string package_dir = Runtime::tmp_dir+"/" + package_str+"/";
@@ -442,11 +506,11 @@ void InstallationManager::installPackage(const Package &arg, bool nl)
 
         if (!l)
         {
-            std::cout << "error: this package doesn't supports local installations!" << std::endl;
+            std::cout << Translation::get("manager.install.doesnt_support_local", false) << std::endl;
 
-            if (!tstd::yn_question("do you want to continue and install it globally?"))
+            if (!tstd::yn_question(Translation::get("manager.install.global_installation_question", false)))
             {
-                std::cout << "aborted." << std::endl;
+                std::cout << Translation::get("general.aborted", false) << std::endl;
                 return;
             }
 
@@ -455,13 +519,70 @@ void InstallationManager::installPackage(const Package &arg, bool nl)
         }
     }
 
-    std::cout << prefix << "building..." << std::endl;
+    std::cout << prefix << Translation::get("manager.install.building", false) << std::endl;
 
-    Script s(Script(package_dir+"pkg/package.sh"));
-    s.go();
-    s.runFunction("build", arg.getGitUser()+"_"+arg.getRepoName()+"_"+arg.getServer());
+    if (std::ifstream(package_dir+"pkg/package.sh").is_open())
+    {
+        Script s(Script(package_dir+"pkg/package.sh"));
+        s.go();
+        s.runFunction("build", arg.getGitUser()+"_"+arg.getRepoName()+"_"+arg.getServer());
+    }
+    else if (package.getType()["name"])
+    {
+        if (PreTypeManager::existsPreType(package.getType()["name"].as<std::string>()))
+        {
+            PreType pre = PreTypeManager::getPreType(package.getType()["name"].as<std::string>());
+            std::vector<Variable> variables;
 
-    std::cout << prefix << "installing version " << package.getVersion() << " ..." << std::endl;
+            for (const std::string &s : pre.getNeededVariables())
+            {
+                if (package.getType()[s])
+                    variables.push_back(Variable(s, package.getType()[s].as<std::string>()));
+            }
+
+            char curdir[256];
+            getcwd(curdir, sizeof(curdir));
+
+            variables.push_back(Variable("current_directory", std::string(curdir)));
+            variables.push_back(Variable("package_name", package.getRepoName()));
+            variables.push_back(Variable("package_version", package.getVersion().str));
+            variables.push_back(Variable("package_server", package.getServer()));
+            variables.push_back(Variable("package_user", package.getGitUser()));
+
+            pre.runScript(variables, arg.getGitUser()+"_"+arg.getRepoName()+"_"+arg.getServer());
+        }
+        else
+        {
+            printf(Translation::get("manager.install.pretype_doesnt_exit").c_str(), package.getType()["name"].as<std::string>().c_str());
+
+            if (Runtime::to_install.size() <= 1)
+                return;
+
+            if (!tstd::yn_question(Translation::get("manager.install.skip_and_continue", false)))
+            {
+                std::cout << Translation::get("general.aborted", false) << std::endl;
+                Runtime::exit(0);
+            }
+            return;
+        }
+    }
+    else
+    {
+        std::cout << Translation::get("manager.install.no_build_script", false) << std::endl;
+
+        if (Runtime::to_install.size() <= 1)
+            return;
+
+        if (!tstd::yn_question(Translation::get("manager.install.skip_and_continue", false)))
+        {
+            std::cout << "aborted." << std::endl;
+            Runtime::exit(0);
+        }
+
+        return;
+    }
+
+    std::cout << prefix << Translation::get("manager.install.installing_version", false) << " " << package.getVersion() << " ..." << std::endl;
 
     if (InstallationManager::moveProducts(prefix, package))
     {
@@ -472,7 +593,10 @@ void InstallationManager::installPackage(const Package &arg, bool nl)
 
         system(std::string("sudo cp "+package_dir+"pkg/package.yaml package.yaml.bkp").c_str());
 
-        system(std::string("sudo cp "+package_dir+"pkg/package.sh "+dir+"; sudo echo -e \"\\nlocal: "+(Runtime::try_local ? "true" : "false")+"\\n\" >> "+file+"; sudo cp "+package_dir+"pkg/package.yaml "+dir).c_str());
+        if (std::ifstream(package_dir+"pkg/package.sh"+dir).is_open())
+            system(std::string("sudo cp "+package_dir+"pkg/package.sh "+dir).c_str());
+
+        system(std::string("sudo echo -e \"\\nlocal: "+std::string(Runtime::try_local ? "true" : "false")+"\\n\" >> "+file+"; sudo cp "+package_dir+"pkg/package.yaml "+dir).c_str());
         system(std::string("sudo cp package.yaml.bkp "+package_dir+"pkg/package.yaml").c_str());
 
         chdir(Runtime::tmp_dir.c_str());
@@ -485,5 +609,5 @@ void InstallationManager::installPackage(const Package &arg, bool nl)
         Runtime::try_local = try_local_backup;
     }
 
-    std::cout << prefix << "skipping..." << std::endl;
+    std::cout << prefix << Translation::get("manager.install.skipping") << std::endl;
 }

@@ -1,0 +1,3 @@
+#% input_file,output_file,arguments
+
+gcc ${input_file} -o ${output_file} ${arguments}

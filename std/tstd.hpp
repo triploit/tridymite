@@ -15,7 +15,7 @@ namespace tstd
     std::string add_prefix(std::string arg); // Add a prefix (- or --) to argument (like "help" -> "--help"; "i" -> "-i")
     std::string replace_git_vars(std::string arg, const Package &p);
     std::string create_url(const Package &p, std::string postfix="", std::string prefix="");
-    std::string create_zip_url(const Package &p, std::string postfix="", std::string prefix="");
+    std::string create_zip_url(const Package &p, std::string postfix="", const std::string &prefix="");
     std::string package_to_argument(const Package &p);
     std::string exec(const char* cmd);
 
@@ -37,6 +37,7 @@ namespace tstd
     std::vector<std::string> get_family(const std::string &arg, const std::vector<std::string> &arg_name); // Getting the family of an argument, e.g. "i" is contained in the family of "i,install"
     std::vector<std::string> read_cursive_all_files(std::string path);
     std::vector<std::string> get_all_directories(const std::string &path);
+    std::vector<std::string> create_list_of_packages(const std::vector<Package> &packages);
 };
 
 
