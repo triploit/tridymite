@@ -17,15 +17,15 @@ void UpdateManager::updatePackage(const Package &to_update)
     {
         if (Runtime::reinstall)
         {
-            std::cout << "info: package " << tstd::package_to_argument(to_update) << " v" << to_update.getVersion() << " is already installed. reinstalling." << std::endl;
+            printf(Translation::get("manager.install.local_reinstall").c_str(), tstd::package_to_argument(to_update).c_str(), to_update.getVersion().str.c_str());
         }
         else
         {
-            std::cout << "info: package " << tstd::package_to_argument(to_update) << " v" << to_update.getVersion() << " is already installed. skipping." << std::endl;
+            printf(Translation::get("manager.install.local_skip").c_str(), tstd::package_to_argument(to_update).c_str(), to_update.getVersion().str.c_str());
             return;
         }
     }
 
-    std::cout << "[ update ] updating package " << tstd::package_to_argument(to_update) << std::endl;
+    std::cout << "[ " << Translation::get("manager.update.updating", false) << " ] " << Translation::get("manager.update.updating_package", false) << " " << tstd::package_to_argument(to_update) << std::endl;
     InstallationManager::installPackage(to_update, false);
 }

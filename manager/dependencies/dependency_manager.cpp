@@ -21,7 +21,7 @@ void DependencyManager::checkDependencies(const Package &package_to_check)
                 x.getGitUser() == dependency.getGitUser() &&
                 x.getServer() == dependency.getServer())
             {
-                std::cout << "info: can't remove " << tstd::package_to_argument(Runtime::to_remove[i]) << ": is a dependency of: " << tstd::package_to_argument(package_to_check) << std::endl;
+                printf(std::string(Translation::get("manager.dependencies.cant_remove_dependency", false)+" "+tstd::package_to_argument(package_to_check)+"\n").c_str(), tstd::package_to_argument(Runtime::to_remove[i]));
                 Runtime::to_remove.erase(Runtime::to_remove.begin()+i);
             }
 
@@ -58,7 +58,7 @@ void DependencyManager::checkDependencies(const Package &package_to_check)
 
         if (!found)
         {
-            std::cout << "info: added dependency: " << tstd::package_to_argument(dependency) << std::endl;
+            std::cout << Translation::get("manager.dependencies.added_dependency", false) << " " << tstd::package_to_argument(dependency) << std::endl;
             DependencyManager::checkDependencies(dependency);
             Runtime::to_install.insert(Runtime::to_install.begin(), dependency);
         }
@@ -72,13 +72,13 @@ std::vector<Package> DependencyManager::getPackagesConfig(std::vector<Package> p
         const Package &p = packages[i];
         const std::string file = Runtime::tmp_dir+"/tmp.yaml";
 
-        std::string msg = "info: loading packages... " + std::to_string(i+1) + "/" + std::to_string(packages.size());
+        std::string msg = Translation::get("general.loading_packages", false) + std::to_string(i+1) + "/" + std::to_string(packages.size());
         std::cout << msg << std::endl;
 
         if (!tstd::download_file(tstd::create_url(p, "raw/master/pkg/package.yaml"), file))
         {
             std::cout << std::endl;
-            std::cout << "error: package " << tstd::package_to_argument(p) << " not found!" << std::endl;
+            printf(Translation::get("general.package_not_found").c_str(), tstd::package_to_argument(p).c_str());
             Runtime::exit(1);
         }
 

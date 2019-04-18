@@ -172,8 +172,8 @@ Package tstd::parse_package(const std::string &package)
     if (p.getGitUser().empty() || p.getRepoName().empty() || p.getServer().empty())
     {
         std::cout << std::endl;
-        std::cout << "error: parsing package: \"" << package << "\" is incomplete." << std::endl;
-        std::cout << "info: packages are build like \"user:repository@gitserver.abc\"" << std::endl;
+        printf(Translation::get("std.package.package_incomplete").c_str(), package.c_str());
+        std::cout << Translation::get("std.package.package_structure", false) << std::endl;
         Runtime::exit(1);
     }
 
@@ -201,20 +201,20 @@ std::string tstd::replace_git_vars(std::string arg, const Package &p)
     return arg;
 }
 
-std::string tstd::create_zip_url(const Package &p, std::string postfix, std::string prefix)
+std::string tstd::create_zip_url(const Package &p, std::string postfix, const std::string &prefix)
 {
     if (!postfix.empty())
         postfix = "/"+postfix;
 
     if (!Runtime::config["servers"])
     {
-        std::cout << "error: no git servers specified in config file!" << std::endl;
+        std::cout << Translation::get("std.config.no_servers_defined", false) << std::endl;
         Runtime::exit(1);
     }
 
     if (!Runtime::config["servers"][p.getServer()] || !Runtime::config["servers"][p.getServer()]["zip"])
     {
-        std::cout << "error: git server \"" << p.getServer() << "\" is not configured in config file!" << std::endl;
+        printf(Translation::get("std.config.server_not_defined", false).c_str(), p.getServer().c_str());
         Runtime::exit(1);
     }
 
@@ -305,7 +305,7 @@ bool tstd::yn_question(const std::string &q)
 
         if (s != "y" && s != "Y" && s != "n" && s != "N")
         {
-            std::cout << "please type y or n!" << std::endl;
+            std::cout << Translation::get("std.neither_y_or_no", false) << std::endl;
             std::cout << "[y/n] : ";
         }
     }
@@ -400,10 +400,10 @@ bool tstd::download_file(const std::string &url, const std::string &destination)
 
         if (r > 1000000000)
         {
-            std::cout << "the file you want to download is really big (" << std::round(r/1000000000) << "GB)." << std::endl;
-            if(!tstd::yn_question("are you sure you want to continue?"))
+            std::cout << Translation::get("std.big_file", false) << " (" << std::round(r/1000000000) << "GB)." << std::endl;
+            if(!tstd::yn_question(Translation::get("general.continue_question", false)))
             {
-                std::cout << "okay. aborted." << std::endl;
+                std::cout << Translation::get("general.aborted", false) << std::endl;
                 return false;
             }
         }
@@ -452,7 +452,7 @@ int tstd::cursive_file_count(const std::string &path, int count)
 
     if(stat(path.c_str(), &info) != 0)
     {
-        std::cout << "error: object " << path << " not found!" << std::endl;
+        printf(Translation::get("std.object_not_found").c_str(), path.c_str());
         Runtime::exit(1);
     }
     else if( info.st_mode & S_IFDIR)
@@ -495,4 +495,69 @@ std::string tstd::replace_quotation_marks(std::string from)
     from = tstd::replace(from, "<¬BSAFZ"+std::to_string(getpid())+">", "\\\"");
 
     return from;
+}
+
+std::vector<std::string> tstd::create_list_of_packages(const std::vector<Package> &packages)
+{
+    std::vector<std::string> msgs;
+
+    unsigned long spaces_length_uname = 0;
+    unsigned long spaces_length_rname = 0;
+    unsigned long spaces_length_server = 0;
+
+    for (const Package &installed_package : packages)
+    {
+        if (spaces_length_uname < installed_package.getGitUser().size())
+            spaces_length_uname = installed_package.getGitUser().size();
+
+        if (spaces_length_rname < installed_package.getRepoName().size())
+            spaces_length_rname = installed_package.getRepoName().size();
+
+        if (spaces_length_server < installed_package.getServer().size())
+            spaces_length_server = installed_package.getServer().size();
+    }
+
+    for (const Package &installed_package : packages)
+    {
+        std::string spaces_uname = "";
+        std::string spaces_rname = "";
+        std::string spaces_server = "";
+
+        for (int i = 0; i < (spaces_length_uname - installed_package.getGitUser().size()); i++)
+        {
+            spaces_uname += " ";
+        }
+
+        for (int i = 0; i < (spaces_length_rname - installed_package.getRepoName().size()); i++)
+        {
+            spaces_rname += " ";
+        }
+
+        for (int i = 0; i < (spaces_length_server - installed_package.getServer().size()); i++)
+        {
+            spaces_server += " ";
+        }
+
+        if (installed_package.getVersion().str.empty())
+            msgs.push_back(
+                    "    - "+
+                    installed_package.getGitUser()+spaces_uname+
+                    " -> "+
+                    installed_package.getRepoName()+spaces_rname+
+                    " @ "+
+                    installed_package.getServer()+spaces_server);
+        else
+            msgs.push_back(
+                    "    - "+
+                    installed_package.getGitUser()+spaces_uname+
+                    " -> "+
+                    installed_package.getRepoName()+spaces_rname+
+                    " @ "+
+                    installed_package.getServer()+spaces_server+
+                    " - v"+
+                    installed_package.getVersion().str); // Add every message to vector
+    }
+
+    std::sort(msgs.begin(), msgs.end()); // Sort messages alphabet
+    return msgs;
 }
