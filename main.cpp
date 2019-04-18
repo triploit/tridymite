@@ -123,25 +123,42 @@ int main(int argc, char* argv[])
 
         if (cli.argumentGiven("s"))
         {
-            std::vector<std::string> strings = tstd::create_list_of_packages(IPackagesManager::getInstalledPackages());
             std::string term = cli.getParameters("s")[0];
+            std::vector<std::string> strings;
+            std::vector<Package> packages;
+            std::string inf = "";
 
+            for (const Package &p : IPackagesManager::getInstalledPackages())
+            {
+                inf = p.getVersion().str + " " +
+                        p.getServer() + " " +
+                        p.getGitUser() + " " +
+                        p.getRepoName() + " " +
+                        p.getName() + " " +
+                        p.getDescription() + " " +
+                        p.getInformation();
+
+                for (const Package &dep : p.getDependencies())
+                {
+                    inf += "\n" + dep.getVersion().str + " " +
+                        dep.getServer() + " " +
+                        dep.getGitUser() + " " +
+                        dep.getRepoName() + " " +
+                        dep.getName() + " " +
+                        dep.getDescription() + " " +
+                        dep.getInformation();
+                }
+
+                std::transform(inf.begin(), inf.end(), inf.begin(), ::tolower);
+
+                if (inf.find(term) != std::string::npos)
+                    packages.push_back(p);
+            }
+
+            strings = tstd::create_list_of_packages(packages);
             for (const std::string &s : strings)
             {
-                std::string copy_s = tstd::trim(s);
-                std::string copy_t = tstd::trim(term);
-
-                std::transform(copy_s.begin(), copy_s.end(), copy_s.begin(), ::tolower);
-                std::transform(copy_t.begin(), copy_t.end(), copy_t.begin(), ::tolower);
-
-                for (char c : copy_s)
-                    copy_s = tstd::replace(copy_s, " ", "");
-
-                for (char c : copy_t)
-                    copy_t = tstd::replace(copy_t, " ", "");
-
-                if (s.find(term) != std::string::npos || copy_s.find(term) != std::string::npos)
-                    std::cout << s << std::endl;
+                std::cout << s << std::endl;
             }
         }
 
