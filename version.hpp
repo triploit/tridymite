@@ -25,10 +25,19 @@ public:
 	{
 		if (major < other.major)
 			return true;
+		else if (major > other.major)
+			return false;
+
 		if (minor < other.minor)
 			return true;
+		else if (minor > other.minor)
+			return false;
+
 		if (revision < other.revision)
 			return true;
+		else if (revision > other.revision)
+			return false;
+
 		if (build < other.build)
 			return true;
 		return false;
@@ -41,27 +50,29 @@ public:
 			|| revision != other.revision
 			|| build != other.build;
 	}
+
 	bool operator <= (const Version& other) const // operator<= added by survari
 	{
-		if (major <= other.major)
-			return true;
-		if (minor <= other.minor)
-			return true;
-		if (revision <= other.revision)
-			return true;
-		if (build <= other.build)
-			return true;
-		return false;
+		return (*this < other) || (*this == other);
 	}
 
 	bool operator > (const Version& other) const // operator> added by survari
 	{
 		if (major > other.major)
 			return true;
+		else if (major < other.major)
+			return false;
+
 		if (minor > other.minor)
 			return true;
+		else if (minor < other.minor)
+			return false;
+
 		if (revision > other.revision)
 			return true;
+		else if (revision < other.revision)
+			return false;
+
 		if (build > other.build)
 			return true;
 		return false;

@@ -80,7 +80,7 @@ script.parse_file.file_not_found: "error: kann nicht ohne date fortfahren."
 script.parse_file.to_many_brackets: "error: zeile %d: zu viele \"}\" in datei %s!"
 script.parse_file.unfinished_declaration: "error: zeile %d: unfertige definition im build.-script."
 script.unsave_script: "error: unsicheres skript: skript benutzt den sudo-befehl!"
-script.function_not_found: "error: kann die funktion nicht ausführen: \"%s\"": funktion nicht gefunden!"
+script.function_not_found: "error: kann die funktion nicht ausführen: \"%s\": funktion nicht gefunden!"
 
 # std
 
