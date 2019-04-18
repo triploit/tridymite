@@ -1,4 +1,7 @@
 #include <iostream>
+#include <algorithm>
+#include <string>
+#include <algorithm>
 
 #include "runtime.hpp"
 #include "cli/cli.hpp"
@@ -6,12 +9,11 @@
 #include <std/arguments.hpp>
 #include <manager/packages/ipackage_manager.hpp>
 #include <manager/install/installation_manager.hpp>
-#include <algorithm>
 #include <manager/dependencies/dependency_manager.hpp>
 #include <manager/remove/remove_manager.hpp>
 #include <manager/update/update_manager.hpp>
 
-#define _VERSION "0.1.1b"
+#define _VERSION "1.0.0a"
 
 int main(int argc, char* argv[])
 {
@@ -19,7 +21,7 @@ int main(int argc, char* argv[])
 
     if (tstd::exec("whoami") == "root\n")
     {
-        std::cout << "error: never run tridymite as root!" << std::endl;
+        std::cout << Translation::get("main.never_root", false) << std::endl;
         Runtime::exit(1);
     }
 
@@ -52,7 +54,7 @@ int main(int argc, char* argv[])
 
             if(stat(path.c_str(), &info) != 0)
             {
-                std::cout << "error: can't use operator \"-l/--local\": no local installation module in setup activated!" << std::endl;
+                std::cout << Translation::get("main.no_local_module", false) << std::endl;
                 Runtime::exit(1);
             }
 
@@ -71,28 +73,14 @@ int main(int argc, char* argv[])
         if (cli.argumentGiven("lp")) // List all installed packages
         {
             std::vector<std::string> msgs; // Vector of messages
-
-            for (const Package &installed_package : IPackagesManager::getInstalledPackages())
-            {
-                std::string s;
-                if (Runtime::try_local)
-                    s = " (local)";
-
-                msgs.push_back(
-                        "   "+s+" - "+installed_package.getGitUser()+
-                        " -> "+installed_package.getRepoName()+
-                        " @ "+installed_package.getServer()+
-                        " - v"+installed_package.getVersion().str); // Add every message to vector
-            }
-
-            std::sort(msgs.begin(), msgs.end()); // Sort messages alphabet
+            msgs = tstd::create_list_of_packages(IPackagesManager::getInstalledPackages());
 
             if (msgs.size() > 0)
             {
                 if (Runtime::try_local)
-                    std::cout << "Local packages installed: " << std::endl;
+                    std::cout << Translation::get("main.list_local_packages", false) << std::endl;
                 else
-                    std::cout << "Packages installed: " << std::endl;
+                    std::cout << Translation::get("main.list_packages", false) << std::endl;
 
 
                 for (const std::string &s : msgs) // Printing all messages
@@ -101,22 +89,81 @@ int main(int argc, char* argv[])
             else
             {
                 if (Runtime::try_local)
-                    std::cout << "No local packages installed." << std::endl;
+                    std::cout << Translation::get("main.no_local_packages_installed", false) << std::endl;
                 else
-                    std::cout << "No packages installed." << std::endl;
+                    std::cout << Translation::get("main.no_packages_installed", false) << std::endl;
+            }
+        }
+
+        if (cli.argumentGiven("g"))
+        {
+            Package p = tstd::parse_package(cli.getParameters("g")[0]);
+            std::string destination = p.getRepoName()+"_"+p.getGitUser()+"_"+p.getServer()+".zip";
+
+            std::cout <<  Translation::get("main.downloading", false) << " " << cli.getParameters("g")[0] << "..." << std::endl;
+
+            if (std::ifstream(destination).is_open())
+            {
+                if (tstd::yn_question(Translation::get("main.file_exists_overwrite", false)))
+                {
+                    if (tstd::download_file(tstd::create_zip_url(p), destination))
+                        std::cout << Translation::get("main.finished", false) << std::endl;
+                    else
+                        std::cout << Translation::get("main.package_not_found", false) << std::endl;
+                }
+            }
+            else
+            {
+                if (tstd::download_file(tstd::create_zip_url(p), destination))
+                    std::cout << Translation::get("main.finished", false) << std::endl;
+                else
+                    std::cout << Translation::get("main.package_not_found", false) << std::endl;
+            }
+        }
+
+        if (cli.argumentGiven("s"))
+        {
+            std::vector<std::string> strings = tstd::create_list_of_packages(IPackagesManager::getInstalledPackages());
+            std::string term = cli.getParameters("s")[0];
+
+            for (const std::string &s : strings)
+            {
+                std::string copy_s = tstd::trim(s);
+                std::string copy_t = tstd::trim(term);
+
+                std::transform(copy_s.begin(), copy_s.end(), copy_s.begin(), ::tolower);
+                std::transform(copy_t.begin(), copy_t.end(), copy_t.begin(), ::tolower);
+
+                for (char c : copy_s)
+                    copy_s = tstd::replace(copy_s, " ", "");
+
+                for (char c : copy_t)
+                    copy_t = tstd::replace(copy_t, " ", "");
+
+                if (s.find(term) != std::string::npos || copy_s.find(term) != std::string::npos)
+                    std::cout << s << std::endl;
             }
         }
 
         if (cli.argumentGiven("d"))
         {
             Package p = tstd::parse_package(cli.getParameters("d")[0]);
+            bool found = false;
 
-            if (IPackagesManager::isPackageInstalled(p))
+            for (const Package &pkg : IPackagesManager::getInstalledPackages())
+            {
+                if (pkg.getRepoName() == p.getRepoName() &&
+                    pkg.getServer() == p.getServer() &&
+                    pkg.getGitUser() == p.getGitUser())
+                        found = true;
+            }
+
+            if (found)
                 std::cout << IPackagesManager::getPackage(p) << std::endl;
             else
             {
-                std::cout << "info: show description: couldn't find package " << cli.getParameters("d")[0] << std::endl;
-                std::cout << "info: trying to find it online..." << std::endl;
+                std::cout << Translation::get("main.description_package_not_found", false) << " " << cli.getParameters("d")[0] << std::endl;
+                std::cout << Translation::get("main.trying_find_online") << std::endl;
 
                 Package package = DependencyManager::getPackagesConfig({p})[0];
                 std::cout << package << std::endl;
@@ -142,8 +189,8 @@ int main(int argc, char* argv[])
         if (cli.argumentGiven("us"))
             Runtime::git_user = cli.getParameters("us")[0]; // Setting the standard git user
 
-        if (cli.argumentGiven("s"))
-            Runtime::git_server = cli.getParameters("s")[0]; // Setting the standard git server
+        if (cli.argumentGiven("gs"))
+            Runtime::git_server = cli.getParameters("gs")[0]; // Setting the standard git server
 
         if (cli.argumentGiven(("e")))
             Runtime::verbose = true; // Show verbose output
@@ -184,7 +231,7 @@ int main(int argc, char* argv[])
 
         if (cli.argumentGiven("p")) // Install local path
         {
-            std::cout << "info: installing local path: " << cli.getParameters("p")[0] << std::endl;
+            std::cout << Translation::get("main.installing_local_path", false) << " " << cli.getParameters("p")[0] << std::endl;
             chdir(cli.getParameters("p")[0].c_str());
             InstallationManager::localPackage(cli.getParameters("p")[0]);
         }
@@ -211,11 +258,11 @@ int main(int argc, char* argv[])
                         {
                             if (Runtime::reinstall)
                             {
-                                std::cout << "info: package " << tstd::package_to_argument(installed_package) << " v" << installed_package.getVersion() << " is already installed. reinstalling." << std::endl;
+                                printf(Translation::get("main.package_up_to_date_reinstall").c_str(), tstd::package_to_argument(installed_package).c_str(), installed_package.getVersion().str.c_str());
                             }
                             else
                             {
-                                std::cout << "info: package " << tstd::package_to_argument(installed_package) << " v" << installed_package.getVersion() << " is already installed. skipping." << std::endl;
+                                printf(Translation::get("main.package_up_to_date_skipping").c_str(), tstd::package_to_argument(installed_package).c_str(), installed_package.getVersion().str.c_str());
                                 Runtime::to_update.erase(Runtime::to_update.begin()+i);
                             }
                         }
@@ -245,7 +292,7 @@ int main(int argc, char* argv[])
             if (!found)
             {
                 Runtime::to_remove.erase(Runtime::to_remove.begin()+i);
-                std::cout << "info: package " << tstd::package_to_argument(to_remove) << " is not installed and can't be removed." << std::endl;
+                printf(Translation::get("main.not_installed_cant_removed").c_str(), tstd::package_to_argument(to_remove).c_str());
             }
         }
 
@@ -254,7 +301,10 @@ int main(int argc, char* argv[])
             Runtime::to_remove[i] = IPackagesManager::getPackage(Runtime::to_remove[i]);
         }
 
-        std::cout << "info: checking packages..." << std::endl;
+        if (Runtime::to_install.size() > 0 || 
+            Runtime::to_remove.size() > 0 || 
+            Runtime::to_update.size() > 0)
+            std::cout << Translation::get("main.checking_packages", false) << std::endl;
 
         for (int i = 0; i < Runtime::to_install.size(); i++)
         {
@@ -264,11 +314,11 @@ int main(int argc, char* argv[])
             {
                 if (Runtime::reinstall)
                 {
-                    std::cout << "info: package " << tstd::package_to_argument(test) << " v" << test.getVersion() << " is already installed. reinstalling." << std::endl;
+                    printf(Translation::get("main.package_installed_reinstall").c_str(), tstd::package_to_argument(test).c_str(), test.getVersion().str.c_str());
                 }
                 else
                 {
-                    std::cout << "info: package " << tstd::package_to_argument(test) << " v" << test.getVersion() << " is already installed. skipping." << std::endl;
+                    printf(Translation::get("main.package_installed_skipping").c_str(), tstd::package_to_argument(test).c_str(), test.getVersion().str.c_str());
                     Runtime::to_install.erase(Runtime::to_install.begin()+i);
                 }
             }
@@ -284,11 +334,11 @@ int main(int argc, char* argv[])
                 {
                     if (Runtime::reinstall)
                     {
-                        std::cout << "info: package " << tstd::package_to_argument(test) << " v" << test.getVersion() << " is already up-to-date. reinstalling." << std::endl;
+                        printf(Translation::get("main.package_up_to_date_reinstall").c_str(), tstd::package_to_argument(test).c_str(), test.getVersion().str.c_str());
                     }
                     else
                     {
-                        std::cout << "info: package " << tstd::package_to_argument(test) << " v" << test.getVersion() << " is already up-to-date. skipping." << std::endl;
+                        printf(Translation::get("main.package_up_to_date_skipping").c_str(), tstd::package_to_argument(test).c_str(), test.getVersion().str.c_str());
                         Runtime::to_update.erase(Runtime::to_update.begin()+i);
                     }
                 }
@@ -298,7 +348,10 @@ int main(int argc, char* argv[])
         if (Runtime::to_update.size() > 0)
             Runtime::update = true;
 
-        std::cout << "info: searching for dependencies..." << std::endl;
+        if (Runtime::to_install.size() > 0 || 
+            Runtime::to_remove.size() > 0 || 
+            Runtime::to_update.size() > 0)
+            std::cout << Translation::get("main.searching_dependencies", false) << std::endl;
 
         for (const Package &p : Runtime::to_install) // Check for dependencies
         {
@@ -331,32 +384,35 @@ int main(int argc, char* argv[])
 
         if (Runtime::to_remove.size() > 0)
         {
-            std::cout << "info: following packages will be removed (" << Runtime::to_remove.size() << "): " << std::endl;
-            std::cout << "  => ";
+            std::cout << Translation::get("main.following_removed", false) << " (" << Runtime::to_remove.size() << "): " << std::endl;
+            std::vector<std::string> msgs = tstd::create_list_of_packages(Runtime::to_remove);
 
-            for (const Package &p : Runtime::to_remove)
-                std::cout << tstd::package_to_argument(p) << " ";
-            std::cout << std::endl << std::endl;
+            for (const std::string &msg : msgs)
+                std::cout << msg << std::endl;  
+            
+            std::cout << std::endl;
         }
 
         if (Runtime::to_update.size() > 0)
         {
-            std::cout << "info: following packages will be updated (" << Runtime::to_update.size() << "): " << std::endl;
-            std::cout << "  => ";
+            std::cout << Translation::get("main.following_updated", false) << " (" << Runtime::to_update.size() << "): " << std::endl;
+            std::vector<std::string> msgs = tstd::create_list_of_packages(Runtime::to_update);
 
-            for (const Package &p : Runtime::to_update)
-                std::cout << tstd::package_to_argument(p) << " ";
-            std::cout << std::endl << std::endl;
+            for (const std::string &msg : msgs)
+                std::cout << msg << std::endl;  
+            
+            std::cout << std::endl;
         }
 
         if (Runtime::to_install.size() > 0)
         {
-            std::cout << "info: following packages will be installed (" << Runtime::to_install.size() << "): " << std::endl;
-            std::cout << "  => ";
+            std::cout << Translation::get("main.following_installed", false) << " (" << Runtime::to_install.size() << "): " << std::endl;
+            std::vector<std::string> msgs = tstd::create_list_of_packages(Runtime::to_install);
 
-            for (const Package &p : Runtime::to_install)
-                std::cout << tstd::package_to_argument(p) << " ";
-            std::cout << std::endl << std::endl;
+            for (const std::string &msg : msgs)
+                std::cout << msg << std::endl;  
+            
+            std::cout << std::endl;
         }
 
         if (Runtime::to_install.size() == 0 &&
@@ -364,7 +420,7 @@ int main(int argc, char* argv[])
             Runtime::to_remove.size() == 0)
             Runtime::exit(0);
 
-        if (!tstd::yn_question("do you want to continue?"))
+        if (!tstd::yn_question(Translation::get("general.continue_question", false)))
             Runtime::exit(0);
 
         // Installing/Updating/Removing
