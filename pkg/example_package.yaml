@@ -22,16 +22,12 @@ also this will work:
 
 dependencies: # declaring dependencies
     - "user:repo@github"
-    - "https://github.com/user/repo.git"
 
-    - nopkg: # installing a repository (that is no tridymite package) with a shell command
-        url: "https://github.com/user/repo.git"
-        type: "command"
-        arguments: "install.sh"
-
-    - nopkg: # installing a repository (that is no tridymite package) via cmake
-        url: "https://github.com/user/repo.git"
-        type: "cmake"
+type: # auto generate of build script
+    name: gcc-c
+    input_file: source_file.c
+    output_file: binary
+    arguments: -s
 
 products: # moving directories and binaries to their place
     - ./config_direcotry: "/usr/opt/program/config_directory"
