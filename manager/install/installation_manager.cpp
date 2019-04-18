@@ -314,7 +314,7 @@ void InstallationManager::localPackage(std::string path)
 
     _of.open(file, std::ios_base::app);
 
-    if (!YAML::LoadFile(file)["reponame"])
+    if (!YAML::LoadFile(file)["gituser"])
     {
         _of << std::endl;
         std::string user;
@@ -325,7 +325,7 @@ void InstallationManager::localPackage(std::string path)
         std::cout << Translation::get("manager.install.added", false) << std::endl;
     }
 
-    if (!YAML::LoadFile(file)["reponame"])
+    if (!YAML::LoadFile(file)["server"])
     {
         std::string server;
         std::cout << Translation::get("manager.install.on_which_server", false) << " : " << std::endl;
