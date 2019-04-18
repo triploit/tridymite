@@ -1,5 +1,5 @@
 name: "Tridymite"
-version: "0.1.1a"
+version: "1.0.0a"
 decription: "Tridymite package manager."
 information: >
     Install packages from GitHub, GitLab or other Git-Servers using Tridymite!
@@ -19,9 +19,17 @@ authors:
     - blobcodes
     - romangraef
 
+type:
+    name: cmake
+
 products:
     - ./tridymite: "/usr/share/tridymite/tridy"
-    - ./pkg/conf/: "/usr/share/tridymite/conf/"
+    - ./pkg/conf/pretypes: "/usr/share/tridymite/conf/pretypes/"
+    - ./pkg/conf/lang: "/usr/share/tridymite/conf/lang/"
 
 links:
     - /usr/share/tridymite/tridy: "/usr/bin/tridy"
+
+gituser: triploit
+server: github.com
+reponame: tridymite
