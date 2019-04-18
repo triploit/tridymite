@@ -51,7 +51,7 @@ void Translation::loadConfig(std::string path)
 general.loading_packages: "info: loading packages ..."
 general.package_not_found: "error: package %s not found!"
 general.package_not_found_good: "error: package not found:"
-general.continue_question: "do you want to continue? (y=yes, n=no)" # don't change up the 'y' and 'n', but translate 'yes' and 'no'! 
+general.continue_question: "do you want to continue? (y=yes, n=no)" # don't change up the 'y' and 'n', but translate 'yes' and 'no'!
 general.aborted: "aborted."
 
 # cli
@@ -72,11 +72,11 @@ manager.dependencies.added_dependency: "info: added dependency:"
 manager.install.linking_files: "linking files ..."
 manager.install.linking: "linking " # "linking <path>" will be printed
 manager.install.counting_files: "counting files ..."
-manager.install.file_warning: "warning: this package contains more than 100 files." 
+manager.install.file_warning: "warning: this package contains more than 100 files."
 manager.install.continue_counting: "continue counting ..."
 manager.install.moving_files: "copying %d files ..."
 manager.install.local_directory_not_found: "error: couldn't find the directory for local packages."
-manager.install.global_installation_question: "do you want to continue and install it globally? (y=yes, n=no)" # don't change up the 'y' and 'n', but translate 'yes' and 'no'! 
+manager.install.global_installation_question: "do you want to continue and install it globally? (y=yes, n=no)" # don't change up the 'y' and 'n', but translate 'yes' and 'no'!
 manager.install.aborting_installation: "aborted package installation."
 manager.install.moving_force: " => copying (FORCE) %s to %s"
 manager.install.moving: " => copying %s to %s"
@@ -104,14 +104,14 @@ manager.install.skipping: "skipping ..."
 manager.install.new_installation: "new installation"
 manager.install.doesnt_support_local: "error: this package doesn't supports local installations!"
 manager.install.pretype_doesnt_exit: "error: the pretype \"%s\" doesn't exists on this computer!"
-manager.install.skip_and_continue: "do you want to skip this package and proceed with the other installations? (y=yes, n=no)" # don't change up the 'y' and 'n', but translate 'yes' and 'no'! 
+manager.install.skip_and_continue: "do you want to skip this package and proceed with the other installations? (y=yes, n=no)" # don't change up the 'y' and 'n', but translate 'yes' and 'no'!
 manager.install.no_build_script: "error: no build script exists."
 
 # manager/remove
 
 manager.remove.removing_links: "removing links ..."
 manager.remove.local_directory_not_found: "error: couldn't find the directory for local packages."
-manager.remove.remove_globally_instead: "do you want to continue and remove it globally? (y=yes, n=no)" # don't change up the 'y' and 'n', but translate 'yes' and 'no'! 
+manager.remove.remove_globally_instead: "do you want to continue and remove it globally? (y=yes, n=no)" # don't change up the 'y' and 'n', but translate 'yes' and 'no'!
 manager.remove.unlinking: "unlinking" # "unlinking <file>" will be printed
 manager.remove.removing_products: "removing products ..."
 manager.remove.removing: "removing"
@@ -130,7 +130,7 @@ script.parse_file.file_not_found: "error: can't go on without a file."
 script.parse_file.to_many_brackets: "error: line %d: to many \"}\" in file %s!"
 script.parse_file.unfinished_declaration: "error: line %d: unfinished declaration of function in build script."
 script.unsave_script: "error: unsave script: script uses sudo command!"
-script.function_not_found: "error: can't run function: \"%s\"": function not found!"
+script.function_not_found: "error: can't run function: \"%s\": function not found!"
 
 # std
 
@@ -222,8 +222,6 @@ main.package_up_to_date_reinstall: "info: package %s v%s is already up-to-date. 
 main.package_up_to_date_skipping: "info: package %s v%s is up-to-date. skipping."
 main.not_installed_cant_removed: "info: package %s is not installed and can't be removed."
 main.checking_packages: "info: checking packages..."
-main.package_up_to_date_reinstall: "info: package %s v%s is up-to-date. reinstalling."
-main.package_up_to_date_skipping: "info: package %s v%s is up-to-date. skipping."
 main.searching_dependencies: "info: searching for dependencies..."
 main.following_removed: "info: following packages will be removed" # "info: following packages will be removed (<number>):" will be printed
 main.following_updated: "info: following packages will be updated" # "info: following packages will be updated (<number>):" will be printed
