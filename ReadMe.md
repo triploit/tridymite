@@ -222,11 +222,57 @@ You can also use "relative paths". That allows the user, to install the package 
 
 Tridymite prepares this option at the installation.
 
+#### Type
+
+This option is not necessary and can only be used in some cases. Let's explain the concept:
+
+Let's say, you're a C++ developer and you use cmake. If you add support for tridymite to all your projects, it would always be the same `package.sh`:
+
+```bash
+function build {
+    cmake .
+    make
+}
+```
+
+That's really annoying. But with the `pretype`-option you can set the build-type of your project and it will automaticcaly generate a `package.sh` at the installation. Let's see how it works:
+
+```yaml
+type:
+    name: cmake
+```
+
+This will automatically generate the file from above. But not only cmake is supported, also make, g++ and gcc. Let's have a look at g++:
+
+```yaml
+type:
+   name: gcc-cpp
+   input_file: main.cpp
+   output_file: binary
+   arguments: -s
+```
+
+Here variables were used to specify some arguments. This will generate the following build-script:
+
+```bash
+g++ main.cpp -o binary -s
+```
+
+But how do you know if a pretype needs a variable? a) Tridymite will tell you. b) You can look into the folder `pkg/conf/pretypes` of this repository to see which pretypes exist and what they need. Let's look at `pkg/conf/pretypes/gcc-cpp`:
+
+```bash
+#% input_file,output_file,arguments
+
+g++ ${input_file} -o ${output_file} ${arguments}
+```
+
+The line starting with `#%` tells tridymite what variables it needs (its necessary!). The lines without `#` will be part of the build-script and variables will be replaced. On this way, you can add your own pretypes and maybe create a pull-request for this repository.
+
 ### `package.sh`
 
 The file `package.sh` is just the build file. Write your commands to execute Makefiles/build your projects or prepare the installation here.
 
-It's not allowed, to execute command as root. Also there have to be a function called `build` . For Tridymite it's like a main function in other programming languages.
+It's not allowed, to execute command as root. Also there have to be a function called `build` . For Tridymite it's like a main function like in other programming languages.
 
 Here is an example:
 
@@ -238,15 +284,4 @@ function build {
 ```
 
 Else you can add own functions and use it in the `build` function.
-
-#### A Look Into The Future
-
-Currently we're working on an option, to generate standartized build-scripts, so you can leave out the `package.sh`. For this, we might add an option to the `package.yaml`, like `type: ...` or `build: ...`. It will look something like this:
-
-```yaml
-name: "Lorem ipsum"
-version: "0.0.1a"
-build: make
-```
-
-In the folder `pkg/conf/pretypes` you can see files, with predefined content for make and cmake files. These will be put into the `package.sh` and that will be then executed. So the `build: <type>` option will take the file in the configuration folder of tridymite, take it's contents and put it into the `package.sh` (if none exists). This would add the possibility to add more predefined build-scripts.
+With the new pretypes you don't need this file anymore, if you have a project with make, cmake or in some other cases.
