@@ -16,7 +16,7 @@ namespace tstd
     std::string replace_git_vars(std::string arg, const Package &p);
     std::string create_url(const Package &p, std::string postfix="", std::string prefix="");
     std::string create_zip_url(const Package &p, std::string postfix="", const std::string &prefix="");
-    std::string package_to_argument(const Package &p);
+    std::string package_to_argument(const Package &p, bool no_branch=false);
     std::string exec(const char* cmd);
 
     std::string ltrim(const std::string &str);
