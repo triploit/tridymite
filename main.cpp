@@ -13,7 +13,7 @@
 #include <manager/remove/remove_manager.hpp>
 #include <manager/update/update_manager.hpp>
 
-#define _VERSION "1.0.0a"
+#define _VERSION "1.0.1a"
 
 int main(int argc, char* argv[])
 {
@@ -333,11 +333,11 @@ int main(int argc, char* argv[])
             {
                 if (Runtime::reinstall)
                 {
-                    printf(Translation::get("main.package_installed_reinstall").c_str(), tstd::package_to_argument(test).c_str(), test.getVersion().str.c_str());
+                    printf(Translation::get("main.package_installed_reinstall").c_str(), tstd::package_to_argument(test, true).c_str(), test.getVersion().str.c_str());
                 }
                 else
                 {
-                    printf(Translation::get("main.package_installed_skipping").c_str(), tstd::package_to_argument(test).c_str(), test.getVersion().str.c_str());
+                    printf(Translation::get("main.package_installed_skipping").c_str(), tstd::package_to_argument(test, true).c_str(), test.getVersion().str.c_str());
                     Runtime::to_install.erase(Runtime::to_install.begin()+i);
                     i--;
                 }
