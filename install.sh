@@ -72,8 +72,8 @@ do
     read language
 done
 
-echo "You chose ${lang_names[@]:(($language-1))}."
-echo "language: \"${lang_names[@]:(($language-1))}\"" >> tridy_dir/conf/config.yaml
+echo "You chose ${lang_names[(($language-1))]}."
+echo "language: \"${lang_names[(($language-1))]}\"" >> tridy_dir/conf/config.yaml
 echo -e "\e[32;1mOkay.\e[00m"
 
 if [[ "$PATH" == *"${pfli}"* ]] && [[ "$1" != "-l" ]]
