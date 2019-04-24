@@ -177,3 +177,11 @@ main.searching_dependencies: "info: suche nach abhängigkeiten ..."
 main.following_removed: "info: folgende pakete werden entfernt" # "info: following packages will be removed (<number>):" will be printed
 main.following_updated: "info: folgende pakete werden aktualisiert" # "info: following packages will be updated (<number>):" will be printed
 main.following_installed: "info: folgende pakete werden installiert" # "info: following packages will be installed (<number>):" will be printed
+
+# package
+
+package.no_option_set: "error: paket %s: option fehlt (%s)!"
+package.products_have_to_be_sequence: "error: paket %s: products müssen eine sequenz sein!"
+package.links_have_to_be_sequence: "error: paket %s: links müssen eine sequenz sein!"
+package.no_tridymite_package: "error: paket %s: abhängigkeit %s scheint kein tridymite-paket zu sein!"
+package.nopkg: "error: paket %s: abhängigkeit: nopkg ist noch nicht erlaubt!"
