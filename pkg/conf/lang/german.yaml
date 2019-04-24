@@ -38,7 +38,7 @@ manager.install.file_neither_exists: "error: kopieren von products: \"%s\": unbe
 manager.install.downloading: "herunterladen ..."
 manager.install.unzipping: "entpacken ..."
 manager.install.couldnt_unzip: "error: konnte die datei nicht entpacken!"
-manager.install.install_unzip: "info: install the unzip tool."
+manager.install.install_unzip: "info: installiere das unzip-tool."
 manager.install.on_which_account: "auf welchem git account wird es liegen?"
 manager.install.on_which_branch: "auf welchem git branch wird es liegen?"
 manager.install.on_which_server: "auf welchem git server wird es liegen?"
