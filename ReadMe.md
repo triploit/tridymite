@@ -14,6 +14,7 @@ Tridymite is a package manager for github repositories. It allows developers and
   * [Introduction for Users](#introduction-for-users)
     * [Installing Tridymite](#installing-tridymite)
     * [Installing Packages](#installing-packages)
+      * [Installing Packages from Different Branches](#installing-packages-from-different-branches)
       * [Installing Packages from Different Servers](#installing-packages-from-different-servers)
       * [Installing Packages Locally](#installing-packages-locally)
     * [Removing Packages](#removing-packages)
@@ -52,13 +53,25 @@ For example, to install a the package AML from our organisation:
 tridy -i triploit:aml@github.com
 ```
 
-The syntax of a package argument is: `user:package@server`. You can leave out the server, If you want to install a package from `github.com`, because GitHub is the standard git server.
+The syntax of a package argument is: `user:package@server#branch`. You can leave out the server, if you want to install a package from `github.com`, because GitHub is the standard git server. You also can leave out the branch, if you want to install the package from the master branch, because it's the standard branch. 
 
 So, this will also work:
 
 ```bash
 tridy -i triploit:aml
 ```
+
+It installs the package `triploit:aml` (https://github.com/triploit/aml) from the `master` branch on the server `github.com`.
+
+#### Installing Packages from Different Branches
+
+The standard branch tridymite installs from, is the master branch. But if you want to install a specific branch (maybe for different releases) you can add a simple option to the package-argument:
+
+```bash
+tridy -i triploit:aml#master
+```
+
+After the `#` starts the branch name, just replace it with the branch you want.
 
 #### Installing Packages from Different Servers
 
