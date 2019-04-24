@@ -15,6 +15,7 @@ private:
     std::string gituser;        // name of user/organisation where the project lies
     std::string repo_name;      // name of the repository
     std::string server;         // name of server (e.g. github.com, bitbucket.org, ...)
+    std::string branch;         // name of branch
 
     std::string name;           // name of project
     std::string description;    // long description
@@ -48,6 +49,7 @@ public:
     const std::string &getInformation() const;
     const std::string &getServer() const;
     const std::string &getYamlPath() const;
+    const std::string &getBranch() const;
 
     const Script &getBuildScript() const;
     const Version &getVersion() const;
@@ -69,6 +71,7 @@ public:
     void setRepoName(const std::string &repo);
     void setYamlPath(const std::string &path);
     void setVersion(const Version &version);
+    void setBranch(const std::string &branch);
 
     void setType(const YAML::Node &type);
     void setBuildScript(const Script &functions);
@@ -77,7 +80,5 @@ public:
 
     friend std::ostream &operator<<(std::ostream &os, const Package &p);
     const bool operator==(const Package &p) const;
-
-
 };
 #endif

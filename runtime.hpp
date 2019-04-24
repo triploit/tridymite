@@ -41,6 +41,7 @@ public:
 
     inline static std::string git_server;
     inline static std::string git_user;
+    inline static std::string git_branch;
 
     inline static bool verbose;
     inline static bool reinstall;
@@ -79,7 +80,9 @@ public:
         if(stat(std::string(homedir+"/.local/").c_str(), &info_local) != 0)
             local_folder = false;
 
-        git_server =  "github.com";
+        git_server = "github.com";
+        git_branch = "master";
+
         tridy_dir = "/usr/share/tridymite/";
         backup_tridy_dir = tridy_dir;
         language = "english";
@@ -108,7 +111,11 @@ public:
 
         config = YAML::LoadFile(tridy_dir+"conf/config.yaml");
 
-        language = config["language"].as<std::string>();
+        if (config["language"])
+            language = config["language"].as<std::string>();
+        else
+            language = "english";
+
         tmp_dir = std::string("/tmp/tridy-"+std::to_string(getpid()));
 
         if (config["standard_git_server"])

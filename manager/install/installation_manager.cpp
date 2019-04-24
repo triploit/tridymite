@@ -314,7 +314,9 @@ void InstallationManager::localPackage(std::string path)
 
     _of.open(file, std::ios_base::app);
 
-    if (!YAML::LoadFile(file)["gituser"])
+    YAML::Node nf = YAML::LoadFile(file);
+
+    if (!nf["gituser"])
     {
         _of << std::endl;
         std::string user;
@@ -325,7 +327,7 @@ void InstallationManager::localPackage(std::string path)
         std::cout << Translation::get("manager.install.added", false) << std::endl;
     }
 
-    if (!YAML::LoadFile(file)["server"])
+    if (!nf["server"])
     {
         std::string server;
         std::cout << Translation::get("manager.install.on_which_server", false) << " : " << std::endl;
@@ -334,12 +336,21 @@ void InstallationManager::localPackage(std::string path)
         std::cout << Translation::get("manager.install.added", false) << std::endl;
     }
 
-    if (!YAML::LoadFile(file)["reponame"])
+    if (!nf["reponame"])
     {
         std::string repo;
         std::cout << Translation::get("manager.install.what_name", false) << " : " << std::endl;
         std::getline(std::cin, repo);
         _of << "reponame: " << repo << std::endl;
+        std::cout << Translation::get("manager.install.added", false) << std::endl;
+    }
+
+    if (!nf["branch"])
+    {
+        std::string branch;
+        std::cout << Translation::get("manager.install.on_which_branch", false) << " : " << std::endl;
+        std::getline(std::cin, branch);
+        _of << "branch: " << branch << std::endl;
         std::cout << Translation::get("manager.install.added", false) << std::endl;
     }
 
@@ -485,6 +496,7 @@ void InstallationManager::installPackage(const Package &arg, bool nl)
     _of << "gituser: " << arg.getGitUser() << std::endl;
     _of << "reponame: " << arg.getRepoName() << std::endl;
     _of << "server: " << arg.getServer() << std::endl;
+    _of << "branch: " << arg.getBranch() << std::endl;
     _of.close();
 
     Package package(YAML::LoadFile(file));

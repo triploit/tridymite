@@ -250,6 +250,14 @@ void Package::load_package_from_nodes(const YAML::Node &pkg)
         Runtime::exit(1);
     }
 
+    if (pkg["branch"])
+        setBranch(pkg["branch"].as<std::string>());
+    else
+    {
+        std::cout << "error: package " << getRepoName() << ": no branch set!" << std::endl;
+        Runtime::exit(1);
+    }
+
     if (pkg["products"])
     {
         if (!pkg["products"].IsSequence())
@@ -312,6 +320,7 @@ void Package::load_package_from_nodes(const YAML::Node &pkg)
             _of << "gituser: " << this->getGitUser() << std::endl;
             _of << "reponame: " << this->getRepoName() << std::endl;
             _of << "server: " << this->getServer() << std::endl;
+            _of << "branch: " << this->getBranch() << std::endl;
             _of.close();
 
             dependencies.push_back(Package(YAML::LoadFile(file)));
@@ -337,4 +346,14 @@ const YAML::Node &Package::getType() const
 void Package::setType(const YAML::Node &type)
 {
     this->type = type;
+}
+
+void Package::setBranch(const std::string &branch)
+{
+    this->branch = branch;
+}
+
+const std::string &Package::getBranch() const
+{
+    return branch;
 }
