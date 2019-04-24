@@ -132,24 +132,48 @@ Package tstd::parse_package(const std::string &package)
     Package p;
     p.setServer(Runtime::git_server);
     p.setGitUser(Runtime::git_user);
+    p.setBranch(Runtime::git_branch);
 
     bool server = false;
+    bool branch = false;
     std::string tmp;
 
     for (const char &c : package)
     {
-        if (server)
+        if (c == '#')
         {
-            tmp += c;
+            if (server)
+            {
+                server = false;
+                p.setServer(tmp);
+            }
+            else
+                p.setRepoName(tmp);
+
+            tmp = "";
+            branch = true;
             continue;
         }
 
         if (c == '@')
         {
-            p.setRepoName(tmp);
+            if (branch)
+            {
+                branch = false;
+                p.setBranch(tmp);
+            }
+            else
+                p.setRepoName(tmp);
+
             tmp = "";
 
             server = true;
+            continue;
+        }
+
+        if (server || branch)
+        {
+            tmp += c;
             continue;
         }
 
@@ -166,6 +190,8 @@ Package tstd::parse_package(const std::string &package)
 
     if (server)
         p.setServer(tmp);
+    else if (branch)
+        p.setBranch(tmp);
     else
         p.setRepoName(tmp);
 
@@ -197,6 +223,7 @@ std::string tstd::replace_git_vars(std::string arg, const Package &p)
     arg = tstd::replace(arg, "$git_user", p.getGitUser());
     arg = tstd::replace(arg, "$git_server", p.getServer());
     arg = tstd::replace(arg, "$git_repository", p.getRepoName());
+    arg = tstd::replace(arg, "$git_branch", p.getBranch());
 
     return arg;
 }
@@ -425,9 +452,12 @@ bool tstd::download_file(const std::string &url, const std::string &destination)
     return false;
 }
 
-std::string tstd::package_to_argument(const Package &p)
+std::string tstd::package_to_argument(const Package &p, bool no_branch)
 {
-    return std::string(p.getGitUser()+":"+p.getRepoName()+"@"+p.getServer());
+    if (no_branch)
+        return std::string(p.getGitUser()+":"+p.getRepoName()+"@"+p.getServer());
+    else
+        return std::string(p.getGitUser()+":"+p.getRepoName()+"@"+p.getServer()+"#"+p.getBranch());
 }
 
 std::string tstd::exec(const char* cmd)
@@ -545,7 +575,9 @@ std::vector<std::string> tstd::create_list_of_packages(const std::vector<Package
                     " -> "+
                     installed_package.getRepoName()+spaces_rname+
                     " @ "+
-                    installed_package.getServer()+spaces_server);
+                    installed_package.getServer()+spaces_server+
+                    " #"+
+                    installed_package.getBranch());
         else
             msgs.push_back(
                     "    - "+
@@ -555,7 +587,9 @@ std::vector<std::string> tstd::create_list_of_packages(const std::vector<Package
                     " @ "+
                     installed_package.getServer()+spaces_server+
                     " - v"+
-                    installed_package.getVersion().str); // Add every message to vector
+                    installed_package.getVersion().str+
+                    " #"+
+                    installed_package.getBranch()); // Add every message to vector
     }
 
     std::sort(msgs.begin(), msgs.end()); // Sort messages alphabet

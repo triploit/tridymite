@@ -210,7 +210,7 @@ void Package::load_package_from_nodes(const YAML::Node &pkg)
         setGitUser(pkg["gituser"].as<std::string>());
     else
     {
-        std::cout << "error: package " << getRepoName() << ": no github user set!" << std::endl;
+        printf(Translation::get("package.no_option_set").c_str(), getRepoName().c_str(), "git user");
         Runtime::exit(1);
     }
 
@@ -218,7 +218,7 @@ void Package::load_package_from_nodes(const YAML::Node &pkg)
         setServer(pkg["server"].as<std::string>());
     else
     {
-        std::cout << "error: package " << getRepoName() << ": no server set!" << std::endl;
+        printf(Translation::get("package.no_option_set").c_str(), getRepoName().c_str(), "git server");
         Runtime::exit(1);
     }
 
@@ -226,7 +226,7 @@ void Package::load_package_from_nodes(const YAML::Node &pkg)
         setName(pkg["name"].as<std::string>());
     else
     {
-        std::cout << "error: package " << getRepoName() << ": no name set!" << std::endl;
+        printf(Translation::get("package.no_option_set").c_str(), getRepoName().c_str(), "name");
         Runtime::exit(1);
     }
 
@@ -246,7 +246,15 @@ void Package::load_package_from_nodes(const YAML::Node &pkg)
         setVersion(Version(pkg["version"].as<std::string>()));
     else
     {
-        std::cout << "error: package " << getRepoName() << ": no version set!" << std::endl;
+        printf(Translation::get("package.no_option_set").c_str(), getRepoName().c_str(), "version");
+        Runtime::exit(1);
+    }
+
+    if (pkg["branch"])
+        setBranch(pkg["branch"].as<std::string>());
+    else
+    {
+        printf(Translation::get("package.no_option_set").c_str(), getRepoName().c_str(), "branch");
         Runtime::exit(1);
     }
 
@@ -254,7 +262,7 @@ void Package::load_package_from_nodes(const YAML::Node &pkg)
     {
         if (!pkg["products"].IsSequence())
         {
-            std::cout << "error: package " << getRepoName() << ": products have to be a sequence!" << std::endl;
+            printf(Translation::get("package.products_have_to_be_sequence").c_str(), getRepoName().c_str());
             Runtime::exit(1);
         }
 
@@ -276,7 +284,7 @@ void Package::load_package_from_nodes(const YAML::Node &pkg)
     {
         if (!pkg["links"].IsSequence())
         {
-            std::cout << "error: package " << getRepoName() << ": links have to be a sequence!" << std::endl;
+            printf(Translation::get("package.links_have_to_be_sequence").c_str(), getRepoName().c_str());
             Runtime::exit(1);
         }
 
@@ -303,8 +311,7 @@ void Package::load_package_from_nodes(const YAML::Node &pkg)
 
             if (!tstd::download_file(url, file))
             {
-                std::cout << "error: package " << tstd::package_to_argument(*this) << ": dependency " << url
-                          << " seens not to be a tridymite package!" << std::endl;
+                printf(Translation::get("package.no_tridymite_package").c_str(), tstd::package_to_argument(*this).c_str(), url.c_str());
                 Runtime::exit(1);
             }
 
@@ -312,6 +319,7 @@ void Package::load_package_from_nodes(const YAML::Node &pkg)
             _of << "gituser: " << this->getGitUser() << std::endl;
             _of << "reponame: " << this->getRepoName() << std::endl;
             _of << "server: " << this->getServer() << std::endl;
+            _of << "branch: " << this->getBranch() << std::endl;
             _of.close();
 
             dependencies.push_back(Package(YAML::LoadFile(file)));
@@ -323,8 +331,7 @@ void Package::load_package_from_nodes(const YAML::Node &pkg)
         }
         else if (n.as<std::string>() == "nopkg")
         {
-            std::cout << "error: package " << tstd::package_to_argument(*this)
-                      << ": dependencies: nopkg is not allowed yet." << std::endl;
+            printf(Translation::get("package.nopkg").c_str(), tstd::package_to_argument(*this).c_str());
         }
     }
 }
@@ -337,4 +344,14 @@ const YAML::Node &Package::getType() const
 void Package::setType(const YAML::Node &type)
 {
     this->type = type;
+}
+
+void Package::setBranch(const std::string &branch)
+{
+    this->branch = branch;
+}
+
+const std::string &Package::getBranch() const
+{
+    return branch;
 }

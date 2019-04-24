@@ -40,6 +40,7 @@ manager.install.unzipping: "unzipping ..."
 manager.install.couldnt_unzip: "error: couldn't unzip file!"
 manager.install.install_unzip: "info: install the unzip tool."
 manager.install.on_which_account: "on which git account will it lie?"
+manager.install.on_which_branch: "on which branch will it lie?"
 manager.install.on_which_server: "on which git server will it lie?"
 manager.install.what_name: "what's the name of the repository?"
 manager.install.added: "added!"
@@ -176,3 +177,11 @@ main.searching_dependencies: "info: searching for dependencies..."
 main.following_removed: "info: following packages will be removed" # "info: following packages will be removed (<number>):" will be printed
 main.following_updated: "info: following packages will be updated" # "info: following packages will be updated (<number>):" will be printed
 main.following_installed: "info: following packages will be installed" # "info: following packages will be installed (<number>):" will be printed
+
+# package
+
+package.no_option_set: "error: package %s: option missing (%s)!"
+package.products_have_to_be_sequence: "error: package %s: products have to be a sequence!"
+package.links_have_to_be_sequence: "error: package %s: links have to be a sequence!"
+package.no_tridymite_package: "error: package %s: dependency %s seems not to be a tridymite package!"
+package.nopkg: "error: package %s: dependencies: nopkg is not allowed yet!"

@@ -38,8 +38,9 @@ manager.install.file_neither_exists: "error: kopieren von products: \"%s\": unbe
 manager.install.downloading: "herunterladen ..."
 manager.install.unzipping: "entpacken ..."
 manager.install.couldnt_unzip: "error: konnte die datei nicht entpacken!"
-manager.install.install_unzip: "info: install the unzip tool."
+manager.install.install_unzip: "info: installiere das unzip-tool."
 manager.install.on_which_account: "auf welchem git account wird es liegen?"
+manager.install.on_which_branch: "auf welchem git branch wird es liegen?"
 manager.install.on_which_server: "auf welchem git server wird es liegen?"
 manager.install.what_name: "was wird der name der repository sein?"
 manager.install.added: "hinzugefügt!"
@@ -176,3 +177,11 @@ main.searching_dependencies: "info: suche nach abhängigkeiten ..."
 main.following_removed: "info: folgende pakete werden entfernt" # "info: following packages will be removed (<number>):" will be printed
 main.following_updated: "info: folgende pakete werden aktualisiert" # "info: following packages will be updated (<number>):" will be printed
 main.following_installed: "info: folgende pakete werden installiert" # "info: following packages will be installed (<number>):" will be printed
+
+# package
+
+package.no_option_set: "error: paket %s: option fehlt (%s)!"
+package.products_have_to_be_sequence: "error: paket %s: products müssen eine sequenz sein!"
+package.links_have_to_be_sequence: "error: paket %s: links müssen eine sequenz sein!"
+package.no_tridymite_package: "error: paket %s: abhängigkeit %s scheint kein tridymite-paket zu sein!"
+package.nopkg: "error: paket %s: abhängigkeit: nopkg ist noch nicht erlaubt!"

@@ -107,7 +107,7 @@ bool RemoveManager::removeProducts(const std::string &prefix, const Package &pac
 void RemoveManager::uninstallPackage(const Package &p)
 {
     std::string file = Runtime::tmp_dir+"/tmp.yaml";
-    std::string url = tstd::create_url(p, "raw/master/pkg/package.yaml");
+    std::string url = tstd::create_url(p, "raw/"+p.getBranch()+"/pkg/package.yaml");
 
     std::cout << "[ " << Translation::get("manager.remove.removing", false) << " ] " << Translation::get("manager.remove.now_uninstalling", false) << " " << tstd::package_to_argument(p) << std::endl;
 
@@ -128,6 +128,7 @@ void RemoveManager::uninstallPackage(const Package &p)
         _of << "gituser: " << p.getGitUser() << std::endl;
         _of << "reponame: " << p.getRepoName() << std::endl;
         _of << "server: " << p.getServer() << std::endl;
+        _of << "branch: " << p.getBranch() << std::endl;
         _of.close();
 
         node = YAML::LoadFile(file);
@@ -163,6 +164,7 @@ void RemoveManager::uninstallPackage(const Package &p)
 
         std::cout << prefix << Translation::get("manager.remove.removing_path", false) << " " << dir << std::endl;
         system(std::string("sudo rm -rf "+dir).c_str());
+        std::cout << std::endl;
     }
     else
     {

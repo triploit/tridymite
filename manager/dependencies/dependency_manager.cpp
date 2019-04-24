@@ -21,8 +21,21 @@ void DependencyManager::checkDependencies(const Package &package_to_check)
                 x.getGitUser() == dependency.getGitUser() &&
                 x.getServer() == dependency.getServer())
             {
-                printf(std::string(Translation::get("manager.dependencies.cant_remove_dependency", false)+" "+tstd::package_to_argument(package_to_check)+"\n").c_str(), tstd::package_to_argument(Runtime::to_remove[i]).c_str());
-                Runtime::to_remove.erase(Runtime::to_remove.begin()+i);
+                bool found = false;
+
+                for (const Package &search : Runtime::to_remove)
+                {
+                    if (search.getRepoName() == package_to_check.getRepoName() &&
+                        search.getGitUser() == package_to_check.getGitUser() &&
+                        search.getServer() == package_to_check.getServer())
+                        found = true;
+                }
+
+                if (!found)
+                {
+                    printf(std::string(Translation::get("manager.dependencies.cant_remove_dependency", false)+" "+tstd::package_to_argument(package_to_check)+"\n").c_str(), tstd::package_to_argument(Runtime::to_remove[i]).c_str());
+                    Runtime::to_remove.erase(Runtime::to_remove.begin()+i);
+                }
             }
 
             continue;
@@ -36,7 +49,8 @@ void DependencyManager::checkDependencies(const Package &package_to_check)
 
             if (package_to_install.getRepoName() == dependency.getRepoName() &&
                 package_to_install.getGitUser() == dependency.getGitUser() &&
-                package_to_install.getServer() == dependency.getServer())
+                package_to_install.getServer() == dependency.getServer() &&
+                package_to_install.getBranch() == dependency.getBranch())
             {
                 found = true;
                 
@@ -51,7 +65,8 @@ void DependencyManager::checkDependencies(const Package &package_to_check)
             {
                 if (installed_package.getRepoName() == dependency.getRepoName() &&
                     installed_package.getGitUser() == dependency.getGitUser() &&
-                    installed_package.getServer() == dependency.getServer())
+                    installed_package.getServer() == dependency.getServer() &&
+                    installed_package.getBranch() == dependency.getBranch())
                     found = true;
             }
         }
@@ -75,7 +90,7 @@ std::vector<Package> DependencyManager::getPackagesConfig(std::vector<Package> p
         std::string msg = Translation::get("general.loading_packages", false) + std::to_string(i+1) + "/" + std::to_string(packages.size());
         std::cout << msg << std::endl;
 
-        if (!tstd::download_file(tstd::create_url(p, "raw/master/pkg/package.yaml"), file))
+        if (!tstd::download_file(tstd::create_url(p, "raw/"+p.getBranch()+"/pkg/package.yaml"), file))
         {
             std::cout << std::endl;
             printf(Translation::get("general.package_not_found").c_str(), tstd::package_to_argument(p).c_str());
@@ -87,6 +102,7 @@ std::vector<Package> DependencyManager::getPackagesConfig(std::vector<Package> p
         _of << "gituser: " << p.getGitUser() << std::endl;
         _of << "reponame: " << p.getRepoName() << std::endl;
         _of << "server: " << p.getServer() << std::endl;
+        _of << "branch: " << p.getBranch() << std::endl;
         _of.close();
 
         packages[i] = Package(YAML::LoadFile(file));
