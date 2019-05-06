@@ -61,6 +61,7 @@ cli.argument.no_passed: "error: no argument passed!"
 cli.argument.too_many: "error: too many parameters for argument \"%s\""
 cli.argument.too_few: "error: too few parameters for argument \"%s\""
 cli.version: "version" # "version <version>" will be printed
+cli.unfinished_arguments: "error: cli: the declerations of the arguments are unfinished!"
 
 # manager/dependencies
 
