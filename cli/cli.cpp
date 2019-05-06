@@ -2,14 +2,22 @@
 
 
 void CLI::init(const std::vector<std::string> &names,
-        const std::vector<std::string> &helps,
-        const std::vector<int> &argc,
-        const std::string &pname,
-        const Version &v)
+               const std::vector<std::string> &helps,
+               const std::vector<int> &argc,
+               const std::string &pname,
+               const Version &v,
+               const std::vector<void (*)(const std::vector<std::string>&, CLI* cli)> &fun)
 {
     CLI::arg_name = names;
     CLI::arg_help = helps;
     CLI::arg_argc = argc;
+    CLI::arg_fun = fun;
+
+    if ((names.size() + helps.size() + argc.size() + fun.size()) % 4 != 0)
+    {
+        std::cout << Translation::get("cli.unfinished_arguments");
+        Runtime::exit(1);
+    }
 
     CLI::program_name = pname;
     CLI::version = v;
@@ -218,14 +226,11 @@ void CLI::printHelp(const std::string &arg0) // Generating the help page from th
 
         if (!tmp.empty())
         {
-
-            if (x < Translation::get("arguments.help."+arg_help[x], false).size())
-                gen_help.push_back(Translation::get("arguments.help."+arg_help[x], false));
-
+            gen_help.push_back(Translation::get("arguments.help."+arg_help[x], false));
             gen_usage.push_back(Translation::get("arguments.usage."+arg_help[x], false));
             gen_name.push_back(tmp);
-            tmp = "";
 
+            tmp = "";
             found = true;
         }
 
@@ -323,17 +328,14 @@ void CLI::printHelp(const std::string &arg0) // Generating the help page from th
 
 bool CLI::argumentGiven(const std::string &name)
 {
-    if (CLI::arg_values.find(name) != CLI::arg_values.end())
-        return true;
-
-    return false;
+    return (CLI::arg_values.find(name) != CLI::arg_values.end());
 }
 
 std::vector<std::string> CLI::getParameters(const std::string &argument)
 {
     std::vector<std::string> result;
 
-    for (const std::string &s : CLI::arg_values[argument])
+    for (const std::string &s : CLI::arg_values[argument.c_str()])
     {
         if (s != "<IGNORE_ME!>")
             result.push_back(s);
