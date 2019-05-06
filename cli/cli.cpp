@@ -343,3 +343,12 @@ std::vector<std::string> CLI::getParameters(const std::string &argument)
 
     return result;
 }
+
+void CLI::runArguments()
+{
+    for (int i = 0; i < arg_name.size(); i++)
+    {
+        if (CLI::argumentGiven(tstd::split(arg_name[i], ',')[0]))
+            arg_fun[i](getParameters(arg_name[i]), this);
+    }
+}
