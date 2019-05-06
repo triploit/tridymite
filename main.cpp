@@ -13,8 +13,6 @@
 #include <manager/remove/remove_manager.hpp>
 #include <manager/update/update_manager.hpp>
 
-#define _VERSION "1.0.1a"
-
 int main(int argc, char* argv[])
 {
     Runtime::init();
@@ -30,7 +28,8 @@ int main(int argc, char* argv[])
             __ARG_HELP,
             __ARG_LENGTH,
             "tridymite",
-            Version(_VERSION));
+            Version(Runtime::version),
+            __ARG_FUNCTIONS);
 
     bool working = cli.parseArguments(std::vector<std::string>(argv + 1, argv + argc)); // Parsing the given arguments, returns a boolean (false if there are errors)
 
@@ -47,211 +46,9 @@ int main(int argc, char* argv[])
     }
     else
     {
-        if (cli.argumentGiven("l"))
-        {
-            struct stat info;
-            std::string path = std::string(getenv("HOME"))+"/.local/";
-
-            if(stat(path.c_str(), &info) != 0)
-            {
-                std::cout << Translation::get("main.no_local_module", false) << std::endl;
-                Runtime::exit(1);
-            }
-
-            Runtime::try_local = true;
-            Runtime::tridy_dir = std::string(getenv("HOME")) + "/.local/share/tridymite";
-
-            Runtime::reloadManagers();
-        }
-
-        if (cli.argumentGiven("lf")) // Set language file
-            Translation::loadConfig(cli.getParameters("lf")[0]); // Loading the language file
-
-        if (cli.argumentGiven("h")) // Printing the help page
-            cli.printHelp("");
-
-        if (cli.argumentGiven("lp")) // List all installed packages
-        {
-            std::vector<std::string> msgs; // Vector of messages
-            msgs = tstd::create_list_of_packages(IPackagesManager::getInstalledPackages());
-
-            if (msgs.size() > 0)
-            {
-                if (Runtime::try_local)
-                    std::cout << Translation::get("main.list_local_packages", false) << std::endl;
-                else
-                    std::cout << Translation::get("main.list_packages", false) << std::endl;
-
-
-                for (const std::string &s : msgs) // Printing all messages
-                    std::cout << s << std::endl;
-            }
-            else
-            {
-                if (Runtime::try_local)
-                    std::cout << Translation::get("main.no_local_packages_installed", false) << std::endl;
-                else
-                    std::cout << Translation::get("main.no_packages_installed", false) << std::endl;
-            }
-        }
-
-        if (cli.argumentGiven("g"))
-        {
-            Package p = tstd::parse_package(cli.getParameters("g")[0]);
-            std::string destination = p.getRepoName()+"_"+p.getGitUser()+"_"+p.getServer()+".zip";
-
-            std::cout <<  Translation::get("main.downloading", false) << " " << cli.getParameters("g")[0] << "..." << std::endl;
-
-            if (std::ifstream(destination).is_open())
-            {
-                if (tstd::yn_question(Translation::get("main.file_exists_overwrite", false)))
-                {
-                    if (tstd::download_file(tstd::create_zip_url(p), destination))
-                        std::cout << Translation::get("main.finished", false) << std::endl;
-                    else
-                        std::cout << Translation::get("main.package_not_found", false) << std::endl;
-                }
-            }
-            else
-            {
-                if (tstd::download_file(tstd::create_zip_url(p), destination))
-                    std::cout << Translation::get("main.finished", false) << std::endl;
-                else
-                    std::cout << Translation::get("main.package_not_found", false) << std::endl;
-            }
-        }
-
-        if (cli.argumentGiven("s"))
-        {
-            std::string term = cli.getParameters("s")[0];
-            std::vector<std::string> strings;
-            std::vector<Package> packages;
-            std::string inf = "";
-
-            for (const Package &p : IPackagesManager::getInstalledPackages())
-            {
-                inf = p.getVersion().str + " " +
-                        p.getServer() + " " +
-                        p.getGitUser() + " " +
-                        p.getRepoName() + " " +
-                        p.getName() + " " +
-                        p.getDescription() + " " +
-                        p.getInformation();
-
-                for (const Package &dep : p.getDependencies())
-                {
-                    inf += "\n" + dep.getVersion().str + " " +
-                        dep.getServer() + " " +
-                        dep.getGitUser() + " " +
-                        dep.getRepoName() + " " +
-                        dep.getName() + " " +
-                        dep.getDescription() + " " +
-                        dep.getInformation();
-                }
-
-                std::transform(inf.begin(), inf.end(), inf.begin(), ::tolower);
-
-                if (inf.find(term) != std::string::npos)
-                    packages.push_back(p);
-            }
-
-            strings = tstd::create_list_of_packages(packages);
-            for (const std::string &s : strings)
-            {
-                std::cout << s << std::endl;
-            }
-        }
-
-        if (cli.argumentGiven("d"))
-        {
-            Package p = tstd::parse_package(cli.getParameters("d")[0]);
-            bool found = false;
-
-            for (const Package &pkg : IPackagesManager::getInstalledPackages())
-            {
-                if (pkg.getRepoName() == p.getRepoName() &&
-                    pkg.getServer() == p.getServer() &&
-                    pkg.getGitUser() == p.getGitUser())
-                        found = true;
-            }
-
-            if (found)
-                std::cout << IPackagesManager::getPackage(p) << std::endl;
-            else
-            {
-                std::cout << Translation::get("main.description_package_not_found", false) << " " << cli.getParameters("d")[0] << std::endl;
-                std::cout << Translation::get("main.trying_find_online") << std::endl;
-
-                Package package = DependencyManager::getPackagesConfig({p})[0];
-                std::cout << package << std::endl;
-            }
-        }
-
-        if (cli.argumentGiven("version"))
-        {
-            std::cout << _VERSION << std::endl;
-        }
-
-        // Setting the variables
-
-        if (cli.argumentGiven("ua"))
-        {
-            Runtime::update_all = true;
-
-            Runtime::to_update.insert(Runtime::to_update.end(),
-                    IPackagesManager::getInstalledPackages().begin(),
-                    IPackagesManager::getInstalledPackages().end());
-        }
-
-        if (cli.argumentGiven("us"))
-            Runtime::git_user = cli.getParameters("us")[0]; // Setting the standard git user
-
-        if (cli.argumentGiven("gs"))
-            Runtime::git_server = cli.getParameters("gs")[0]; // Setting the standard git server
-
-        if (cli.argumentGiven(("e")))
-            Runtime::verbose = true; // Show verbose output
-
-        if (cli.argumentGiven(("n"))) // Don't ask security questions
-            Runtime::insecure = true;
-
-        if (cli.argumentGiven("a"))
-            Runtime::reinstall = true;
-
-        if (cli.argumentGiven("f"))
-            Runtime::force = true;
-
-        if (cli.argumentGiven("nc"))
-            Runtime::no_dependencies = true;
-
-        // Adding the packages
-
-        if (cli.argumentGiven("i")) // Check if argument -i/--install is used
-        {
-            std::vector<Package> pkgs = tstd::parse_package_arguments(cli.getParameters("i")); // Get all parameters and convert them to packages
-            Runtime::to_install.insert(Runtime::to_install.end(), pkgs.begin(), pkgs.end()); // Add Packages to install
-        }
-
-        if (cli.argumentGiven("u") && !Runtime::update_all)
-        {
-            std::vector<Package> pkgs = tstd::parse_package_arguments(cli.getParameters("u"));
-            Runtime::to_update.insert(Runtime::to_update.end(), pkgs.begin(), pkgs.end());
-        }
-
-        if (cli.argumentGiven("r"))
-        {
-            std::vector<Package> pkgs = tstd::parse_package_arguments(cli.getParameters("r"));
-            Runtime::to_remove.insert(Runtime::to_remove.end(), pkgs.begin(), pkgs.end());
-        }
+        cli.runArguments();
 
         // Running the managers, doing installing, updating etc.
-
-        if (cli.argumentGiven("p")) // Install local path
-        {
-            std::cout << Translation::get("main.installing_local_path", false) << " " << cli.getParameters("p")[0] << std::endl;
-            chdir(cli.getParameters("p")[0].c_str());
-            InstallationManager::localPackage(cli.getParameters("p")[0]);
-        }
 
         if (Runtime::to_install.empty() &&
             Runtime::to_update.empty() &&
