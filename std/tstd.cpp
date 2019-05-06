@@ -405,7 +405,11 @@ bool tstd::url_exists(const std::string &url)
         tstd::read_buf.clear();
         res = curl_easy_perform(curl);
 
-        return tstd::read_buf.find("Status: 404 Not Found") == std::string::npos;
+        return tstd::read_buf.find("Status: 404 Not Found") == std::string::npos &&
+            tstd::read_buf.find("HTTP/2 404") == std::string::npos &&
+            tstd::read_buf.find("HTTP/2 401") == std::string::npos &&
+            tstd::read_buf.find("HTTP/1.1 401") == std::string::npos &&
+            tstd::read_buf.find("HTTP/1.1 404") == std::string::npos;
     }
 
     return false;
