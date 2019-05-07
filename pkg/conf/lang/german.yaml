@@ -105,7 +105,7 @@ arguments.help.no_deps: "abhängigkeiten werden nicht gesucht"
 arguments.help.force: "dateikonflikte ignorieren"
 arguments.help.local: "versucht ein paket lokal zu installieren"
 arguments.help.get: "läd das archiv eines paketes ins aktuelle verzeichnis herunter"
-arguments.help.search: "suche nach einem installierten paket"
+arguments.help.search_installed: "suche nach einem installierten paket"
 
 arguments.usage.help: ""
 arguments.usage.install: "<paket> ..."
@@ -126,9 +126,9 @@ arguments.usage.no_deps: ""
 arguments.usage.force: ""
 arguments.usage.local: ""
 arguments.usage.get: "<paket>"
-arguments.usage.search: "<string>"
+arguments.usage.search_installed: "<string>"
 
-arguments.package: "<paket> = <git-nutzer>:<git-repo>[@<git-server>] (git-server ist github.com in der standardinstallation, kann in der konfiguration von tridymite geändert werden)"
+arguments.package: "<paket> = <git-nutzer>:<git-repo>[@<git-server>] (git-server ist standardmäßig %s)"
 
 std.package.package_incomplete: "error: parsen des paketes: \"%s\" ist nicht vollständig."
 std.package.package_structure: "info: paketnamen sind wie folgt aufgebaut: \"nutzer:repository@gitserver.abc\""
@@ -178,6 +178,19 @@ main.searching_dependencies: "info: suche nach abhängigkeiten ..."
 main.following_removed: "info: folgende pakete werden entfernt" # "info: following packages will be removed (<number>):" will be printed
 main.following_updated: "info: folgende pakete werden aktualisiert" # "info: following packages will be updated (<number>):" will be printed
 main.following_installed: "info: folgende pakete werden installiert" # "info: following packages will be installed (<number>):" will be printed
+
+main.so.to_few_parameters: "error: zu wenige argumente! syntax:\n    ... -so <server> <suchterme> ..."
+main.so.no_git_servers: "error: es sind keine git-server in der konfigurationsdatei!"
+main.so.server_not_defined: "error: server %s wurde nicht in der konfig definiert!"
+main.so.servant_not_implemented: "error: die suchfunktion für den server %s ist nicht implementiert!"
+main.so.no_servant: "error: kein servant definiert."
+main.so.error_at_servant: "error: fehler passierte beim servant!"
+main.so.error: "error: ein fehler trat auf!"
+main.so.invalid_pat: "error: falscher personal access token!"
+main.so.found_matches: "%d Ergebnisse:"
+main.so.found_match: "%d Ergebnis:"
+main.so.no_found: "Keine Pakete gefunden."
+main.so.incomplete_package: "error: fehler in servant: servant gibt ungültiges paket zurück!"
 
 # package
 

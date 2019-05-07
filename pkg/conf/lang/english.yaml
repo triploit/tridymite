@@ -105,7 +105,8 @@ arguments.help.no_deps: "don't check dependencies"
 arguments.help.force: "don't look for file conflicts"
 arguments.help.local: "if possible, try to install a package locally"
 arguments.help.get: "download a package archive into the current working directory"
-arguments.help.search: "search for an installed package"
+arguments.help.search_installed: "search for an installed package"
+arguments.help.search_online: "search for an installed package"
 
 arguments.usage.help: ""
 arguments.usage.install: "<package> ..."
@@ -126,9 +127,10 @@ arguments.usage.no_deps: ""
 arguments.usage.force: ""
 arguments.usage.local: ""
 arguments.usage.get: "<package>"
-arguments.usage.search: "<string>"
+arguments.usage.search_installed: "<string>"
+arguments.usage.search_online: "<string> ..."
 
-arguments.package: "<package> = <git-user>:<git-repo>[@<git-server>] (git-server is github.com in default)"
+arguments.package: "<package> = <git-user>:<git-repo>[@<git-server>] (git-server is %s by default)"
 
 std.package.package_incomplete: "error: parsing package: \"%s\" is incomplete."
 std.package.package_structure: "info: packages are build like \"user:repository@gitserver.abc\""
@@ -178,6 +180,19 @@ main.searching_dependencies: "info: searching for dependencies..."
 main.following_removed: "info: following packages will be removed" # "info: following packages will be removed (<number>):" will be printed
 main.following_updated: "info: following packages will be updated" # "info: following packages will be updated (<number>):" will be printed
 main.following_installed: "info: following packages will be installed" # "info: following packages will be installed (<number>):" will be printed
+
+main.so.to_few_parameters: "error: to few parameters! usage:\n    ... -so <server> <term> ..."
+main.so.no_git_servers: "error: no git-servers set in config file!"
+main.so.server_not_defined: "error: server %s not defined in config!"
+main.so.servant_not_implemented: "error: the online search function for server %s is not implemented!"
+main.so.no_servant: "error: no servant defined."
+main.so.error_at_servant: "error: error happened at servant!"
+main.so.error: "error: an error happened!"
+main.so.invalid_pat: "error: invalid personal access token!"
+main.so.found_matches: "Found %d matches:"
+main.so.found_match: "Found %d match:"
+main.so.no_found: "No packages found."
+main.so.incomplete_package: "error: error in servant: servant responds incomplete package!"
 
 # package
 
