@@ -349,6 +349,6 @@ void CLI::runArguments()
     for (int i = 0; i < arg_name.size(); i++)
     {
         if (CLI::argumentGiven(tstd::split(arg_name[i], ',')[0]))
-            arg_fun[i](getParameters(arg_name[i]), this);
+            arg_fun[i](getParameters(tstd::split(arg_name[i], ',')[0]), this);
     }
 }
