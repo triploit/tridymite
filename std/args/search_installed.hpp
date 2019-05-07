@@ -7,9 +7,9 @@
 
 #include <vector>
 
-void __argument_search(const std::vector<std::string> &parameters, CLI* cli)
+void __argument_search_installed(const std::vector<std::string> &parameters, CLI* cli)
 {
-    std::string term = cli->getParameters("s")[0];
+    std::string term = cli->getParameters("si")[0];
     std::vector<std::string> strings;
     std::vector<Package> packages;
     std::string inf = "";
