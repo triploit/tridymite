@@ -1,5 +1,251 @@
 #!/usr/bin/env bash
 
+function ask_local {
+    if [[ "$PATH" == *"${pfli}"* ]] && [[ "$1" != "-l" ]]
+    then
+        printf ""
+    else
+        echo -e "\e[32;1mDo you want to add a directory to your path to make local installations of packages possible?\e[00m";
+        printf "[y/n] : "
+
+        read yn
+        _local=true
+        echo -e "\e[32;1mOkay.\e[00m"
+
+        if [[ "$yn" == "y" ]] || [[ "$yn" == "Y" ]]
+        then
+            echo -e "Are you using (1) bash, (2) zsh or (3) something else?"
+            printf "> "
+            read wsh
+
+            if [[ "$wsh" == "1" ]]
+            then
+                shdir="$HOME/.bashrc"
+            elif [[ "$wsh" == "2" ]]
+            then
+                shdir="$HOME/.zshrc"
+            else
+                echo -e "Then please give me the \e[1mcomplete\e[00m path of the autoload script (for bash it's $HOME/.bashrc, for zsh $HOME/.zshrc)."
+                printf "> "
+                read shdir
+            fi
+
+            echo -e "\nPATH=\"$HOME/.local/bin/:\$PATH\"" >> "${shdir}"
+            mkdir -p ${HOME}/.local/share/tridymite/conf/packages
+        fi
+    fi
+}
+
+function get_language {
+    echo "Following language packs are installed in `pwd`:"
+
+    count=0
+    cur=`pwd`
+
+    cd ./pkg/conf/lang/
+
+    lang_names=()
+    lang_count=()
+
+    for filename in *.yaml; do
+        ((count+=1))
+        echo "${count}.) ${filename/.yaml/}"
+
+        lang_names+=(${filename/.yaml/})
+    done
+
+    cd $cur
+
+    echo -e "\e[32;1mWhich language pack do you want to use?\e[00m"
+    printf "(1-${count}) : "
+
+    read language
+
+    while (( $language > $count )) || (( $language <= 0 ))
+    do
+        echo "Wrong input. Numbers available: 1-${count}."
+        printf "(1-${count}) : "
+
+        read language
+    done
+
+    echo "You chose ${lang_names[(($language-1))]}."
+    echo "language: \"${lang_names[(($language-1))]}\"" >> tridy_dir/conf/config.yaml
+    echo -e "\e[32;1mOkay.\e[00m"
+}
+
+function get_acces_tokens {
+    echo -e "\e[32;1mDo you want to add access tokens for the api of git-servers to search online for packages?\e[00m";
+    printf "[y/n] : "
+
+    read yn
+    echo -e "\e[32;1mOkay.\e[00m"
+
+    if [[ "$yn" == "y" ]] || [[ "$yn" == "Y" ]]
+    then
+        echo -e "\e[31;1mNOTE: YOU HAVE TO INSTALL PIP AND THE \"reqeusts\" PACKAGE!\e[00m"
+        echo -e "Note: GitHub doesn't need a personal access token."
+        echo ""
+        echo "Following git-servers are supported:"
+
+        count=0
+        cur=`pwd`
+        cd ./pkg/conf/servants/
+
+        serv_names=()
+        serv_count=()
+        serv_already=()
+
+        echo -e "For which do you want to set the access tokens for the api?"
+        echo -e "(type \"finished\" if don't want to set any more keys.)"
+
+        for filename in *
+        do
+            if [[ $filename != *".yaml"* ]] && [[ $filename != *"github"* ]]
+            then
+                ((count+=1))
+                echo "${count}.) ${filename/_servant.py/}"
+
+                serv_names+=(${filename/_servant.py/})
+            fi
+        done
+
+        cd $cur
+        finished=false
+
+        while [[ "$servant" != "finished" ]]
+        do
+            echo -e ""
+            printf "(1-${count}) : "
+            read servant
+
+            if [[ "$servant" != "finished" ]]
+            then
+                while (( $servant > $count )) || (( $servant <= 0 ))
+                do
+                    echo ""
+                    echo "Wrong input. Numbers available: 1-${count}."
+                    printf "(1-${count}) : "
+                    read servant
+                done
+
+                function check_it {
+                    for num in "${serv_already[@]}"
+                    do
+                        if [[ "$num" == "$servant" ]]
+                        then
+                            echo ""
+                            echo "Wrong input. You already had that server."
+                            echo -e "(type \"finished\" if don't want to set any more keys.)"
+
+                            printf "(1-${count}) : "
+                            read servant
+
+                            check_it
+                        elif [[ "$servant" == "finished" ]]
+                        then
+                            exit
+                            finished=true
+                        fi
+                    done
+                }
+
+                if [[ "$finished" == "true" ]]
+                then
+                    exit
+                fi
+
+                check_it
+
+                echo "Please enter the api access token for ${serv_names[((servant-1))]}."
+                echo "(type \"cancel\" to cancel this server)"
+                printf " > "
+                read token
+
+                if [[ "$token" != "cancel" ]]
+                then
+                    echo -e "${serv_names[((servant-1))]}: \"$token\"" >> "./pkg/conf/servants/_tokens.yaml"
+                    serv_already=($servant ${serv_already[@]})
+
+                    echo "Added!"
+                fi
+            fi
+        done
+
+        echo -e "\e[32;1mOkay.\e[00m"
+    fi
+}
+
+function install_yaml_cpp {
+    if [ ! -d "/usr/include/yaml-cpp" ] && [ ! -d "/usr/local/include/yaml-cpp" ]
+    then
+        echo -e "\e[32;1mNow installing yaml-cpp from github. It's a dependency of tridymite.\e[00m";
+        wget https://github.com/jbeder/yaml-cpp/archive/yaml-cpp-0.6.2.tar.gz
+
+        tar -xzf yaml-cpp-0.6.2.tar.gz
+        cd yaml-cpp*/
+
+        cmake .
+        make
+        sudo make install
+        rm -rf yaml-cpp*
+        cd ..
+    fi
+
+    if [ ! -d "/usr/include/yaml-cpp" ] && [ ! -d "/usr/local/include/yaml-cpp" ]
+    then
+        echo -e "\e[31;1mAn error happened at installation of yaml-cpp.\e[00m"
+        echo -e "\e[31;1mExit\e[00m"
+        exit 1
+    fi
+}
+
+function install_curl {
+    if [ ! -d "/usr/include/curl" ]
+    then
+        echo -e "\e[32;1mNow installing libcurl for your system...\e[00m";
+
+        if [ "$(grep -Ei 'debian|buntu|mint' /etc/*release)" ]
+        then
+            echo -e "\e[32;1mI think you're on a debian machine. Let's go with apt-get.\e[00m"
+            sudo apt-get update
+            sudo apt-get install libcurl-dev
+        elif [ -f "/usr/bin/pacman" ]
+        then
+            echo -e "\e[32;1mI think you're on an arch linux machine. Let's go with pacman.\e[00m"
+            echo -e "\e[32;1m"
+            sudo pacman -Sy curl
+        elif [ "$(grep -Ei 'suse|opensuse' /etc/*release)" ]
+        then
+            echo -e "\e[32;1mI think you're on an suse machine. Let's go with zypper.\e[00m"
+            sudo zypper install php5-curl
+        elif [ "$(grep -Ei 'Red Hat|redhat|cent' /etc/*release)" ]
+        then
+            echo -e "\e[32;1mI think you're on a redhat or centos machine. Let's go with yum.\e[00m"
+            yum install curl
+        else
+            echo -e "\e[31;1mHm..., I don't know your distribution.\e[00m"
+            echo -e "\e[32;1mInstalling for other linux distribution, from source...\e[00m"
+
+            wget https://curl.haxx.se/download/curl-7.63.0.tar.bz2
+            tar xfj curl-7.63.0.tar.bz2
+            cd curl-7.63.0
+
+            ./configure --prefix=/usr
+
+            make
+            sudo make install
+        fi
+    fi
+
+    if [ ! -d "/usr/include/curl" ]
+    then
+        echo -e "\e[31;1mAn error happened at installation of yaml-cpp.\e[00m"
+        echo -e "\e[31;1mExit\e[00m"
+        exit 1
+    fi
+}
+
 if [[ `whoami` == "root" ]]
 then
     echo "You shouldn't run this installer as root.";
@@ -44,137 +290,53 @@ fi
 cp -r pkg tridy_dir
 rm tridy_dir/*.sh tridy_dir/*.yaml
 
-echo "Following language packs are installed in `pwd`:"
 
-count=0
-cur=`pwd`
-cd ./pkg/conf/lang/
-lang_names=()
-lang_count=()
 
-for filename in *.yaml; do
-    ((count+=1))
-    echo "${count}.) ${filename/.yaml/}"
+#########################################################################
+#
+# ASKING FOR LANGUAGE
+#
+#########################################################################
 
-    lang_names+=(${filename/.yaml/})
-done
+get_language
 
-cd $cur
+#########################################################################
+#
+# ASKING FOR LOCAL MODULE
+#
+#########################################################################
 
-echo -e "\e[32;1mWhich language pack do you want to use?\e[00m"
-printf "(1-${count}) : "
-read language
+ask_local
 
-while (( $language > $count )) || (( $language <= 0 )) 
-do
-    echo "Wrong input. Numbers available: 1-${count}."
-    printf "(1-${count}) : "
-    read language
-done
+#########################################################################
+#
+# ASKING FOR API ACCESS TOKENS
+#
+#########################################################################
 
-echo "You chose ${lang_names[(($language-1))]}."
-echo "language: \"${lang_names[(($language-1))]}\"" >> tridy_dir/conf/config.yaml
-echo -e "\e[32;1mOkay.\e[00m"
+get_acces_tokens
 
-if [[ "$PATH" == *"${pfli}"* ]] && [[ "$1" != "-l" ]]
-then
-    printf ""
-else
-    echo -e "\e[32;1mDo you want to add a directory to your path to make local installations of packages possible?\e[00m";
-    printf "[y/n] : "
+#########################################################################
+#
+# INSTALLING YAML-CPP
+#
+#########################################################################
 
-    read yn
-    _local=true
-    echo -e "\e[32;1mOkay.\e[00m"
+install_yaml_cpp
 
-    if [[ "$yn" == "y" ]] || [[ "$yn" == "Y" ]]
-    then
-        echo -e "Are you using (1) bash, (2) zsh or (3) something else?"
-        printf "> "
-        read wsh
+#########################################################################
+#
+# INSTALLING CURL
+#
+#########################################################################
 
-        if [[ "$wsh" == "1" ]]
-        then
-            shdir="$HOME/.bashrc"
-        elif [[ "$wsh" == "2" ]]
-        then
-            shdir="$HOME/.zshrc"
-        else
-            echo -e "Then please give me the \e[1mcomplete\e[00m path of the autoload script (for bash it's $HOME/.bashrc, for zsh $HOME/.zshrc)."
-            printf "> "
-            read shdir
-        fi
+install_curl
 
-        echo -e "\nPATH=\"$HOME/.local/bin/:\$PATH\"" >> "${shdir}"
-        mkdir -p ${HOME}/.local/share/tridymite/conf/packages
-    fi
-fi
-
-if [ ! -d "/usr/include/yaml-cpp" ] && [ ! -d "/usr/local/include/yaml-cpp" ]
-then
-    echo -e "\e[32;1mNow installing yaml-cpp from github. It's a dependency of tridymite.\e[00m";
-    wget https://github.com/jbeder/yaml-cpp/archive/yaml-cpp-0.6.2.tar.gz
-
-    tar -xzf yaml-cpp-0.6.2.tar.gz
-    cd yaml-cpp*/
-
-    cmake .
-    make
-    sudo make install
-    rm -rf yaml-cpp*
-    cd ..
-fi
-
-if [ ! -d "/usr/include/yaml-cpp" ] && [ ! -d "/usr/local/include/yaml-cpp" ]
-then
-    echo -e "\e[31;1mAn error happened at installation of yaml-cpp.\e[00m"
-    echo -e "\e[31;1mExit\e[00m"
-    exit 1
-fi
-
-if [ ! -d "/usr/include/curl" ]
-then
-    echo -e "\e[32;1mNow installing libcurl for your system...\e[00m";
-
-    if [ "$(grep -Ei 'debian|buntu|mint' /etc/*release)" ]
-    then
-        echo -e "\e[32;1mI think you're on a debian machine. Let's go with apt-get.\e[00m"
-        sudo apt-get update
-        sudo apt-get install libcurl-dev
-    elif [ -f "/usr/bin/pacman" ]
-    then
-        echo -e "\e[32;1mI think you're on an arch linux machine. Let's go with pacman.\e[00m"
-        echo -e "\e[32;1m"
-        sudo pacman -Sy curl
-    elif [ "$(grep -Ei 'suse|opensuse' /etc/*release)" ]
-    then
-        echo -e "\e[32;1mI think you're on an suse machine. Let's go with zypper.\e[00m"
-        sudo zypper install php5-curl
-    elif [ "$(grep -Ei 'Red Hat|redhat|cent' /etc/*release)" ]
-    then
-        echo -e "\e[32;1mI think you're on a redhat or centos machine. Let's go with yum.\e[00m"
-        yum install curl
-    else
-        echo -e "\e[31;1mHm..., I don't know your distribution.\e[00m"
-        echo -e "\e[32;1mInstalling for other linux distribution, from source...\e[00m"
-
-        wget https://curl.haxx.se/download/curl-7.63.0.tar.bz2
-        tar xfj curl-7.63.0.tar.bz2
-        cd curl-7.63.0
-
-        ./configure --prefix=/usr
-
-        make
-        sudo make install
-    fi
-fi
-
-if [ ! -d "/usr/include/curl" ]
-then
-    echo -e "\e[31;1mAn error happened at installation of yaml-cpp.\e[00m"
-    echo -e "\e[31;1mExit\e[00m"
-    exit 1
-fi
+#########################################################################
+#
+# INSTALLING TRIDYMITE
+#
+#########################################################################
 
 cmake .
 make

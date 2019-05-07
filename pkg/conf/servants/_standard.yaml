@@ -1,0 +1,5 @@
+return_code: "0" # 1 at error, 2 at invalid token
+size: "50" # number of packages given, max. 50
+
+packages: # check if they are tridymite packages!
+    - "user:repo@server.abc#branch!version!description"

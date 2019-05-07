@@ -19,6 +19,7 @@ private:
     std::vector<std::string> arg_name;
     std::vector<std::string> arg_help;
     std::vector<int> arg_argc;
+    std::vector<void (*)(const std::vector<std::string>&, CLI* cli)> arg_fun;
 
     std::map<std::string, std::vector<std::string>> arg_values;
 
@@ -31,9 +32,11 @@ public:
             const std::vector<std::string> &helps,
             const std::vector<int> &argc,
             const std::string &pname,
-            const Version &v);
+            const Version &v,
+            const std::vector<void (*)(const std::vector<std::string>&, CLI* cli)> &fun);
 
     void printHelp(const std::string &arg0);
+    void runArguments();
 
     bool parseArguments(const std::vector<std::string> &arguments);
     bool argumentGiven(const std::string &name);
