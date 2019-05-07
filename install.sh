@@ -83,6 +83,9 @@ function get_acces_tokens {
 
     if [[ "$yn" == "y" ]] || [[ "$yn" == "Y" ]]
     then
+        echo -e "\e[31;1mNOTE: YOU HAVE TO INSTALL PIP AND THE \"reqeusts\" PACKAGE!\e[00m"
+        echo -e "Note: GitHub doesn't need a personal access token."
+        echo ""
         echo "Following git-servers are supported:"
 
         count=0
