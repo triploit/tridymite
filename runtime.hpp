@@ -56,7 +56,7 @@ public:
     inline static std::string language;
 
     inline static YAML::Node config;
-    inline static std::string version = "1.0.1a";
+    inline static std::string version = "1.0.2a";
 
     static void init()
     {
