@@ -51,7 +51,7 @@ void Translation::loadConfig(std::string path)
 general.loading_packages: "info: loading packages ..."
 general.package_not_found: "error: package %s not found!"
 general.package_not_found_good: "error: package not found:"
-general.continue_question: "do you want to continue? (y=yes, n=no)" # don't change up the 'y' and 'n', but translate 'yes' and 'no'!
+general.continue_question: "do you want to continue? (y=yes, n=no)" # don't change up the 'y' and 'n', but translate 'yes' and 'no'! 
 general.aborted: "aborted."
 
 # cli
@@ -73,11 +73,11 @@ manager.dependencies.added_dependency: "info: added dependency:"
 manager.install.linking_files: "linking files ..."
 manager.install.linking: "linking " # "linking <path>" will be printed
 manager.install.counting_files: "counting files ..."
-manager.install.file_warning: "warning: this package contains more than 100 files."
+manager.install.file_warning: "warning: this package contains more than 100 files." 
 manager.install.continue_counting: "continue counting ..."
 manager.install.moving_files: "copying %d files ..."
 manager.install.local_directory_not_found: "error: couldn't find the directory for local packages."
-manager.install.global_installation_question: "do you want to continue and install it globally? (y=yes, n=no)" # don't change up the 'y' and 'n', but translate 'yes' and 'no'!
+manager.install.global_installation_question: "do you want to continue and install it globally? (y=yes, n=no)" # don't change up the 'y' and 'n', but translate 'yes' and 'no'! 
 manager.install.aborting_installation: "aborted package installation."
 manager.install.moving_force: " => copying (FORCE) %s to %s"
 manager.install.moving: " => copying %s to %s"
@@ -91,6 +91,7 @@ manager.install.unzipping: "unzipping ..."
 manager.install.couldnt_unzip: "error: couldn't unzip file!"
 manager.install.install_unzip: "info: install the unzip tool."
 manager.install.on_which_account: "on which git account will it lie?"
+manager.install.on_which_branch: "on which branch will it lie?"
 manager.install.on_which_server: "on which git server will it lie?"
 manager.install.what_name: "what's the name of the repository?"
 manager.install.added: "added!"
@@ -105,14 +106,14 @@ manager.install.skipping: "skipping ..."
 manager.install.new_installation: "new installation"
 manager.install.doesnt_support_local: "error: this package doesn't supports local installations!"
 manager.install.pretype_doesnt_exit: "error: the pretype \"%s\" doesn't exists on this computer!"
-manager.install.skip_and_continue: "do you want to skip this package and proceed with the other installations? (y=yes, n=no)" # don't change up the 'y' and 'n', but translate 'yes' and 'no'!
+manager.install.skip_and_continue: "do you want to skip this package and proceed with the other installations? (y=yes, n=no)" # don't change up the 'y' and 'n', but translate 'yes' and 'no'! 
 manager.install.no_build_script: "error: no build script exists."
 
 # manager/remove
 
 manager.remove.removing_links: "removing links ..."
 manager.remove.local_directory_not_found: "error: couldn't find the directory for local packages."
-manager.remove.remove_globally_instead: "do you want to continue and remove it globally? (y=yes, n=no)" # don't change up the 'y' and 'n', but translate 'yes' and 'no'!
+manager.remove.remove_globally_instead: "do you want to continue and remove it globally? (y=yes, n=no)" # don't change up the 'y' and 'n', but translate 'yes' and 'no'! 
 manager.remove.unlinking: "unlinking" # "unlinking <file>" will be printed
 manager.remove.removing_products: "removing products ..."
 manager.remove.removing: "removing"
@@ -154,7 +155,8 @@ arguments.help.no_deps: "don't check dependencies"
 arguments.help.force: "don't look for file conflicts"
 arguments.help.local: "if possible, try to install a package locally"
 arguments.help.get: "download a package archive into the current working directory"
-arguments.help.search: "search for an installed package"
+arguments.help.search_installed: "search for an installed package"
+arguments.help.search_online: "search for an installed package"
 
 arguments.usage.help: ""
 arguments.usage.install: "<package> ..."
@@ -175,9 +177,10 @@ arguments.usage.no_deps: ""
 arguments.usage.force: ""
 arguments.usage.local: ""
 arguments.usage.get: "<package>"
-arguments.usage.search: "<string>"
+arguments.usage.search_installed: "<string>"
+arguments.usage.search_online: "<string> ..."
 
-arguments.package: "<package> = <git-user>:<git-repo>[@<git-server>] (git-server is github.com in default)"
+arguments.package: "<package> = <git-user>:<git-repo>[@<git-server>] (git-server is %s by default)"
 
 std.package.package_incomplete: "error: parsing package: \"%s\" is incomplete."
 std.package.package_structure: "info: packages are build like \"user:repository@gitserver.abc\""
@@ -227,6 +230,27 @@ main.searching_dependencies: "info: searching for dependencies..."
 main.following_removed: "info: following packages will be removed" # "info: following packages will be removed (<number>):" will be printed
 main.following_updated: "info: following packages will be updated" # "info: following packages will be updated (<number>):" will be printed
 main.following_installed: "info: following packages will be installed" # "info: following packages will be installed (<number>):" will be printed
+
+main.so.to_few_parameters: "error: to few parameters! usage:\n    ... -so <server> <term> ..."
+main.so.no_git_servers: "error: no git-servers set in config file!"
+main.so.server_not_defined: "error: server %s not defined in config!"
+main.so.servant_not_implemented: "error: the online search function for server %s is not implemented!"
+main.so.no_servant: "error: no servant defined."
+main.so.error_at_servant: "error: error happened at servant!"
+main.so.error: "error: an error happened!"
+main.so.invalid_pat: "error: invalid personal access token!"
+main.so.found_matches: "Found %d matches:"
+main.so.found_match: "Found %d match:"
+main.so.no_found: "No packages found."
+main.so.incomplete_package: "error: error in servant: servant responds incomplete package!"
+
+# package
+
+package.no_option_set: "error: package %s: option missing (%s)!"
+package.products_have_to_be_sequence: "error: package %s: products have to be a sequence!"
+package.links_have_to_be_sequence: "error: package %s: links have to be a sequence!"
+package.no_tridymite_package: "error: package %s: dependency %s seems not to be a tridymite package!"
+package.nopkg: "error: package %s: dependencies: nopkg is not allowed yet!"
 )V0G0N");
 
     if (std::ifstream(path).is_open())
