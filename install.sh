@@ -101,7 +101,7 @@ function get_acces_tokens {
 
         for filename in *
         do
-            if [[ $filename != *".yaml"* ]]
+            if [[ $filename != *".yaml"* ]] && [[ $filename != *"github"* ]]
             then
                 ((count+=1))
                 echo "${count}.) ${filename/_servant.py/}"
