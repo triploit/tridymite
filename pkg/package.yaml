@@ -26,7 +26,7 @@ products:
     - ./tridymite: "/usr/share/tridymite/tridy"
     - ./pkg/conf/pretypes: "/usr/share/tridymite/conf/pretypes/"
     - ./pkg/conf/lang: "/usr/share/tridymite/conf/lang/"
-    - ./pkg/conf/servants/*.py: "/usr/share/tridymite/conf/servants/"
+    - ./pkg/conf/servants/: "/usr/share/tridymite/conf/servants/"
 
 links:
     - /usr/share/tridymite/tridy: "/usr/bin/tridy"

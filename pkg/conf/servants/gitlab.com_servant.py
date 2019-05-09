@@ -14,7 +14,7 @@ for arg in sys.argv[1:]:
     else:
         query += arg+" "
 
-for line in open("conf/servants/_tokens.yaml"):
+for line in open("conf/tokens.yaml"):
     if line.startswith("gitlab.com:"):
         token = line.replace("gitlab.com:", "").replace("\"", "").strip()
 
