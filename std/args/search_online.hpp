@@ -75,10 +75,12 @@ void __argument_search_online(const std::vector<std::string> &parameters, CLI* c
     {
         if (n["size"].as<int>() > 0)
         {
-            if (n["size"].as<int>() > 1)
-                printf(Translation::get("main.so.found_matches").c_str(), n["size"].as<std::string>().c_str());
+            int size = n["size"].as<int>();
+
+            if (size > 1)
+                printf(Translation::get("main.so.found_matches").c_str(), size);
             else
-                printf(Translation::get("main.so.found_match").c_str(), n["size"].as<std::string>().c_str());
+                printf(Translation::get("main.so.found_match").c_str(), size);
         }
         else
             std::cout << Translation::get("main.so.no_found");
