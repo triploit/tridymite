@@ -200,55 +200,22 @@ function install_yaml_cpp {
     fi
 }
 
-function install_curl {
-    if [ ! -d "/usr/include/curl" ]
-    then
-        echo -e "\e[32;1mNow installing libcurl for your system...\e[00m";
+if ! hash cmake 2>/dev/null
+then
+    echo "Error: CMake is not installed. Please install CMake."
+    exit
+fi
 
-        if [ "$(grep -Ei 'debian|buntu|mint' /etc/*release)" ]
-        then
-            echo -e "\e[32;1mI think you're on a debian machine. Let's go with apt-get.\e[00m"
-            sudo apt-get update
-            sudo apt-get install libcurl-dev
-        elif [ -f "/usr/bin/pacman" ]
-        then
-            echo -e "\e[32;1mI think you're on an arch linux machine. Let's go with pacman.\e[00m"
-            echo -e "\e[32;1m"
-            sudo pacman -Sy curl
-        elif [ "$(grep -Ei 'suse|opensuse' /etc/*release)" ]
-        then
-            echo -e "\e[32;1mI think you're on an suse machine. Let's go with zypper.\e[00m"
-            sudo zypper install php5-curl
-        elif [ "$(grep -Ei 'Red Hat|redhat|cent' /etc/*release)" ]
-        then
-            echo -e "\e[32;1mI think you're on a redhat or centos machine. Let's go with yum.\e[00m"
-            yum install curl
-        else
-            echo -e "\e[31;1mHm..., I don't know your distribution.\e[00m"
-            echo -e "\e[32;1mInstalling for other linux distribution, from source...\e[00m"
-
-            wget https://curl.haxx.se/download/curl-7.63.0.tar.bz2
-            tar xfj curl-7.63.0.tar.bz2
-            cd curl-7.63.0
-
-            ./configure --prefix=/usr
-
-            make
-            sudo make install
-        fi
-    fi
-
-    if [ ! -d "/usr/include/curl" ]
-    then
-        echo -e "\e[31;1mAn error happened at installation of yaml-cpp.\e[00m"
-        echo -e "\e[31;1mExit\e[00m"
-        exit 1
-    fi
-}
+if ! hash g++ 2>/dev/null
+then
+    echo "Error: G++ (GCC) is not installed. Please install G++ (GCC)."
+    exit
+fi
 
 if [[ `whoami` == "root" ]]
 then
     echo "You shouldn't run this installer as root.";
+    exit
 fi
 
 pfli="${HOME}/.local/bin"
@@ -323,14 +290,6 @@ get_acces_tokens
 #########################################################################
 
 install_yaml_cpp
-
-#########################################################################
-#
-# INSTALLING CURL
-#
-#########################################################################
-
-install_curl
 
 #########################################################################
 #

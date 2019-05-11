@@ -13,3 +13,4 @@ servers:
     bitbucket.org:
         zip: "https://bitbucket.org/$git_user/$git_repository/get/$git_branch.zip"
         path: "$git_user-$git_repository-*"
+        servant: "python3 conf/servants/bitbucket.org_servant.py"

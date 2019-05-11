@@ -181,7 +181,7 @@ main.following_removed: "info: following packages will be removed" # "info: foll
 main.following_updated: "info: following packages will be updated" # "info: following packages will be updated (<number>):" will be printed
 main.following_installed: "info: following packages will be installed" # "info: following packages will be installed (<number>):" will be printed
 
-main.so.to_few_parameters: "error: to few parameters! usage:\n    ... -so <server> <term> ..."
+main.so.too_few_parameters: "error: too few parameters! usage:\n    ... -so <server> <term> ..."
 main.so.no_git_servers: "error: no git-servers set in config file!"
 main.so.server_not_defined: "error: server %s not defined in config!"
 main.so.servant_not_implemented: "error: the online search function for server %s is not implemented!"

@@ -12,7 +12,8 @@ void __argument_search_online(const std::vector<std::string> &parameters, CLI* c
 {
     if (parameters.size() < 2)
     {
-        std::cout << Translation::get("main.so.to_few_parameters");
+        std::cout << Translation::get("main.so.too_few_parameters");
+        Runtime::exit(1);
     }
 
     std::string server = parameters[0];
