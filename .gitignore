@@ -9,3 +9,4 @@ Makefile
 tridymite
 tridymite.*
 *.vcxproj*
+tokens.*
