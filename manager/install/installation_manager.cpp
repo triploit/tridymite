@@ -23,6 +23,7 @@ bool InstallationManager::linkProducts(const std::string &prefix, const Package 
     for (int i = 0; i < package.getLinksFrom().size(); i++)
     {
         std::string from = package.getLinksFrom()[i];
+        from = tstd::replace(from, "$cwd", tstd::get_current_directory());
 
         if (Runtime::try_local && Runtime::local_folder)
         {
@@ -40,6 +41,7 @@ bool InstallationManager::linkProducts(const std::string &prefix, const Package 
         }
 
         std::string to = package.getLinksTo()[i];
+        to = tstd::replace(to, "$cwd", tstd::get_current_directory());
 
         if (Runtime::try_local && Runtime::local_folder)
         {
@@ -120,6 +122,7 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
         }
 
         std::string from = tstd::trim(package.getProductsFrom()[i]);
+        from = tstd::replace(from, "$cwd", tstd::get_current_directory());
 
         if (Runtime::try_local && Runtime::local_folder)
         {
@@ -137,6 +140,7 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
         }
 
         std::string to = tstd::trim(package.getProductsTo()[i]);
+        to = tstd::replace(to, "$cwd", tstd::get_current_directory());
 
         if (Runtime::try_local && Runtime::local_folder)
         {
@@ -401,10 +405,7 @@ void InstallationManager::localPackage(std::string path)
                     variables.push_back(Variable(s, package.getType()[s].as<std::string>()));
             }
 
-            char curdir[256];
-            getcwd(curdir, sizeof(curdir));
-
-            variables.push_back(Variable("current_directory", std::string(curdir)));
+            variables.push_back(Variable("current_directory", tstd::get_current_directory()));
             variables.push_back(Variable("package_name", package.getRepoName()));
             variables.push_back(Variable("package_version", package.getVersion().str));
             variables.push_back(Variable("package_server", package.getServer()));
@@ -552,10 +553,7 @@ void InstallationManager::installPackage(const Package &arg, bool nl)
                     variables.push_back(Variable(s, package.getType()[s].as<std::string>()));
             }
 
-            char curdir[256];
-            getcwd(curdir, sizeof(curdir));
-
-            variables.push_back(Variable("current_directory", std::string(curdir)));
+            variables.push_back(Variable("current_directory", tstd::get_current_directory()));
             variables.push_back(Variable("package_name", package.getRepoName()));
             variables.push_back(Variable("package_version", package.getVersion().str));
             variables.push_back(Variable("package_server", package.getServer()));
