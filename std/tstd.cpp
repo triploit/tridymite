@@ -10,6 +10,10 @@
 #include <memory>
 #include <tgmath.h>
 #include <algorithm>
+#include <glob.h>
+#include <sys/param.h>
+#include "tstd.hpp"
+
 
 std::vector<std::string> tstd::split(std::string s, char delim) // split a string by a delimiter
 {
@@ -598,4 +602,23 @@ std::vector<std::string> tstd::create_list_of_packages(const std::vector<Package
 
     std::sort(msgs.begin(), msgs.end()); // Sort messages alphabet
     return msgs;
+}
+
+std::string tstd::get_current_directory()
+{
+    char path[MAXPATHLEN];
+    getcwd(path, MAXPATHLEN);
+
+    return std::string(path);
+}
+
+std::string tstd::get_answer(const std::string &question)
+{
+    std::cout << question << std::endl;
+    std::cout << " > ";
+
+    std::string line;
+    std::getline(std::cin, line);
+
+    return line;
 }
