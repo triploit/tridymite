@@ -18,12 +18,16 @@ private:
 
 public:
     PreType(const std::string &file, const std::string &name);
+    PreType();
 
     void runScript(const std::vector<Variable> &variables, const std::string &token);
 
     const std::string &getName() const;
     const std::string &getFullFileName() const;
     const std::vector<std::string> &getNeededVariables();
+
+    void setName(const std::string &name);
+    void setFullFileName(const std::string &file);
 };
 
 
