@@ -25,5 +25,6 @@
 #include "update_all.hpp"
 #include "user.hpp"
 #include "version.hpp"
+#include "create.hpp"
 
 #endif //TRIDYMITE_ARGS_HPP

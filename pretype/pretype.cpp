@@ -92,3 +92,19 @@ const std::string &PreType::getFullFileName() const
 {
     return full_file_name;
 }
+
+PreType::PreType()
+{
+    this->name = "none";
+    this->full_file_name = "none";
+}
+
+void PreType::setName(const std::string &name)
+{
+    this->name = name;
+}
+
+void PreType::setFullFileName(const std::string &file)
+{
+    this->full_file_name = name;
+}

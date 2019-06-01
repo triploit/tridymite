@@ -109,8 +109,8 @@ int main(int argc, char* argv[])
             }
         }
 
-        if (Runtime::to_install.size() > 0 || 
-            Runtime::to_remove.size() > 0 || 
+        if (Runtime::to_install.size() > 0 ||
+            Runtime::to_remove.size() > 0 ||
             Runtime::to_update.size() > 0)
             std::cout << Translation::get("main.checking_packages", false) << std::endl;
         else
@@ -166,8 +166,8 @@ int main(int argc, char* argv[])
         if (Runtime::to_update.size() > 0)
             Runtime::update = true;
 
-        if (Runtime::to_install.size() > 0 || 
-            Runtime::to_remove.size() > 0 || 
+        if (Runtime::to_install.size() > 0 ||
+            Runtime::to_remove.size() > 0 ||
             Runtime::to_update.size() > 0)
             std::cout << Translation::get("main.searching_dependencies", false) << std::endl;
 
@@ -206,8 +206,8 @@ int main(int argc, char* argv[])
             std::vector<std::string> msgs = tstd::create_list_of_packages(Runtime::to_remove);
 
             for (const std::string &msg : msgs)
-                std::cout << msg << std::endl;  
-            
+                std::cout << msg << std::endl;
+
             std::cout << std::endl;
         }
 
@@ -217,8 +217,8 @@ int main(int argc, char* argv[])
             std::vector<std::string> msgs = tstd::create_list_of_packages(Runtime::to_update);
 
             for (const std::string &msg : msgs)
-                std::cout << msg << std::endl;  
-            
+                std::cout << msg << std::endl;
+
             std::cout << std::endl;
         }
 
@@ -228,8 +228,8 @@ int main(int argc, char* argv[])
             std::vector<std::string> msgs = tstd::create_list_of_packages(Runtime::to_install);
 
             for (const std::string &msg : msgs)
-                std::cout << msg << std::endl;  
-            
+                std::cout << msg << std::endl;
+
             std::cout << std::endl;
         }
 

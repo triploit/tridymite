@@ -27,6 +27,7 @@ bool RemoveManager::unlinkProducts(const std::string &prefix, const Package &pac
     for (int i = 0; i < package.getLinksTo().size(); i++)
     {
         std::string to = package.getLinksTo()[i];
+        to = tstd::replace(to, "$cwd", tstd::get_current_directory());
 
         if (Runtime::try_local && Runtime::local_folder)
         {
@@ -76,6 +77,7 @@ bool RemoveManager::removeProducts(const std::string &prefix, const Package &pac
     for (int i = 0; i < package.getProductsTo().size(); i++)
     {
         std::string to = package.getProductsTo()[i];
+        to = tstd::replace(to, "$cwd", tstd::get_current_directory());
 
         if (Runtime::try_local && Runtime::local_folder)
         {

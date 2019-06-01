@@ -10,3 +10,5 @@ tridymite
 tridymite.*
 *.vcxproj*
 tokens.*
+compile_error.txt
+tests/

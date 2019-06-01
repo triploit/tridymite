@@ -30,7 +30,8 @@ const std::vector<std::string> __ARG_NAME { // Names, two names of the same argu
     "g,get",
     "i,install",
     "u,update",
-    "r,remove"
+    "r,remove",
+    "c,create"
 
 };
 
@@ -54,7 +55,8 @@ const std::vector<std::string> __ARG_HELP { // Help for the arguments
     "get",
     "install",
     "update",
-    "remove"
+    "remove",
+    "create"
 };
 
 std::vector<int> __ARG_LENGTH { // How many arguments can an argument have? -1 = endless, 0 = 0, 1 = 1, ...
@@ -77,7 +79,8 @@ std::vector<int> __ARG_LENGTH { // How many arguments can an argument have? -1 =
     1,
     -1, // Endless arguments can be provided
     -1,
-    -1
+    -1,
+    0
 };
 
 std::vector<void (*)(const std::vector<std::string>&, CLI* cli)> __ARG_FUNCTIONS {
@@ -100,7 +103,8 @@ std::vector<void (*)(const std::vector<std::string>&, CLI* cli)> __ARG_FUNCTIONS
     &__argument_get,
     &__argument_install,
     &__argument_update,
-    &__argument_remove
+    &__argument_remove,
+    &__argument_create
 };
 
 #endif //TRIDYMITE_ARGUMENTS_HPP
