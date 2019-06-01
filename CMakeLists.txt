@@ -50,4 +50,18 @@ add_executable(tridymite
         manager/packages/ipackage_manager.cpp
         manager/packages/ipackage_manager.hpp
 
-        translation/translation.cpp manager/dependencies/dependency_manager.cpp manager/dependencies/dependency_manager.hpp manager/pretypes/pretype_manager.cpp manager/pretypes/pretype_manager.hpp pretype/pretype.cpp pretype/pretype.hpp variable/variable.cpp variable/variable.hpp std/args/args.hpp)
+        translation/translation.cpp
+
+        manager/dependencies/dependency_manager.cpp
+        manager/dependencies/dependency_manager.hpp
+
+        manager/pretypes/pretype_manager.cpp
+        manager/pretypes/pretype_manager.hpp
+
+        pretype/pretype.cpp
+        pretype/pretype.hpp
+
+        variable/variable.cpp
+        variable/variable.hpp
+
+        std/args/args.hpp)
