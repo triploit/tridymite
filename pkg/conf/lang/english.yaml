@@ -108,6 +108,7 @@ arguments.help.get: "download a package archive into the current working directo
 arguments.help.search_installed: "search for an installed package"
 arguments.help.search_online: "search for an installed package"
 arguments.help.create: "create a new package from the source of the current directory"
+arguments.help.keep_tmp: "keep tmp-folder after exit"
 
 arguments.usage.help: ""
 arguments.usage.install: "<package> ..."
@@ -131,6 +132,7 @@ arguments.usage.get: "<package>"
 arguments.usage.search_installed: "<string>"
 arguments.usage.search_online: "<string> ..."
 arguments.usage.create: ""
+arguments.usage.keep_tmp: ""
 
 arguments.package: "<package> = <git-user>:<git-repo>[@<git-server>] (git-server is %s by default)"
 

@@ -107,6 +107,7 @@ arguments.help.local: "versucht ein paket lokal zu installieren"
 arguments.help.get: "läd das archiv eines paketes ins aktuelle verzeichnis herunter"
 arguments.help.search_installed: "suche nach einem installierten paket"
 arguments.help.create: "ein neues paket mit dem aktuellen verzeichnis erstellen"
+arguments.help.keep_tmp: "den tmp-ordner nach abschließen des programmes behalten"
 
 arguments.usage.help: ""
 arguments.usage.install: "<paket> ..."
@@ -129,6 +130,7 @@ arguments.usage.local: ""
 arguments.usage.get: "<paket>"
 arguments.usage.search_installed: "<string>"
 arguments.usage.create: ""
+arguments.usage.keep_tmp: ""
 
 arguments.package: "<paket> = <git-nutzer>:<git-repo>[@<git-server>] (git-server ist standardmäßig %s)"
 

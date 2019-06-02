@@ -26,5 +26,6 @@
 #include "user.hpp"
 #include "version.hpp"
 #include "create.hpp"
+#include "keep_tmp.hpp"
 
 #endif //TRIDYMITE_ARGS_HPP

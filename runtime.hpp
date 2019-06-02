@@ -51,6 +51,7 @@ public:
     inline static bool force;
     inline static bool update;
     inline static bool try_local;
+    inline static bool keep_tmp;
 
     inline static bool local_folder;
     inline static std::string language;
@@ -69,6 +70,7 @@ public:
         update = false;
         try_local = false;
         local_folder = true;
+        keep_tmp = false;
 
         std::string homedir = getenv("HOME");
 
@@ -176,10 +178,13 @@ public:
 
     static void exit(int i, bool lang_exit=true)
     {
-        if (!Runtime::cleanFiles() ||
-            !Runtime::clearDirectories())
+        if (!keep_tmp)
         {
-            std::cout << Translation::get("runtime.clear_up_all_tmps");
+            if (!Runtime::cleanFiles() ||
+                !Runtime::clearDirectories())
+            {
+                std::cout << Translation::get("runtime.clear_up_all_tmps");
+            }
         }
 
         if (lang_exit)
