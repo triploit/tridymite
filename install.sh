@@ -1,5 +1,21 @@
 #!/usr/bin/env bash
 
+function check_programs() { # command_name, apt, pacman, dnf, yum, eopkg, zypper
+    if ! [ -x "$(command -v $1)" ]; then
+        echo "Error: $1 is not installed. Please install it."
+        
+        echo "Try running:"
+        echo "   (Ubuntu, Mint, Debian)     - $ sudo apt-get install $2"
+        echo "   (Arch, AntergOS, Manjaro)  - $ sudo pacman -S $3"
+        echo "   (Fedora, RHEL, CentOS)     - $ sudo dnf install $4"
+        echo "       (or)                     $ sudo yum install $5"
+        echo "   (Solus Linux)              - $ sudo eopkg install $6"
+        echo "   (openSUSE)                 - $ sudo zypper in $7"
+
+        exit 1
+    fi
+}
+
 function ask_local {
     if [[ "$PATH" == *"${pfli}"* ]] && [[ "$1" != "-l" ]]
     then
@@ -200,17 +216,26 @@ function install_yaml_cpp {
     fi
 }
 
-if ! hash cmake 2>/dev/null
-then
-    echo "Error: CMake is not installed. Please install CMake."
-    exit
-fi
+#########################################################################
+#
+# CHECKING INSTALLED PROGRAMS
+#
+#########################################################################
 
-if ! hash g++ 2>/dev/null
-then
-    echo "Error: G++ (GCC) is not installed. Please install G++ (GCC)."
-    exit
-fi
+# check_programs name apt pacman dnf yum eopkg zypper
+
+check_programs "git" "git" "git" "git-all" "git-core" "git" "git-core"
+check_programs "curl" "curl libcurl4" "curl libcurl-gnutls" "libcurl" "libcurl" "curl" "<UNKNOWN>"
+check_programs "wget" "wget" "wget" "wget" "wget -y" "wget"
+check_programs "g++" "g++" "gcc" "gcc-c++" "gcc-c++" "-c system.devel" "gcc-c++"
+check_programs "make" "binutils" "make" "make" "make" "-c system.devel" "-t devel_basis"
+check_programs "cmake" "cmake" "cmake" "cmake" "cmake" "-c system.devel" "cmake"
+
+#########################################################################
+#
+# END
+#
+#########################################################################
 
 if [[ `whoami` == "root" ]]
 then
@@ -256,8 +281,6 @@ fi
 
 cp -r pkg tridy_dir
 rm tridy_dir/*.sh tridy_dir/*.yaml
-
-
 
 #########################################################################
 #
