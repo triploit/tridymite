@@ -151,7 +151,7 @@ void RemoveManager::uninstallPackage(const Package &p)
 
     if (IPackagesManager::isPackageInstalled(package))
     {
-        std::string prefix = "[ " + package.getRepoName() + " ] ";
+        std::string prefix = "\033[1;33m[ " + package.getRepoName() + " ]\033[00m ";
         std::string dir = Runtime::tridy_dir;
 
         if (dir[dir.size()-1] != '/')
@@ -164,7 +164,7 @@ void RemoveManager::uninstallPackage(const Package &p)
         unlinkProducts(prefix, package);
         removeProducts(prefix, package);
 
-        std::cout << prefix << Translation::get("manager.remove.removing_path", false) << " " << dir << std::endl;
+        std::cout << " \033[1;32m=>\033[00m " << Translation::get("manager.remove.removing_path", false) << " " << dir << std::endl;
         system(std::string("sudo rm -rf "+dir).c_str());
         std::cout << std::endl;
     }

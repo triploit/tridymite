@@ -78,8 +78,8 @@ bool InstallationManager::linkProducts(const std::string &prefix, const Package 
 bool InstallationManager::moveProducts(const std::string &prefix, const Package &package)
 {
     int count = 0;
-
     std::cout << prefix << Translation::get("manager.install.counting_files", false) << std::endl;
+
     for (const std::string &s : package.getProductsFrom())
     {
         count += tstd::cursive_file_count(s);
@@ -184,10 +184,22 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
         from_var = "$"+from_var;
         to_var = "$"+to_var;
 
-        if (Runtime::force)
-            printf(Translation::get("manager.install.moving_force").c_str(), from.c_str(), to.c_str());
-        else
-            printf(Translation::get("manager.install.moving").c_str(), from.c_str(), to.c_str());
+        if (Runtime::force) 
+        {
+            char buff[Translation::get("manager.install.moving_force").size()+from.size()+to.size()];
+            snprintf(buff, sizeof(buff), Translation::get("manager.install.moving_force").c_str(), from.c_str(), to.c_str());
+            std::string str = buff;
+
+            std::cout << tstd::replace(str, "=>", "\033[1;32m=>\033[00m");
+        }
+        else 
+        {
+            char buff[Translation::get("manager.install.moving").size()+from.size()+to.size()];
+            snprintf(buff, sizeof(buff), Translation::get("manager.install.moving").c_str(), from.c_str(), to.c_str());
+            std::string str = buff;
+
+            std::cout << tstd::replace(str, "=>", "\033[1;32m=>\033[00m");
+        }
 
         if (!from_exists)
         {
@@ -376,7 +388,7 @@ void InstallationManager::localPackage(std::string path)
         }
     }
 
-    std::string prefix = "[ " + package.getRepoName() + " ] ";
+    std::string prefix = "\033[1;33m[ " + package.getRepoName() + " ]\033[00m ";
     std::cout << std::endl;
     std::cout << "[ " << Translation::get("manager.install.new_local_installation", false) << " ] " << Translation::get("manager.install.now_installing", false) << " " << tstd::package_to_argument(package) << std::endl;
 
@@ -473,12 +485,12 @@ void InstallationManager::localPackage(std::string path)
 
 void InstallationManager::installPackage(const Package &arg, bool nl)
 {
-    std::string prefix = "[ " + arg.getRepoName() + " ] ";
+    std::string prefix = "\033[1;33m[ " + arg.getRepoName() + " ]\033[00m ";
 
     if (nl)
         std::cout << std::endl;
 
-    std::cout << "[ " << Translation::get("manager.install.new_installation", false) << " ] " << Translation::get("manager.install.now_installing", false) << " " << tstd::package_to_argument(arg) << std::endl;
+    std::cout << "\033[1;33m[ " << Translation::get("manager.install.new_installation", false) << " ]\033[00m " << Translation::get("manager.install.now_installing", false) << " " << tstd::package_to_argument(arg) << std::endl;
 
     std::string package_str = arg.getGitUser()+"+" + arg.getRepoName()+"+" + arg.getServer();
     std::string package_dir = Runtime::tmp_dir+"/" + package_str+"/";
