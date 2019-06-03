@@ -351,6 +351,13 @@ static size_t throw_away(void *ptr, size_t size, size_t nmemb, void *data)
     return (size_t)(size * nmemb);
 }
 
+static size_t write_buf(void *contents, size_t size, size_t nmemb, void *userp)
+{
+    size_t realsize = size * nmemb;
+    tstd::read_buf.append((char*) contents, realsize);
+    return realsize;
+}
+
 double tstd::check_size(const std::string &url)
 {
     CURL *curl = curl_easy_init();
@@ -360,13 +367,21 @@ double tstd::check_size(const std::string &url)
     {
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, true);
+        curl_easy_setopt(curl, CURLOPT_FILETIME, 1L);
 
         curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
-        curl_easy_setopt(curl, CURLOPT_FILETIME, 1L);
-        curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, throw_away);
-        curl_easy_setopt(curl, CURLOPT_HEADER, 0L);
+        curl_easy_setopt(curl, CURLOPT_HEADER, 1L);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_buf);
 
+        tstd::read_buf.clear();
         res = curl_easy_perform(curl);
+
+        if (tstd::read_buf.find("Status: 404 Not Found") != std::string::npos ||
+            tstd::read_buf.find("HTTP/2 404") != std::string::npos ||
+            tstd::read_buf.find("HTTP/2 401") != std::string::npos ||
+            tstd::read_buf.find("HTTP/1.1 401") != std::string::npos ||
+            tstd::read_buf.find("HTTP/1.1 404") != std::string::npos)
+            return -2;
 
         if (!res)
         {
@@ -383,42 +398,6 @@ double tstd::check_size(const std::string &url)
     return -1;
 }
 
-static size_t write_buf(void *contents, size_t size, size_t nmemb, void *userp)
-{
-    size_t realsize = size * nmemb;
-    tstd::read_buf.append((char*) contents, realsize);
-    return realsize;
-}
-
-bool tstd::url_exists(const std::string &url)
-{
-    CURL *curl;
-    FILE *fp;
-    CURLcode res;
-    curl = curl_easy_init();
-
-    if (curl)
-    {
-        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, true);
-
-        curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
-        curl_easy_setopt(curl, CURLOPT_HEADER, 1L);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_buf);
-
-        tstd::read_buf.clear();
-        res = curl_easy_perform(curl);
-
-        return tstd::read_buf.find("Status: 404 Not Found") == std::string::npos &&
-            tstd::read_buf.find("HTTP/2 404") == std::string::npos &&
-            tstd::read_buf.find("HTTP/2 401") == std::string::npos &&
-            tstd::read_buf.find("HTTP/1.1 401") == std::string::npos &&
-            tstd::read_buf.find("HTTP/1.1 404") == std::string::npos;
-    }
-
-    return false;
-}
-
 bool tstd::download_file(const std::string &url, const std::string &destination)
 {
     CURL *curl;
@@ -430,9 +409,6 @@ bool tstd::download_file(const std::string &url, const std::string &destination)
     {
         double r = tstd::check_size(url);
 
-        if (!url_exists(url))
-            return false;
-
         if (r > 1000000000)
         {
             std::cout << Translation::get("std.big_file", false) << " (" << std::round(r/1000000000) << "GB)." << std::endl;
@@ -442,6 +418,8 @@ bool tstd::download_file(const std::string &url, const std::string &destination)
                 return false;
             }
         }
+        else if (r == -2)
+            return false;
 
         fp = fopen(destination.c_str(), "wb");
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
@@ -528,9 +506,9 @@ int tstd::cursive_file_count(const std::string &path, int count)
 
 std::string tstd::replace_quotation_marks(std::string from)
 {
-    from = tstd::replace(from, "\\\"", "<¬BSAFZ"+std::to_string(getpid())+">");
+    from = tstd::replace(from, "\\\"", "<¬BSAFZ"+std::to_string(Runtime::pid)+">");
     from = tstd::replace(from, "\"", "\\\"");
-    from = tstd::replace(from, "<¬BSAFZ"+std::to_string(getpid())+">", "\\\"");
+    from = tstd::replace(from, "<¬BSAFZ"+std::to_string(Runtime::pid)+">", "\\\"");
 
     return from;
 }

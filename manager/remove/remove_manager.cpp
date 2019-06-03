@@ -45,7 +45,7 @@ bool RemoveManager::unlinkProducts(const std::string &prefix, const Package &pac
         }
 
         to = "_"+tstd::replace_quotation_marks(to);
-        std::string to_var = std::to_string(getpid())+"_tridy_pto";
+        std::string to_var = std::to_string(Runtime::pid)+"_tridy_pto";
         setenv(to_var.c_str(), to.c_str(), true);
         to_var = "$"+to_var;
 
@@ -95,7 +95,7 @@ bool RemoveManager::removeProducts(const std::string &prefix, const Package &pac
         }
 
         to = tstd::replace_quotation_marks(to);
-        std::string to_var = "_"+std::to_string(getpid())+"_tridy_pto";
+        std::string to_var = "_"+std::to_string(Runtime::pid)+"_tridy_pto";
         setenv(to_var.c_str(), to.c_str(), true);
         to_var = "$"+to_var;
 

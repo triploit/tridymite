@@ -227,13 +227,13 @@ function install_yaml_cpp {
 # check_programs name apt pacman dnf yum eopkg zypper
 
 check_programs git git git git-all git-core git git-core
-check_programs curl libcurl4-gnutls-dev curl libcurl-gnutls libcurl libcurl curl libcurl-devel
+check_programs curl libcurl4-gnutls-dev curl libcurl-gnutls libcurl-devel libcurl-devel curl libcurl-devel
 check_programs wget wget wget wget 'wget#-y' wget
 check_programs g++ g++ gcc gcc-c++ gcc-c++ '-c#system.devel' gcc-c++
-check_programs make binutils make make make '-c#system.devel' '-t#devel_basis'
+check_programs make make make make make '-c#system.devel' '-t#devel_basis'
 check_programs cmake cmake cmake cmake cmake '-c#system.devel' cmake
 
-if [ ! -f "/usr/include/x86_64-linux-gnu/curl/curl.h" ] && [ ! -f "/usr/include/curl/curl.h" ]
+if [ ! -f "/usr/include/x86_64-linux-gnu/curl/curl.h" ] && [ ! -f "/usr/include/curl/curl.h" ] && [ ! -f "/usr/include/x86_64-linux-gnu/curl/curl.h" ] 
 then
     echo "Error: libcurl isn't installed!"
     try_running_message "libcurl4-gnutls-dev" "libcurl-gnutls" "libcurl" "libcurl" "curl-devel" "<UNKNOWN>"
@@ -243,7 +243,7 @@ fi
 if [ ! -d "/usr/include/yaml-cpp" ] && [ ! -d "/usr/local/include/yaml-cpp" ]
 then
     echo "Error: yaml-cpp isn't installed!"
-    try_running_message libyaml-cpp-devel yaml-cpp yaml-cpp-devel yaml-cpp-devel yaml-cpp-devel yaml-cpp-devel
+    try_running_message libyaml-cpp-dev yaml-cpp yaml-cpp-devel yaml-cpp-devel yaml-cpp-devel yaml-cpp-devel
     exit 1
 fi
 

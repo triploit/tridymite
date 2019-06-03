@@ -1,8 +1,17 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.7)
 project(tridymite)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_LIBRARIES "-lyaml-cpp -lcurl")
+
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    # require at least gcc 8.3.0
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 7.3.0)
+        message(FATAL_ERROR "GCC version must be at least 7.3.0!")
+    endif()
+else()
+    message(WARNING "You are using an unsupported compiler! Compilation has only been tested with Clang and GCC.")
+endif()
 
 include_directories(.)
 include_directories(cli)

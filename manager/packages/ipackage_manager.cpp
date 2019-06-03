@@ -61,7 +61,7 @@ const Package& IPackagesManager::getPackage(Package &p)
 
 std::string IPackagesManager::getPackageFile(const Package &p)
 {
-    return std::__cxx11::string();
+    return p.getYamlPath();
 }
 
 void IPackagesManager::setInstalledPackages(const std::vector<Package> &packages)

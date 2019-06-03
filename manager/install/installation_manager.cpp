@@ -59,8 +59,8 @@ bool InstallationManager::linkProducts(const std::string &prefix, const Package 
         to = tstd::replace_quotation_marks(to);
         from = tstd::replace_quotation_marks(from);
 
-        std::string from_var = "_"+std::to_string(getpid())+"_tridy_pfrom";
-        std::string to_var = "_"+std::to_string(getpid())+"_tridy_pto";
+        std::string from_var = "_"+std::to_string(Runtime::pid)+"_tridy_pfrom";
+        std::string to_var = "_"+std::to_string(Runtime::pid)+"_tridy_pto";
 
         setenv(from_var.c_str(), from.c_str(), true);
         setenv(to_var.c_str(), to.c_str(), true);
@@ -175,8 +175,8 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
         to = tstd::replace_quotation_marks(to);
         from = tstd::replace_quotation_marks(from);
 
-        std::string from_var = "_"+std::to_string(getpid())+"_tridy_pfrom";
-        std::string to_var = "_"+std::to_string(getpid())+"_tridy_pto";
+        std::string from_var = "_"+std::to_string(Runtime::pid)+"_tridy_pfrom";
+        std::string to_var = "_"+std::to_string(Runtime::pid)+"_tridy_pto";
 
         setenv(from_var.c_str(), from.c_str(), true);
         setenv(to_var.c_str(), to.c_str(), true);
@@ -217,6 +217,16 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
                 printf(Translation::get("manager.install.file_conflict").c_str(), tstd::package_to_argument(package).c_str(), to.c_str());
                 Runtime::exit(1);
             }
+        }
+
+        if (Runtime::verbose)
+        {
+            std::cout << std::endl;
+            std::cout << "[ VERB ] Moving from ";
+            system(("echo \\\""+from_var+"\\\"").c_str());
+
+            std::cout << "[ VERB ] Moving to ";
+            system(("echo \\\""+to_var+"\\\"").c_str());
         }
 
         if ((from_file && to_file) ||
