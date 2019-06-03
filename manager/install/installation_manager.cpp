@@ -219,6 +219,16 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
             }
         }
 
+        if (Runtime::verbose)
+        {
+            std::cout << std::endl;
+            std::cout << "[ VERB ] Moving from ";
+            system(("echo \\\""+from_var+"\\\"").c_str());
+
+            std::cout << "[ VERB ] Moving to ";
+            system(("echo \\\""+to_var+"\\\"").c_str());
+        }
+
         if ((from_file && to_file) ||
             (from_file && !to_file))
         {

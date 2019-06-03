@@ -227,7 +227,7 @@ function install_yaml_cpp {
 # check_programs name apt pacman dnf yum eopkg zypper
 
 check_programs git git git git-all git-core git git-core
-check_programs curl libcurl4-gnutls-dev curl libcurl-gnutls libcurl libcurl curl libcurl-devel
+check_programs curl libcurl4-gnutls-dev curl libcurl-gnutls libcurl-devel libcurl-devel curl libcurl-devel
 check_programs wget wget wget wget 'wget#-y' wget
 check_programs g++ g++ gcc gcc-c++ gcc-c++ '-c#system.devel' gcc-c++
 check_programs make binutils make make make '-c#system.devel' '-t#devel_basis'
