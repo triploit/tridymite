@@ -257,7 +257,38 @@ int main(int argc, char* argv[])
         {
             InstallationManager::installPackage(install_me);
         }
+    }
 
+    std::cout << std::endl << Translation::get("main.all_work_done");
+
+    if (!Runtime::to_install.empty())
+    {
+        std::cout << Translation::get("main.arrow", false);
+
+        if (Runtime::to_install.size() > 1)
+            printf(Translation::get("main.installed_t").c_str(), Runtime::to_install.size());
+        else
+            printf(Translation::get("main.installed_o").c_str(), Runtime::to_install.size());
+    }
+
+    if (!Runtime::to_update.empty())
+    {
+        std::cout << Translation::get("main.arrow", false);
+
+        if (Runtime::to_update.size() > 1)
+            printf(Translation::get("main.updated_t").c_str(), Runtime::to_update.size());
+        else
+            printf(Translation::get("main.updated_o").c_str(), Runtime::to_update.size());
+    }
+
+    if (!Runtime::to_remove.empty())
+    {
+        std::cout << Translation::get("main.arrow", false);
+
+        if (Runtime::to_remove.size() > 1)
+            printf(Translation::get("main.removed_t").c_str(), Runtime::to_remove.size());
+        else
+            printf(Translation::get("main.removed_o").c_str(), Runtime::to_remove.size());
     }
 
     Runtime::exit(0);

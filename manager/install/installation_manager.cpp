@@ -16,7 +16,7 @@
 bool InstallationManager::linkProducts(const std::string &prefix, const Package &package)
 {
     if (package.getLinksTo().size() > 0)
-        std::cout << prefix << Translation::get("manager.install.linking", false) << std::endl;
+        std::cout << prefix << Translation::get("manager.install.linking_files", false) << std::endl;
 
     for (int i = 0; i < package.getLinksFrom().size(); i++)
     {

@@ -12,6 +12,7 @@
 #define _RED "\033[1;31m"
 #define _YELLOW "\033[1;33m"
 #define _BLUE "\033[1;34m"
+#define _NONE "\033[00m"
 
 std::string Translation::get(const std::string &s, const bool &nl, const bool &bnl)
 {
@@ -24,7 +25,14 @@ std::string Translation::get(const std::string &s, const bool &nl, const bool &b
         if (bnl)
             str = "\n" + str;
 
-        return tstd::replace(tstd::replace(tstd::replace(tstd::replace(str, "[!!!]", _RED), "[!!]", _YELLOW), "[!]", _BLUE), "[.]", "\033[00m");
+        str = tstd::replace(str, "[=>]", "\033[1;32m=>\033[00m");
+        str = tstd::replace(str, "[!!!]", _RED);
+        str = tstd::replace(str, "[!!]", _YELLOW);
+        str = tstd::replace(str, "[!]", _BLUE);
+        str = tstd::replace(str, "[!]", _BLUE);
+        str = tstd::replace(str, "[.]", _NONE);
+
+        return str;
     }
     else
     {
@@ -42,7 +50,14 @@ std::string Translation::get(const std::string &s, const bool &nl, const bool &b
             if (bnl)
                 str = "\n" + str;
 
-            return "[?] "+tstd::replace(tstd::replace(tstd::replace(tstd::replace(str, "[!!!]", _RED), "[!!]", _YELLOW), "[!]", _BLUE), "[.]", "\033[00m");
+            str = tstd::replace(str, "[=>]", "\033[1;32m=>\033[00m");
+            str = tstd::replace(str, "[!!!]", _RED);
+            str = tstd::replace(str, "[!!]", _YELLOW);
+            str = tstd::replace(str, "[!]", _BLUE);
+            str = tstd::replace(str, "[!]", _BLUE);
+            str = tstd::replace(str, "[.]", _NONE);
+
+            return "[?] "+str;
         }
     }
 
