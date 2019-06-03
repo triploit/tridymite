@@ -1,75 +1,75 @@
-general.loading_packages: "info: lade pakete ..."
-general.package_not_found: "error: paket %s nicht gefunden!"
-general.package_not_found_good: "error: paket nicht gefunden:"
+general.loading_packages: "[!] info: lade pakete ..."
+general.package_not_found: "[!!!] error: paket %s nicht gefunden!"
+general.package_not_found_good: "[!!!] error: paket nicht gefunden:"
 general.continue_question: "willst du fortfahren? (y=ja, n=nein)" # don't change up the 'y' and 'n', but translate 'yes' and 'no'! 
 general.aborted: "abgebrochen."
 
 # cli
 
-cli.argument.not_found: "error: argument \"%s\" nicht gefunden!"
-cli.argument.no_passed: "error: kein argument angegeben!"
-cli.argument.too_many: "error: zu viele parameter für das argument \"%s\""
-cli.argument.too_few: "error: zu wenige parameter für das argument \"%s\""
+cli.argument.not_found: "[!!!] error: argument \"%s\" nicht gefunden!"
+cli.argument.no_passed: "[!!!] error: kein argument angegeben!"
+cli.argument.too_many: "[!!!] error: zu viele parameter für das argument \"%s\""
+cli.argument.too_few: "[!!!] error: zu wenige parameter für das argument \"%s\""
 cli.version: "version" # "version <version>" will be printed
-cli.unfinished_arguments: "error: cli: die deklarationen der argumente sind unfertig!"
+cli.unfinished_arguments: "[!!!] error: cli: die deklarationen der argumente sind unfertig!"
 
 # manager/dependencies
 
-manager.dependencies.cant_remove_dependency: "info: kann %s nicht entfernen: ist eine abhängigkeit von:"
-manager.dependencies.added_dependency: "info: abhängigkeit hinzugefügt:"
+manager.dependencies.cant_remove_dependency: "[!] info: kann %s nicht entfernen: ist eine abhängigkeit von:"
+manager.dependencies.added_dependency: "[!] info: abhängigkeit hinzugefügt:"
 
 # manager/install
 
 manager.install.linking_files: "verlinke dateien ..."
 manager.install.linking: "verlinke " # "linking <path>" will be printed
 manager.install.counting_files: "zähle dateien ..."
-manager.install.file_warning: "warnung: dieses paket enthält mehr als 100 dateien." 
+manager.install.file_warning: "[!!] warnung: dieses paket enthält mehr als 100 dateien." 
 manager.install.continue_counting: "zähle weiter ..."
 manager.install.moving_files: "kopiere %d dateien ..."
-manager.install.local_directory_not_found: "error: konnte das verzeichnis für die lokalen pakete nicht finden."
+manager.install.local_directory_not_found: "[!!!] error: konnte das verzeichnis für die lokalen pakete nicht finden."
 manager.install.global_installation_question: "möchtest du fortfahren und es global installieren? (y=ja, n=nein)" # don't change up the 'y' and 'n', but translate 'yes' and 'no'! 
 manager.install.aborting_installation: "paketinstallation abgebrochen."
 manager.install.moving_force: " => kopiere (UNTER ZWANG) %s nach %s"
 manager.install.moving: " => kopiere %s nach %s"
-manager.install.product_not_existing: "error: paket %s: products: \"%s\" existiert nicht!"
-manager.install.file_conflict: "error: paket %s: products: konflikt:\n    - \"%s\" existiert bereits im dateisystem!"
-manager.install.moving_error_unknown: "error: kopieren von products: \"%s\": unbekannter fehler!"
-manager.install.directory_into_file: "error: paket %s: products: \"%s\": kann verzeichnis nicht in eine datei kopieren!"
-manager.install.file_neither_exists: "error: kopieren von products: \"%s\": unbekannter fehler! beide dateien (\"%s\" und \"%s\") existieren nicht!"
+manager.install.product_not_existing: "[!!!] error: paket %s: products: \"%s\" existiert nicht!"
+manager.install.file_conflict: "[!!!] error: paket %s: products: konflikt:\n    - \"%s\" existiert bereits im dateisystem!"
+manager.install.moving_error_unknown: "[!!!] error: kopieren von products: \"%s\": unbekannter fehler!"
+manager.install.directory_into_file: "[!!!] error: paket %s: products: \"%s\": kann verzeichnis nicht in eine datei kopieren!"
+manager.install.file_neither_exists: "[!!!] error: kopieren von products: \"%s\": unbekannter fehler! beide dateien (\"%s\" und \"%s\") existieren nicht!"
 manager.install.downloading: "herunterladen ..."
 manager.install.unzipping: "entpacken ..."
-manager.install.couldnt_unzip: "error: konnte die datei nicht entpacken!"
-manager.install.install_unzip: "info: installiere das unzip-tool."
+manager.install.couldnt_unzip: "[!!!] error: konnte die datei nicht entpacken!"
+manager.install.install_unzip: "[!] info: installiere das unzip-tool."
 manager.install.on_which_account: "auf welchem git account wird es liegen?"
 manager.install.on_which_branch: "auf welchem git branch wird es liegen?"
 manager.install.on_which_server: "auf welchem git server wird es liegen?"
 manager.install.what_name: "was wird der name der repository sein?"
 manager.install.added: "hinzugefügt!"
-manager.install.dependency_searching: "info: suche nach abhängigkeiten ..."
-manager.install.local_reinstall: "info: (lokal) paket %s v%s ist bereits installiert. installiere erneut."
-manager.install.local_skip: "info: (lokal) paket %s v%s ist bereits installiert. überspringe."
+manager.install.dependency_searching: "[!] info: suche nach abhängigkeiten ..."
+manager.install.local_reinstall: "[!] info: (lokal) paket %s v%s ist bereits installiert. installiere erneut."
+manager.install.local_skip: "[!] info: (lokal) paket %s v%s ist bereits installiert. überspringe."
 manager.install.new_local_installation: "neue lokale installation"
 manager.install.now_installing: "installiere jetzt" # "now installing <project>"" will be printed
 manager.install.building: "baue das paket ..."
 manager.install.installing_version: "installiere version" # "installing version <version>" will be printed
 manager.install.skipping: "überpsringe ..."
 manager.install.new_installation: "neue installation"
-manager.install.doesnt_support_local: "error: dieses paket unterstützt keine lokalen installation!"
-manager.install.pretype_doesnt_exit: "error: der pretype \"%s\" existiert nicht auf diesem computer!"
+manager.install.doesnt_support_local: "[!!!] error: dieses paket unterstützt keine lokalen installation!"
+manager.install.pretype_doesnt_exit: "[!!!] error: der pretype \"%s\" existiert nicht auf diesem computer!"
 manager.install.skip_and_continue: "möchtest du dieses paket überspringen und mit den anderen installationen fortfahren? (y=ja, n=nein)" # don't change up the 'y' and 'n', but translate 'yes' and 'no'! 
-manager.install.no_build_script: "error: es existiert kein build-script im paket."
+manager.install.no_build_script: "[!!!] error: es existiert kein build-script im paket."
 
 # manager/remove
 
 manager.remove.removing_links: "entferne verlinkungen ..."
-manager.remove.local_directory_not_found: "error: konnte das verzeichnis für lokale pakete nicht finden."
+manager.remove.local_directory_not_found: "[!!!] error: konnte das verzeichnis für lokale pakete nicht finden."
 manager.remove.remove_globally_instead: "möchtest du fortfahren und es global entfernen? (y=ja, n=nein)" # don't change up the 'y' and 'n', but translate 'yes' and 'no'! 
 manager.remove.unlinking: "entferne verlinkung von" # "unlinking <datei>" will be printed
 manager.remove.removing_products: "entfernen von products ..."
 manager.remove.removing: "entfernen"
 manager.remove.now_uninstalling: "deinstalliere jetzt" # "now uninstalling <packages>" will be printed
 manager.remove.removing_path: "entfernen von" # "removing <path>" will be printed
-manager.remove.package_not_found: "warnung: entfernen: paket %s nicht gefunden. überspringe."
+manager.remove.package_not_found: "[!!] warnung: entfernen: paket %s nicht gefunden. überspringe."
 
 # manager/update
 
@@ -78,11 +78,12 @@ manager.update.updating_package: "aktualisiere paket" # "updating package <paket
 
 # script
 
-script.parse_file.file_not_found: "error: kann nicht ohne date fortfahren."
-script.parse_file.to_many_brackets: "error: zeile %d: zu viele \"}\" in datei %s!"
-script.parse_file.unfinished_declaration: "error: zeile %d: unfertige definition im build.-script."
-script.unsave_script: "error: unsicheres skript: skript benutzt den sudo-befehl!"
-script.function_not_found: "error: kann die funktion nicht ausführen: \"%s\": funktion nicht gefunden!"
+script.parse_file.file_not_found: "[!!!] error: kann nicht ohne date fortfahren."
+script.parse_file.to_many_brackets: "[!!!] error: zeile %d: zu viele \"}\" in datei %s!"
+script.parse_file.unfinished_declaration: "[!!!] error: zeile %d: unfertige definition im build.-script."
+script.unsave_script: "[!!!] error: unsicheres skript: skript benutzt den sudo-befehl!"
+script.function_not_found: "[!!!] error: kann die funktion nicht ausführen: \"%s\": funktion nicht gefunden!"
+script.error_at_script: "[!!!] error: fehler beim build-skript. abbruch."
 
 # std
 
@@ -134,75 +135,75 @@ arguments.usage.keep_tmp: ""
 
 arguments.package: "<paket> = <git-nutzer>:<git-repo>[@<git-server>] (git-server ist standardmäßig %s)"
 
-std.package.package_incomplete: "error: parsen des paketes: \"%s\" ist nicht vollständig."
-std.package.package_structure: "info: paketnamen sind wie folgt aufgebaut: \"nutzer:repository@gitserver.abc\""
-std.config.no_servers_defined: "error: keine git-server in der konfigurationsdatei angegeben!"
-std.config.server_not_defined: "error: git server \"%s\" ist nicht in der konfigurationsdatei konfiguriert!"
+std.package.package_incomplete: "[!!!] error: parsen des paketes: \"%s\" ist nicht vollständig."
+std.package.package_structure: "[!] info: paketnamen sind wie folgt aufgebaut: \"nutzer:repository@gitserver.abc\""
+std.config.no_servers_defined: "[!!!] error: keine git-server in der konfigurationsdatei angegeben!"
+std.config.server_not_defined: "[!!!] error: git server \"%s\" ist nicht in der konfigurationsdatei konfiguriert!"
 std.neither_y_or_no: "bitte schriebe y oder n!"
 std.big_file: "die datei, die du herunterlade möchtest, ist ziemlich groß" # "the file you want to download is really big (<size> GB)." will be printed
-std.object_not_found: "error: object %s not found!"
+std.object_not_found: "[!!!] error: object %s not found!"
 
 # runtime
 
-runtime.not_installed: "error: es sieht so aus, als wäre tridymite noch nicht installiert.\nWenn du den Source-Code hier hast, führe die install.sh-Datei aus."
-runtime.tmp_permission_error: "error: konnte temporäres verzeichnis nicht erstellen!:"
-runtime.clean_files.error: "error: konnte dateien nicht entfernen: %s"
-runtime.clean_directories.error: "error: konnte verzeichnis nicht entfernen: %s"
+runtime.not_installed: "[!!!] error: es sieht so aus, als wäre tridymite noch nicht installiert.\nWenn du den Source-Code hier hast, führe die install.sh-Datei aus."
+runtime.tmp_permission_error: "[!!!] error: konnte temporäres verzeichnis nicht erstellen!:"
+runtime.clean_files.error: "[!!!] error: konnte dateien nicht entfernen: %s"
+runtime.clean_directories.error: "[!!!] error: konnte verzeichnis nicht entfernen: %s"
 
-runtime.clear_up_all_tmps: "error: fehler beim aufräumen der temporären verzeichnisse."
+runtime.clear_up_all_tmps: "[!!!] error: fehler beim aufräumen der temporären verzeichnisse."
 runtime.exit: "beende mit code %d"
 
-runtime.config_not_found: "error: die konfigurationsdatei von tridymite wurde nicht gefunden!"
-runtime.tridy_not_installed: "error: es sieht so aus, als wäre tridymite noch nicht installiert."
+runtime.config_not_found: "[!!!] error: die konfigurationsdatei von tridymite wurde nicht gefunden!"
+runtime.tridy_not_installed: "[!!!] error: es sieht so aus, als wäre tridymite noch nicht installiert."
 runtime.run_installer: "Wenn du den Source-Code hier hast, führe die install.sh-Datei aus."
 runtime.catch_ctrl_c: "^C abgefangen\ntu das nicht noch einmal!"
 
 # main
 
-main.never_root: "error: führe tridymite niemals als root aus!"
-main.no_local_module: "error: kann die option \"-l/--local\" nicht nutzen: das modul zur lokalen installation ist nicht aktiviert!"
+main.never_root: "[!!!] error: führe tridymite niemals als root aus!"
+main.no_local_module: "[!!!] error: kann die option \"-l/--local\" nicht nutzen: das modul zur lokalen installation ist nicht aktiviert!"
 main.list_local_packages: "Diese lokalen Pakete sind installiert:"
 main.list_packages: "Diese Pakete sind installiert:"
 main.no_packages_installed: "Es wurden keine Pakete installiert."
 main.no_local_packages_installed: "Es wurden keine lokalen Pakete installiert."
-main.downloading: "info: herunterladen von " # "info: downloading <paket> ..." will be printed
-main.file_exists_overwrite: "warnung: diese datei existiert bereits.\nmöchtest du sie überschreiben?"
-main.finished: "info: abgeschlossen."
-main.package_not_found: "error: paket nicht gefunden!"
-main.description_package_not_found: "info: beschreibung anzeigen: das oajet konnte nicht gefunden werden:" # "info: show description: couldn't find package <paket>" will be printed
-main.trying_find_online: "info: versuche es online zu finden ..."
-main.installing_local_path: "info: installiere den pfad:"
-main.package_installed_reinstall: "info: paket %s v%s ist schon installiert. installiere erneut."
-main.package_installed_skipping: "info: paket %s v%s ist schon installiert. überspringe."
-main.package_up_to_date_reinstall: "info: paket %s v%s ist up-to-date. installiere erneut."
-main.package_up_to_date_skipping: "info: paket %s v%s ist up-to-date. überpspringe."
-main.not_installed_cant_removed: "info: paket %s ist nicht installiert und kann daher auch nicht entfernt werden."
-main.checking_packages: "info: überprüfe pakete ..."
-main.searching_dependencies: "info: suche nach abhängigkeiten ..."
-main.following_removed: "info: folgende pakete werden entfernt" # "info: following packages will be removed (<number>):" will be printed
-main.following_updated: "info: folgende pakete werden aktualisiert" # "info: following packages will be updated (<number>):" will be printed
-main.following_installed: "info: folgende pakete werden installiert" # "info: following packages will be installed (<number>):" will be printed
+main.downloading: "[!] info: herunterladen von " # "[!] info: downloading <paket> ..." will be printed
+main.file_exists_overwrite: "[!!] warnung: diese datei existiert bereits.\nmöchtest du sie überschreiben?"
+main.finished: "[!] info: abgeschlossen."
+main.package_not_found: "[!!!] error: paket nicht gefunden!"
+main.description_package_not_found: "[!] info: beschreibung anzeigen: das oajet konnte nicht gefunden werden:" # "[!] info: show description: couldn't find package <paket>" will be printed
+main.trying_find_online: "[!] info: versuche es online zu finden ..."
+main.installing_local_path: "[!] info: installiere den pfad:"
+main.package_installed_reinstall: "[!] info: paket %s v%s ist schon installiert. installiere erneut."
+main.package_installed_skipping: "[!] info: paket %s v%s ist schon installiert. überspringe."
+main.package_up_to_date_reinstall: "[!] info: paket %s v%s ist up-to-date. installiere erneut."
+main.package_up_to_date_skipping: "[!] info: paket %s v%s ist up-to-date. überpspringe."
+main.not_installed_cant_removed: "[!] info: paket %s ist nicht installiert und kann daher auch nicht entfernt werden."
+main.checking_packages: "[!] info: überprüfe pakete ..."
+main.searching_dependencies: "[!] info: suche nach abhängigkeiten ..."
+main.following_removed: "[!] info: folgende pakete werden entfernt" # "[!] info: following packages will be removed (<number>):" will be printed
+main.following_updated: "[!] info: folgende pakete werden aktualisiert" # "[!] info: following packages will be updated (<number>):" will be printed
+main.following_installed: "[!] info: folgende pakete werden installiert" # "[!] info: following packages will be installed (<number>):" will be printed
 
-main.so.to_few_parameters: "error: zu wenige argumente! syntax:\n    ... -so <server> <suchterme> ..."
-main.so.no_git_servers: "error: es sind keine git-server in der konfigurationsdatei!"
-main.so.server_not_defined: "error: server %s wurde nicht in der konfig definiert!"
-main.so.servant_not_implemented: "error: die suchfunktion für den server %s ist nicht implementiert!"
-main.so.no_servant: "error: kein servant definiert."
-main.so.error_at_servant: "error: fehler passierte beim servant!"
-main.so.error: "error: ein fehler trat auf!"
-main.so.invalid_pat: "error: falscher personal access token!"
+main.so.to_few_parameters: "[!!!] error: zu wenige argumente! syntax:\n    ... -so <server> <suchterme> ..."
+main.so.no_git_servers: "[!!!] error: es sind keine git-server in der konfigurationsdatei!"
+main.so.server_not_defined: "[!!!] error: server %s wurde nicht in der konfig definiert!"
+main.so.servant_not_implemented: "[!!!] error: die suchfunktion für den server %s ist nicht implementiert!"
+main.so.no_servant: "[!!!] error: kein servant definiert."
+main.so.error_at_servant: "[!!!] error: fehler passierte beim servant!"
+main.so.error: "[!!!] error: ein fehler trat auf!"
+main.so.invalid_pat: "[!!!] error: falscher personal access token!"
 main.so.found_matches: "%d Ergebnisse:"
 main.so.found_match: "%d Ergebnis:"
 main.so.no_found: "Keine Pakete gefunden."
-main.so.incomplete_package: "error: fehler in servant: servant gibt ungültiges paket zurück!"
+main.so.incomplete_package: "[!!!] error: fehler in servant: servant gibt ungültiges paket zurück!"
 
-main.create.info_file_not_found: "error: datei nicht gefunden!"
+main.create.info_file_not_found: "[!!!] error: datei nicht gefunden!"
 main.create.name: "Wie ist der Name des Projekes?"
 main.create.version: "Wie ist die aktuelle Versionsnummer des Projektes (N.N.NB; N=Number, B=Buchstabe(a-z))?"
 main.create.description: "Beschreibe dein Projekt in einem kurzem Satz."
 main.create.info_file: "Hast du eine Text-Datei mit einigen Informationen über das Projekt? (Wie eine kleine Version einer ReadMe.md.)"
 main.create.info_path: "Bitte gib mir den Pfad zu dieser Datei."
-main.create.cant_write: "error: kann die datei nicht erstellen!"
+main.create.cant_write: "[!!!] error: kann die datei nicht erstellen!"
 main.create.authors: "Gib mir die Autoren des Projektes (schreibe \"(end)\", wenn du fertig bist)."
 main.create.tridy_knows: "Tridymite kennt diese Pakettypen : "
 main.create.one_of_them: "Ist dein Paket ein Typ davon?"
@@ -223,8 +224,8 @@ main.create.ok: "Okay!"
 
 # package
 
-package.no_option_set: "error: paket %s: option fehlt (%s)!"
-package.products_have_to_be_sequence: "error: paket %s: products müssen eine sequenz sein!"
-package.links_have_to_be_sequence: "error: paket %s: links müssen eine sequenz sein!"
-package.no_tridymite_package: "error: paket %s: abhängigkeit %s scheint kein tridymite-paket zu sein!"
-package.nopkg: "error: paket %s: abhängigkeit: nopkg ist noch nicht erlaubt!"
+package.no_option_set: "[!!!] error: paket %s: option fehlt (%s)!"
+package.products_have_to_be_sequence: "[!!!] error: paket %s: products müssen eine sequenz sein!"
+package.links_have_to_be_sequence: "[!!!] error: paket %s: links müssen eine sequenz sein!"
+package.no_tridymite_package: "[!!!] error: paket %s: abhängigkeit %s scheint kein tridymite-paket zu sein!"
+package.nopkg: "[!!!] error: paket %s: abhängigkeit: nopkg ist noch nicht erlaubt!"
