@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
 function try_running_message() {
-        echo "Try running:"
-    echo "   (Ubuntu, Mint, Debian)     - $ sudo apt-get install $1"
-    echo "   (Arch, AntergOS, Manjaro)  - $ sudo pacman -S $2"
-    echo "   (Fedora, RHEL, CentOS)     - $ sudo dnf install $3"
-    echo "       (or)                     $ sudo yum install $4"
-    echo "   (Solus Linux)              - $ sudo eopkg install $5"
-    echo "   (openSUSE)                 - $ sudo zypper in $6"
+    echo "Try running:"
+    echo "   (Ubuntu, Mint, Debian)     - $ sudo apt-get install ${1/\#/ }"
+    echo "   (Arch, AntergOS, Manjaro)  - $ sudo pacman -S ${2/\#/ }"
+    echo "   (Fedora, RHEL, CentOS)     - $ sudo dnf install ${3/\#/ }"
+    echo "       (or)                     $ sudo yum install ${4/\#/ }"
+    echo "   (Solus Linux)              - $ sudo eopkg install ${5/\#/ }"
+    echo "   (openSUSE)                 - $ sudo zypper in ${6/\#/ }"
 }
 
 function check_programs() { # command_name, apt, pacman, dnf, yum, eopkg, zypper
@@ -226,19 +226,26 @@ function install_yaml_cpp {
 
 # check_programs name apt pacman dnf yum eopkg zypper
 
-check_programs "git" "git" "git" "git-all" "git-core" "git" "git-core"
-check_programs "curl" "libcurl4-gnutls-dev" "curl libcurl-gnutls" "libcurl" "libcurl" "curl" "<UNKNOWN>"
-check_programs "wget" "wget" "wget" "wget" "wget -y" "wget"
-check_programs "g++" "g++" "gcc" "gcc-c++" "gcc-c++" "-c system.devel" "gcc-c++"
-check_programs "make" "binutils" "make" "make" "make" "-c system.devel" "-t devel_basis"
-check_programs "cmake" "cmake" "cmake" "cmake" "cmake" "-c system.devel" "cmake"
+check_programs git git git git-all git-core git git-core
+check_programs curl libcurl4-gnutls-dev curl libcurl-gnutls libcurl libcurl curl UNKNOWN
+check_programs wget wget wget wget 'wget#-y' wget
+check_programs g++ g++ gcc gcc-c++ gcc-c++ '-c#system.devel' gcc-c++
+check_programs make binutils make make make '-c#system.devel' '-t#devel_basis'
+check_programs cmake cmake cmake cmake cmake '-c#system.devel' cmake
 
-if [ ! -f "/usr/include/x86_64-linux-gnu/curl/curl.h" ]
+if [ ! -f "/usr/include/x86_64-linux-gnu/curl/curl.h" ] && [ ! -f "/usr/include/curl/curl.h" ]
 then
     echo "Error: libcurl isn't installed!"
-    try_running_message "libcurl4-gnutls-dev" "libcurl-gnutls" "libcurl" "libcurl" "curl" "<UNKNOWN>"
+    try_running_message "libcurl4-gnutls-dev" "libcurl-gnutls" "libcurl" "libcurl" "curl-devel" "<UNKNOWN>"
     exit 1
 fi
+
+if [ ! -d "/usr/include/yaml-cpp" ] && [ ! -d "/usr/local/include/yaml-cpp" ]
+then
+    check_programs libyaml-cpp-devel yaml-cpp yaml-cpp-devel yaml-cpp-devel yaml-cpp-devel yaml-cpp
+fi
+
+# install_yaml_cpp
 
 #########################################################################
 #
@@ -314,14 +321,6 @@ ask_local
 #########################################################################
 
 get_acces_tokens
-
-#########################################################################
-#
-# INSTALLING YAML-CPP
-#
-#########################################################################
-
-install_yaml_cpp
 
 #########################################################################
 #
