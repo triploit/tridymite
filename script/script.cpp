@@ -206,7 +206,7 @@ void Script::runFunction(const std::string &function, const std::string &token)
         of << "#!/usr/bin/bash" << "\n\n" << file_content << std::endl;
 
         if (std::system(std::string("source "+file_name+"; "+function).c_str()) != 0) {
-            std::cout << "error: error at build script. aborting now." << std::endl;
+            std::cout << Translation::get("script.error_at_script");
             Runtime::exit(1);
         }
 

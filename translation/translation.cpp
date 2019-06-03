@@ -7,7 +7,11 @@
 
 #include <runtime.hpp>
 #include "translation.hpp"
+#include <tstd.hpp>
 
+#define _RED "\033[1;31m"
+#define _YELLOW "\033[1;33m"
+#define _BLUE "\033[1;34m"
 
 std::string Translation::get(const std::string &s, const bool &nl, const bool &bnl)
 {
@@ -20,7 +24,7 @@ std::string Translation::get(const std::string &s, const bool &nl, const bool &b
         if (bnl)
             str = "\n" + str;
 
-        return str;
+        return tstd::replace(tstd::replace(tstd::replace(tstd::replace(str, "[!!!] ", _RED), "[!!]", _YELLOW), "[!] ", _BLUE), "[.]", "\033[00m");
     }
     else
     {
@@ -38,7 +42,7 @@ std::string Translation::get(const std::string &s, const bool &nl, const bool &b
             if (bnl)
                 str = "\n" + str;
 
-            return ("[?] "+str);
+            return "[?] "+tstd::replace(tstd::replace(tstd::replace(tstd::replace(str, "[!!!] ", _RED), "[!!]", _YELLOW), "[!] ", _BLUE), "[.]", "\033[00m");
         }
     }
 
