@@ -52,10 +52,11 @@ public:
     inline static bool update;
     inline static bool try_local;
     inline static bool keep_tmp;
-
     inline static bool local_folder;
+
     inline static std::string language;
 
+    inline static int pid;
     inline static YAML::Node config;
     inline static std::string version = "1.0.3a";
 
@@ -71,6 +72,7 @@ public:
         try_local = false;
         local_folder = true;
         keep_tmp = false;
+        pid = getpid();
 
         std::string homedir = getenv("HOME");
 
@@ -119,7 +121,7 @@ public:
         else
             language = "english";
 
-        tmp_dir = std::string("/tmp/tridy-"+std::to_string(getpid()));
+        tmp_dir = std::string("/tmp/tridy-"+std::to_string(pid));
 
         if (config["standard_git_server"])
             git_server = config["standard_git_server"].as<std::string>();
