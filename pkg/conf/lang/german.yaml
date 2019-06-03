@@ -222,6 +222,15 @@ main.create.already_exists_overwrite: "Da ist schon eine Paketdatei. Willst du s
 main.create.sure: "Bist du dir da wirklich sicher?"
 main.create.ok: "Okay!"
 
+main.all_work_done: "Okay! Alle Arbeit wurde getan!"
+main.arrow: " [=>] "
+main.installed_o: "%d Paket installiert."
+main.installed_t: "%d Pakete installiert."
+main.updated_o: "%d Paket aktualisiert."
+main.updated_t: "%d Pakete aktualisiert."
+main.removed_o: "%d Paket entfernt."
+main.removed_t: "%d Pakete entfernt."
+
 # package
 
 package.no_option_set: "[!!!]error:[.] paket %s: option fehlt (%s)!"
