@@ -5,8 +5,6 @@
 #include "installation_manager.hpp"
 
 #include <curl/curl.h>
-#include <zlib.h>
-#include <zip.h>
 #include <yaml-cpp/yaml.h>
 #include <sys/stat.h>
 #include <unistd.h>
