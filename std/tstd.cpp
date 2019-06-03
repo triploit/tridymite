@@ -506,9 +506,9 @@ int tstd::cursive_file_count(const std::string &path, int count)
 
 std::string tstd::replace_quotation_marks(std::string from)
 {
-    from = tstd::replace(from, "\\\"", "<¬BSAFZ"+std::to_string(getpid())+">");
+    from = tstd::replace(from, "\\\"", "<¬BSAFZ"+std::to_string(Runtime::pid)+">");
     from = tstd::replace(from, "\"", "\\\"");
-    from = tstd::replace(from, "<¬BSAFZ"+std::to_string(getpid())+">", "\\\"");
+    from = tstd::replace(from, "<¬BSAFZ"+std::to_string(Runtime::pid)+">", "\\\"");
 
     return from;
 }

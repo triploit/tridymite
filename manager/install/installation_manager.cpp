@@ -59,8 +59,8 @@ bool InstallationManager::linkProducts(const std::string &prefix, const Package 
         to = tstd::replace_quotation_marks(to);
         from = tstd::replace_quotation_marks(from);
 
-        std::string from_var = "_"+std::to_string(getpid())+"_tridy_pfrom";
-        std::string to_var = "_"+std::to_string(getpid())+"_tridy_pto";
+        std::string from_var = "_"+std::to_string(Runtime::pid)+"_tridy_pfrom";
+        std::string to_var = "_"+std::to_string(Runtime::pid)+"_tridy_pto";
 
         setenv(from_var.c_str(), from.c_str(), true);
         setenv(to_var.c_str(), to.c_str(), true);
@@ -175,8 +175,8 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
         to = tstd::replace_quotation_marks(to);
         from = tstd::replace_quotation_marks(from);
 
-        std::string from_var = "_"+std::to_string(getpid())+"_tridy_pfrom";
-        std::string to_var = "_"+std::to_string(getpid())+"_tridy_pto";
+        std::string from_var = "_"+std::to_string(Runtime::pid)+"_tridy_pfrom";
+        std::string to_var = "_"+std::to_string(Runtime::pid)+"_tridy_pto";
 
         setenv(from_var.c_str(), from.c_str(), true);
         setenv(to_var.c_str(), to.c_str(), true);
