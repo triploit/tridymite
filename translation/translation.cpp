@@ -24,7 +24,7 @@ std::string Translation::get(const std::string &s, const bool &nl, const bool &b
         if (bnl)
             str = "\n" + str;
 
-        return tstd::replace(tstd::replace(tstd::replace(tstd::replace(str, "[!!!] ", _RED), "[!!]", _YELLOW), "[!] ", _BLUE), "[.]", "\033[00m");
+        return tstd::replace(tstd::replace(tstd::replace(tstd::replace(str, "[!!!]", _RED), "[!!]", _YELLOW), "[!]", _BLUE), "[.]", "\033[00m");
     }
     else
     {
@@ -42,7 +42,7 @@ std::string Translation::get(const std::string &s, const bool &nl, const bool &b
             if (bnl)
                 str = "\n" + str;
 
-            return "[?] "+tstd::replace(tstd::replace(tstd::replace(tstd::replace(str, "[!!!] ", _RED), "[!!]", _YELLOW), "[!] ", _BLUE), "[.]", "\033[00m");
+            return "[?] "+tstd::replace(tstd::replace(tstd::replace(tstd::replace(str, "[!!!]", _RED), "[!!]", _YELLOW), "[!]", _BLUE), "[.]", "\033[00m");
         }
     }
 
