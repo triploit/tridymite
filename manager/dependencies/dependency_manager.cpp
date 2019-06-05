@@ -4,6 +4,7 @@
 
 #include <runtime.hpp>
 #include <std/tstd.hpp>
+#include <thread>
 #include "dependency_manager.hpp"
 
 void DependencyManager::checkDependencies(const Package &package_to_check)
@@ -82,34 +83,95 @@ void DependencyManager::checkDependencies(const Package &package_to_check)
 
 std::vector<Package> DependencyManager::getPackagesConfig(std::vector<Package> packages)
 {
+    std::vector<std::thread> threads;
+    int count;
+
     for (int i = 0; i < packages.size(); i++)
     {
-        const Package &p = packages[i];
-        const std::string file = Runtime::tmp_dir+"/tmp.yaml";
+        std::cout << Translation::get("general.loading_packages", false) +
+                     std::to_string(i + 1) + "/" +
+                     std::to_string(packages.size()) << std::endl;
 
-        std::string msg = Translation::get("general.loading_packages", false) + std::to_string(i+1) + "/" + std::to_string(packages.size());
-        std::cout << msg << std::endl;
+        if ((i + 1) < packages.size())
+            printf("\033[1A");
 
-        if (!tstd::download_file(tstd::create_url(p, "raw/"+p.getBranch()+"/pkg/package.yaml"), file))
-        {
-            std::cout << std::endl;
-            printf(Translation::get("general.package_not_found").c_str(), tstd::package_to_argument(p).c_str());
-            Runtime::exit(1);
+        count += 1;
+
+        if (count > 20) {
+            for (int x = 0; x < threads.size(); x++)
+            {
+                if (threads[x].joinable())
+                    threads[x].join();
+            }
+
+            count = 0;
+            threads.clear();
         }
 
-        std::ofstream _of(file, std::ios::app);
-        _of << std::endl << std::endl;
-        _of << "gituser: " << p.getGitUser() << std::endl;
-        _of << "reponame: " << p.getRepoName() << std::endl;
-        _of << "server: " << p.getServer() << std::endl;
-        _of << "branch: " << p.getBranch() << std::endl;
-        _of.close();
+        threads.push_back(std::thread([](int i, const std::vector<Package> &packages)
+        {
+          const Package &p = packages[i];
+          const std::string file =
+                  Runtime::tmp_dir + "/_DMIT_tmp" + std::to_string(i) + ".yaml";
 
-        packages[i] = Package(YAML::LoadFile(file));
-        std::remove(file.c_str());
+          if (!tstd::download_file(
+                  tstd::create_url(p, "raw/" + p.getBranch() + "/pkg/package.yaml"),
+                  file))
+          {
+              std::cout << std::endl;
+              printf(Translation::get("general.package_not_found").c_str(),
+                     tstd::package_to_argument(p).c_str());
 
-        if ((i+1) < packages.size())
-            printf("\033[1A");
+              Runtime::exit(1);
+          }
+
+          std::ofstream _of(file, std::ios::app);
+          _of << std::endl << std::endl;
+          _of << "gituser: " << p.getGitUser() << std::endl;
+          _of << "reponame: " << p.getRepoName() << std::endl;
+          _of << "server: " << p.getServer() << std::endl;
+          _of << "branch: " << p.getBranch() << std::endl;
+          _of.close();
+        }, i, packages));
+    }
+
+    for (std::thread &t : threads)
+    {
+        if (t.joinable())
+            t.join();
+    }
+
+    threads.clear();
+    std::vector<std::string> files;
+
+    DIR *dir;
+    struct dirent *ent;
+    if ((dir = opendir(Runtime::tmp_dir.c_str())) != NULL)
+    {
+        while ((ent = readdir(dir)) != NULL)
+        {
+            std::string file = ent->d_name;
+
+            if (file.rfind("_DMIT_tmp", 0) == 0)
+            {
+                file = Runtime::tmp_dir + "/" + file;
+                Package npackage = Package(YAML::LoadFile(file));
+
+                for (int i = 0; i < packages.size(); i++)
+                {
+
+                    if (npackage.getGitUser() == packages[i].getGitUser() &&
+                        npackage.getServer() == packages[i].getServer() &&
+                        npackage.getRepoName() == packages[i].getRepoName())
+                    {
+                        packages[i] = npackage;
+                        std::remove(file.c_str());
+                    }
+                }
+            }
+        }
+
+        closedir(dir);
     }
 
     return packages;

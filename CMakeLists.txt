@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.7)
 project(tridymite)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_LIBRARIES "-lyaml-cpp -lcurl")
+set(CMAKE_CXX_STANDARD_LIBRARIES "-lyaml-cpp -lcurl -lpthread")
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     # require at least gcc 8.3.0
