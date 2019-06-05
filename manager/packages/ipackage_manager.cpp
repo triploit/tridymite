@@ -59,6 +59,19 @@ const Package& IPackagesManager::getPackage(Package &p)
     return p;
 }
 
+bool IPackagesManager::isPackageInstalledNV(const Package &p) // NV = no version comparison
+{
+    for (const Package &installed_package : IPackagesManager::installed_packages)
+    {
+        if (p.getGitUser() == installed_package.getGitUser() &&
+            p.getRepoName() == installed_package.getRepoName() &&
+            p.getServer() == installed_package.getServer())
+            return true;
+    }
+
+    return false;
+}
+
 std::string IPackagesManager::getPackageFile(const Package &p)
 {
     return p.getYamlPath();
