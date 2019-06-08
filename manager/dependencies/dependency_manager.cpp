@@ -88,13 +88,6 @@ std::vector<Package> DependencyManager::getPackagesConfig(std::vector<Package> p
 
     for (int i = 0; i < packages.size(); i++)
     {
-        std::cout << Translation::get("general.loading_packages", false) +
-                     std::to_string(i + 1) + "/" +
-                     std::to_string(packages.size()) << std::endl;
-
-        if ((i + 1) < packages.size())
-            printf("\033[1A");
-
         count += 1;
 
         if (count > 20) {
@@ -110,36 +103,49 @@ std::vector<Package> DependencyManager::getPackagesConfig(std::vector<Package> p
 
         threads.push_back(std::thread([](int i, const std::vector<Package> &packages)
         {
-          const Package &p = packages[i];
-          const std::string file =
-                  Runtime::tmp_dir + "/_DMIT_tmp" + std::to_string(i) + ".yaml";
+            const Package &p = packages[i];
+            const std::string file =
+            Runtime::tmp_dir + "/_DMIT_tmp" + std::to_string(i) + ".yaml";
 
-          if (!tstd::download_file(
-                  tstd::create_url(p, "raw/" + p.getBranch() + "/pkg/package.yaml"),
-                  file))
-          {
-              std::cout << std::endl;
-              printf(Translation::get("general.package_not_found").c_str(),
-                     tstd::package_to_argument(p).c_str());
+            if (!tstd::download_file(tstd::create_url(p, "raw/" + p.getBranch() + "/pkg/package.yaml"), file))
+            {
+                std::cout << std::endl;
+                printf(Translation::get("general.package_not_found").c_str(), tstd::package_to_argument(p).c_str());
 
-              Runtime::exit(1);
-          }
+                Runtime::exit(1);
+            }
 
-          std::ofstream _of(file, std::ios::app);
-          _of << std::endl << std::endl;
-          _of << "gituser: " << p.getGitUser() << std::endl;
-          _of << "reponame: " << p.getRepoName() << std::endl;
-          _of << "server: " << p.getServer() << std::endl;
-          _of << "branch: " << p.getBranch() << std::endl;
-          _of.close();
+            std::ofstream _of(file, std::ios::app);
+            _of << std::endl << std::endl;
+            _of << "gituser: " << p.getGitUser() << std::endl;
+            _of << "reponame: " << p.getRepoName() << std::endl;
+            _of << "server: " << p.getServer() << std::endl;
+            _of << "branch: " << p.getBranch() << std::endl;
+            _of.close();
         }, i, packages));
     }
+
+    count = 0;
 
     for (std::thread &t : threads)
     {
         if (t.joinable())
+        {
+            count += 1;
+            std::cout << Translation::get("general.loading_packages", false) + " " +
+                         std::to_string(count) + "/" +
+                         std::to_string(packages.size()) << std::endl;
+
+            std::cin.sync();
             t.join();
+
+            if (count < packages.size())
+                printf("\033[1A");
+        }
     }
+
+    if (count > 0)
+        std::cout << std::endl;
 
     threads.clear();
     std::vector<std::string> files;

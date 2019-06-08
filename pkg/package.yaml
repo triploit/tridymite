@@ -19,9 +19,6 @@ authors:
     - blobcodes
     - romangraef
 
-type:
-    name: cmake
-
 products:
     - ./tridymite: "/usr/share/tridymite/tridy"
     - ./pkg/conf/pretypes: "/usr/share/tridymite/conf/pretypes/"

@@ -46,7 +46,7 @@ const std::vector<Package> &IPackagesManager::getInstalledPackages()
     return IPackagesManager::installed_packages;
 }
 
-const Package& IPackagesManager::getPackage(Package &p)
+const Package& IPackagesManager::getPackage(const Package &p)
 {
     for (const Package &installed_package : IPackagesManager::installed_packages)
     {
