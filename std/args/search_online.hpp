@@ -103,11 +103,21 @@ void __argument_search_online(const std::vector<std::string> &parameters, CLI* c
 
             Package package(tstd::parse_package(result[0]));
             Version version(result[1]);
+            package.setVersion(version);
 
             std::string info;
-            info= std::accumulate(result.begin()+2, result.end(), info);
+            std::string post;
+            info = std::accumulate(result.begin()+2, result.end(), info);
 
-            std::cout << "[" << package.getGitUser() << "/" << package.getRepoName() << "] " << "v" << version << std::endl;
+            if (IPackagesManager::isPackageInstalledNV(package))
+            {
+                post = " (installed)";
+
+                if (!IPackagesManager::isPackageInstalled(package))
+                    post += " (not up to date)";
+            }
+
+            std::cout << "[" << package.getGitUser() << "/" << package.getRepoName() << "] " << "v" << version << post << std::endl;
             std::cout << "    " << info << std::endl;
             std::cout << std::endl;
         }

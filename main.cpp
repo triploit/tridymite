@@ -70,13 +70,15 @@ int main(int argc, char* argv[])
                     {
                         if (Runtime::to_update[i].getVersion() <= installed_package.getVersion())
                         {
+                            Runtime::to_update[i] = IPackagesManager::getPackage(Runtime::to_update[i]);
+
                             if (Runtime::reinstall)
                             {
-                                printf(Translation::get("main.package_up_to_date_reinstall").c_str(), tstd::package_to_argument(installed_package).c_str(), installed_package.getVersion().str.c_str());
+                                printf(Translation::get("main.package_up_to_date_reinstall").c_str(), tstd::package_to_argument(Runtime::to_update[i]).c_str(), Runtime::to_update[i].getVersion().str.c_str());
                             }
                             else
                             {
-                                printf(Translation::get("main.package_up_to_date_skipping").c_str(), tstd::package_to_argument(installed_package).c_str(), installed_package.getVersion().str.c_str());
+                                printf(Translation::get("main.package_up_to_date_skipping").c_str(), tstd::package_to_argument(Runtime::to_update[i]).c_str(), Runtime::to_update[i].getVersion().str.c_str());
                                 Runtime::to_update.erase(Runtime::to_update.begin()+i);
                                 i--;
                             }
@@ -124,10 +126,13 @@ int main(int argc, char* argv[])
 
         for (int i = 0; i < Runtime::to_install.size(); i++)
         {
-            const Package &test = Runtime::to_install[i];
+            Package test = Runtime::to_install[i];
 
             if (IPackagesManager::isPackageInstalled(test))
             {
+                test = IPackagesManager::getPackage(test);
+                Runtime::to_install[i] = IPackagesManager::getPackage(Runtime::to_install[i]);
+
                 if (Runtime::reinstall)
                 {
                     printf(Translation::get("main.package_installed_reinstall").c_str(), tstd::package_to_argument(test, true).c_str(), test.getVersion().str.c_str());
@@ -145,10 +150,13 @@ int main(int argc, char* argv[])
         {
             for (int i = 0; i < Runtime::to_update.size(); i++)
             {
-                const Package &test = Runtime::to_update[i];
+                Package test = Runtime::to_update[i];
 
                 if (IPackagesManager::isPackageInstalled(test))
                 {
+                    test = IPackagesManager::getPackage(test);
+                    Runtime::to_update[i] = IPackagesManager::getPackage(Runtime::to_update[i]);
+
                     if (Runtime::reinstall)
                     {
                         printf(Translation::get("main.package_up_to_date_reinstall").c_str(), tstd::package_to_argument(test).c_str(), test.getVersion().str.c_str());
