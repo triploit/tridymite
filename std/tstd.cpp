@@ -222,12 +222,21 @@ std::vector<Package> tstd::parse_package_arguments(const std::vector<std::string
     return to_ret;
 }
 
-std::string tstd::replace_git_vars(std::string arg, const Package &p)
+std::string tstd::replace_git_vars(std::string arg, const Package &p, bool replace_tag)
 {
     arg = tstd::replace(arg, "$git_user", p.getGitUser());
     arg = tstd::replace(arg, "$git_server", p.getServer());
     arg = tstd::replace(arg, "$git_repository", p.getRepoName());
-    arg = tstd::replace(arg, "$git_branch", p.getBranch());
+
+    if (p.getBranch().size() >= 2)
+    {
+        if (p.getBranch()[0] == 'v' && (p.getBranch()[1] >= 48 && p.getBranch()[1] <= 57) && replace_tag)
+            arg = tstd::replace(arg, "$git_branch", p.getBranch().substr(1, p.getBranch().size()));
+        else
+            arg = tstd::replace(arg, "$git_branch", p.getBranch());
+    }
+    else
+        arg = tstd::replace(arg, "$git_branch", p.getBranch());
 
     return arg;
 }

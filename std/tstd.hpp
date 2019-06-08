@@ -13,7 +13,7 @@ namespace tstd
     Package parse_package(const std::string &package);
 
     std::string add_prefix(std::string arg); // Add a prefix (- or --) to argument (like "help" -> "--help"; "i" -> "-i")
-    std::string replace_git_vars(std::string arg, const Package &p);
+    std::string replace_git_vars(std::string arg, const Package &p, bool replace_tag=false);
     std::string create_url(const Package &p, std::string postfix="", std::string prefix="");
     std::string create_zip_url(const Package &p, std::string postfix="", const std::string &prefix="");
     std::string package_to_argument(const Package &p, bool no_branch=false);
