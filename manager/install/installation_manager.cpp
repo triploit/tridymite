@@ -68,8 +68,8 @@ bool InstallationManager::linkProducts(const std::string &prefix, const Package 
         from_var = "$"+from_var;
         to_var = "$"+to_var;
 
-        std::cout << prefix << Translation::get("manager.install.linking", false) << package.getProductsTo()[i] << std::endl;
-        system(std::string("ln -s "+from_var+" "+to_var).c_str());
+        std::cout << prefix << Translation::get("manager.install.linking", false) << tstd::trim(package.getProductsTo()[i]) << std::endl;
+        system(("if [ ! -L "+to_var+" ]; then sudo ln -s "+from_var+" "+to_var+"; fi").c_str());
     }
 
     return true;
@@ -259,8 +259,6 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
 std::string InstallationManager::downloadPackage(const std::string &prefix, const std::string &package_dir, const std::string &package_zip, const Package &arg)
 {
     std::cout << prefix << Translation::get("manager.install.downloading", false) << std::endl;
-
-    std::cout << tstd::create_zip_url(arg) << std::endl;
 
     if (!tstd::download_file(tstd::create_zip_url(arg), package_zip))
     {
@@ -521,8 +519,6 @@ void InstallationManager::installPackage(const Package &arg, bool nl)
     _of << "server: " << arg.getServer() << std::endl;
     _of << "branch: " << arg.getBranch() << std::endl;
     _of.close();
-
-    std::cout << file << std::endl;
 
     Package package(YAML::LoadFile(file));
 
