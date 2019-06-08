@@ -102,7 +102,7 @@ void __argument_search_online(const std::vector<std::string> &parameters, CLI* c
             }
 
             Package package(tstd::parse_package(result[0]));
-            Version version(result[1]);
+            semver::Version version(result[1]);
             package.setVersion(version);
 
             std::string info;

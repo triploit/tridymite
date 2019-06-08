@@ -6,7 +6,7 @@
 
 Package::Package()
 {
-    version = Version("0.0.0a");
+    version = semver::Version("0.0.0");
 }
 
 Package::Package(const std::string &argument_name)
@@ -109,12 +109,12 @@ void Package::setAuthors(const std::vector<std::string> &authors)
     Package::authors = authors;
 }
 
-const Version &Package::getVersion() const
+const semver::Version &Package::getVersion() const
 {
     return version;
 }
 
-void Package::setVersion(const Version &version)
+void Package::setVersion(const semver::Version &version)
 {
     this->version = version;
 }
@@ -134,7 +134,7 @@ std::ostream &operator<<(std::ostream &os, const Package &p)
     if (!p.getName().empty())
         os << "Name        : " << p.getName() << std::endl;
 
-    if (!p.getVersion().str.empty())
+    if (!p.getVersion().ToString().empty())
         os << std::endl << "Version     : " << p.getVersion() << std::endl;
 
     if (!p.getDescription().empty())
@@ -243,7 +243,7 @@ void Package::load_package_from_nodes(const YAML::Node &pkg)
         setType(pkg["type"]);
 
     if (pkg["version"])
-        setVersion(Version(pkg["version"].as<std::string>()));
+        setVersion(semver::Version(pkg["version"].as<std::string>()));
     else
     {
         printf(Translation::get("package.no_option_set").c_str(), getRepoName().c_str(), "version");

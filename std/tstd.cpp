@@ -554,7 +554,7 @@ std::vector<std::string> tstd::create_list_of_packages(const std::vector<Package
             spaces_server += " ";
         }
 
-        if (installed_package.getVersion().str.empty())
+        if (installed_package.getVersion().ToString().empty())
             msgs.push_back(
                     "    - "+
                     installed_package.getGitUser()+spaces_uname+
@@ -573,7 +573,7 @@ std::vector<std::string> tstd::create_list_of_packages(const std::vector<Package
                     " @ "+
                     installed_package.getServer()+spaces_server+
                     " - v"+
-                    installed_package.getVersion().str+
+                    installed_package.getVersion().ToString()+
                     " #"+
                     installed_package.getBranch()); // Add every message to vector
     }

@@ -389,11 +389,11 @@ void InstallationManager::localPackage(std::string path)
     {
         if (Runtime::reinstall)
         {
-            printf(Translation::get("manager.install.local_reinstall").c_str(), tstd::package_to_argument(package).c_str(), package.getVersion().str.c_str());
+            printf(Translation::get("manager.install.local_reinstall").c_str(), tstd::package_to_argument(package).c_str(), package.getVersion().ToString().c_str());
         }
         else
         {
-            printf(Translation::get("manager.install.local_skip").c_str(), tstd::package_to_argument(package).c_str(), package.getVersion().str.c_str());
+            printf(Translation::get("manager.install.local_skip").c_str(), tstd::package_to_argument(package).c_str(), package.getVersion().ToString().c_str());
             return;
         }
     }
@@ -427,7 +427,7 @@ void InstallationManager::localPackage(std::string path)
 
             variables.push_back(Variable("current_directory", tstd::get_current_directory()));
             variables.push_back(Variable("package_name", package.getRepoName()));
-            variables.push_back(Variable("package_version", package.getVersion().str));
+            variables.push_back(Variable("package_version", package.getVersion().ToString()));
             variables.push_back(Variable("package_server", package.getServer()));
             variables.push_back(Variable("package_user", package.getGitUser()));
 
@@ -575,7 +575,7 @@ void InstallationManager::installPackage(const Package &arg, bool nl)
 
             variables.push_back(Variable("current_directory", tstd::get_current_directory()));
             variables.push_back(Variable("package_name", package.getRepoName()));
-            variables.push_back(Variable("package_version", package.getVersion().str));
+            variables.push_back(Variable("package_version", package.getVersion().ToString()));
             variables.push_back(Variable("package_server", package.getServer()));
             variables.push_back(Variable("package_user", package.getGitUser()));
 

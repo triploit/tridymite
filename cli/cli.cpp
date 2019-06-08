@@ -5,7 +5,7 @@ void CLI::init(const std::vector<std::string> &names,
                const std::vector<std::string> &helps,
                const std::vector<int> &argc,
                const std::string &pname,
-               const Version &v,
+               const semver::Version &v,
                const std::vector<void (*)(const std::vector<std::string>&, CLI* cli)> &fun)
 {
     CLI::arg_name = names;

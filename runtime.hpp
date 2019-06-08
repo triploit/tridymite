@@ -58,7 +58,7 @@ public:
 
     inline static int pid;
     inline static YAML::Node config;
-    inline static std::string version = "1.0.3d";
+    inline static std::string version = "1.0.3-rc.5";
 
     static void init()
     {

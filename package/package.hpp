@@ -33,7 +33,7 @@ private:
     std::vector<std::string> links_from;
     std::vector<std::string> links_to;
 
-    Version version;
+    semver::Version version;
 
     void load_package_from_nodes(const YAML::Node &pkg);
 
@@ -52,7 +52,7 @@ public:
     const std::string &getBranch() const;
 
     const Script &getBuildScript() const;
-    const Version &getVersion() const;
+    const semver::Version &getVersion() const;
     const YAML::Node &getType() const;
 
     const std::string &getRepoName() const;
@@ -70,7 +70,7 @@ public:
     void setServer(const std::string &server);
     void setRepoName(const std::string &repo);
     void setYamlPath(const std::string &path);
-    void setVersion(const Version &version);
+    void setVersion(const semver::Version &version);
     void setBranch(const std::string &branch);
 
     void setType(const YAML::Node &type);

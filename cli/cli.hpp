@@ -24,7 +24,7 @@ private:
     std::map<std::string, std::vector<std::string>> arg_values;
 
     std::string program_name;
-    Version version;
+    semver::Version version;
 
 
 public:
@@ -32,7 +32,7 @@ public:
             const std::vector<std::string> &helps,
             const std::vector<int> &argc,
             const std::string &pname,
-            const Version &v,
+            const semver::Version &v,
             const std::vector<void (*)(const std::vector<std::string>&, CLI* cli)> &fun);
 
     void printHelp(const std::string &arg0);

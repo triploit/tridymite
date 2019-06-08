@@ -16,7 +16,7 @@ void __argument_search_installed(const std::vector<std::string> &parameters, CLI
 
     for (const Package &p : IPackagesManager::getInstalledPackages())
     {
-        inf = p.getVersion().str + " " +
+        inf = p.getVersion().ToString() + " " +
               p.getServer() + " " +
               p.getGitUser() + " " +
               p.getRepoName() + " " +
@@ -26,7 +26,7 @@ void __argument_search_installed(const std::vector<std::string> &parameters, CLI
 
         for (const Package &dep : p.getDependencies())
         {
-            inf += "\n" + dep.getVersion().str + " " +
+            inf += "\n" + dep.getVersion().ToString() + " " +
                    dep.getServer() + " " +
                    dep.getGitUser() + " " +
                    dep.getRepoName() + " " +
