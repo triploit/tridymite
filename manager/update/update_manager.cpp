@@ -17,11 +17,11 @@ void UpdateManager::updatePackage(const Package &to_update)
     {
         if (Runtime::reinstall)
         {
-            printf(Translation::get("manager.install.local_reinstall").c_str(), tstd::package_to_argument(to_update).c_str(), to_update.getVersion().str.c_str());
+            printf(Translation::get("manager.install.local_reinstall").c_str(), tstd::package_to_argument(to_update).c_str(), to_update.getVersion().ToString().c_str());
         }
         else
         {
-            printf(Translation::get("manager.install.local_skip").c_str(), tstd::package_to_argument(to_update).c_str(), to_update.getVersion().str.c_str());
+            printf(Translation::get("manager.install.local_skip").c_str(), tstd::package_to_argument(to_update).c_str(), to_update.getVersion().ToString().c_str());
             return;
         }
     }

@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
             __ARG_HELP,
             __ARG_LENGTH,
             "tridymite",
-            Version(Runtime::version),
+            semver::Version(Runtime::version),
             __ARG_FUNCTIONS);
 
     bool working = cli.parseArguments(std::vector<std::string>(argv + 1, argv + argc)); // Parsing the given arguments, returns a boolean (false if there are errors)
@@ -74,11 +74,11 @@ int main(int argc, char* argv[])
 
                             if (Runtime::reinstall)
                             {
-                                printf(Translation::get("main.package_up_to_date_reinstall").c_str(), tstd::package_to_argument(Runtime::to_update[i]).c_str(), Runtime::to_update[i].getVersion().str.c_str());
+                                printf(Translation::get("main.package_up_to_date_reinstall").c_str(), tstd::package_to_argument(Runtime::to_update[i]).c_str(), Runtime::to_update[i].getVersion().ToString().c_str());
                             }
                             else
                             {
-                                printf(Translation::get("main.package_up_to_date_skipping").c_str(), tstd::package_to_argument(Runtime::to_update[i]).c_str(), Runtime::to_update[i].getVersion().str.c_str());
+                                printf(Translation::get("main.package_up_to_date_skipping").c_str(), tstd::package_to_argument(Runtime::to_update[i]).c_str(), Runtime::to_update[i].getVersion().ToString().c_str());
                                 Runtime::to_update.erase(Runtime::to_update.begin()+i);
                                 i--;
                             }
@@ -135,11 +135,11 @@ int main(int argc, char* argv[])
 
                 if (Runtime::reinstall)
                 {
-                    printf(Translation::get("main.package_installed_reinstall").c_str(), tstd::package_to_argument(test, true).c_str(), test.getVersion().str.c_str());
+                    printf(Translation::get("main.package_installed_reinstall").c_str(), tstd::package_to_argument(test, true).c_str(), test.getVersion().ToString().c_str());
                 }
                 else
                 {
-                    printf(Translation::get("main.package_installed_skipping").c_str(), tstd::package_to_argument(test, true).c_str(), test.getVersion().str.c_str());
+                    printf(Translation::get("main.package_installed_skipping").c_str(), tstd::package_to_argument(test, true).c_str(), test.getVersion().ToString().c_str());
                     Runtime::to_install.erase(Runtime::to_install.begin()+i);
                     i--;
                 }
@@ -159,11 +159,11 @@ int main(int argc, char* argv[])
 
                     if (Runtime::reinstall)
                     {
-                        printf(Translation::get("main.package_up_to_date_reinstall").c_str(), tstd::package_to_argument(test).c_str(), test.getVersion().str.c_str());
+                        printf(Translation::get("main.package_up_to_date_reinstall").c_str(), tstd::package_to_argument(test).c_str(), test.getVersion().ToString().c_str());
                     }
                     else
                     {
-                        printf(Translation::get("main.package_up_to_date_skipping").c_str(), tstd::package_to_argument(test).c_str(), test.getVersion().str.c_str());
+                        printf(Translation::get("main.package_up_to_date_skipping").c_str(), tstd::package_to_argument(test).c_str(), test.getVersion().ToString().c_str());
                         Runtime::to_update.erase(Runtime::to_update.begin()+i);
                         i--;
                     }
