@@ -260,6 +260,8 @@ std::string InstallationManager::downloadPackage(const std::string &prefix, cons
 {
     std::cout << prefix << Translation::get("manager.install.downloading", false) << std::endl;
 
+    std::cout << tstd::create_zip_url(arg) << std::endl;
+
     if (!tstd::download_file(tstd::create_zip_url(arg), package_zip))
     {
         std::cout << Translation::get("general.package_not_found_good", false) << " " << tstd::package_to_argument(arg) << std::endl;
@@ -289,7 +291,7 @@ std::string InstallationManager::downloadPackage(const std::string &prefix, cons
     if (Runtime::config["servers"][arg.getServer()]["path"])
         source_path = Runtime::config["servers"][arg.getServer()]["path"].as<std::string>();
 
-    source_path = tstd::trim(tstd::replace_git_vars(source_path, arg));
+    source_path = tstd::trim(tstd::replace_git_vars(source_path, arg, true));
 
     if (source_path.size() >= 1)
     {
@@ -519,6 +521,8 @@ void InstallationManager::installPackage(const Package &arg, bool nl)
     _of << "server: " << arg.getServer() << std::endl;
     _of << "branch: " << arg.getBranch() << std::endl;
     _of.close();
+
+    std::cout << file << std::endl;
 
     Package package(YAML::LoadFile(file));
 
