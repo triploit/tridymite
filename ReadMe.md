@@ -1,4 +1,4 @@
-# Tridymite
+![# Tridymite](https://github.com/triploit/tridymite/raw/master/img/logo_with_text_tiny.png)
 
 Tridymite is a package manager for github repositories. It allows developers and users to easily install and manage their packages and let them create their own in their repositories.
 
