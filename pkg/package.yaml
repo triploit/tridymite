@@ -1,5 +1,5 @@
 name: "Tridymite"
-version: "v1.0.4-alpha.1"
+version: "1.0.4-beta.1"
 decription: "Tridymite package manager."
 information: >
     Install packages from GitHub, GitLab or other git-servers using Tridymite!
