@@ -31,40 +31,22 @@ Tridymite is a package manager for github repositories. It allows developers and
 Tridymite has the following dependencies:
 * g++
 * cmake
-* libcurl
- 
-**1\. Installing the dependencies**
+* libcurl (headers)
+* yaml-cpp
 
-APT
+The installation script will help you, if a dependency isn't installed.
 
-```bash
-sudo apt-get update
-sudo apt-get install g++ cmake libcurl4-gnutls-dev
-```
-
-Pacman
-
-```bash
-sudo pacman -Sy gcc cmake curl
-```
-
-Yum
-
-```bash
-yum install gcc-c++ cmake curl
-```
-
-**2\. Clone the repository and change to it's directory.**
+**1\. Clone the repository and change to it's directory.**
 
 ```bash
 git clone https://github.com/triploit/tridymite
 cd tridymite/
 ```
 
-**3\. Run the installation script:**
+**2\. Run the installation script:**
 
 ```bash
-sudo bash ./install.sh
+bash ./install.sh
 ```
 
 You will be lead through the setup.
