@@ -349,6 +349,42 @@ bool tstd::yn_question(const std::string &q)
     return (s == "Y" || s == "y");
 }
 
+void tstd::remove_directory(char *path)
+{
+    struct dirent *entry = NULL;
+    DIR *dir = NULL;
+    dir = opendir(path);
+
+    if (dir == NULL)
+        return;
+
+    while(entry = readdir(dir))
+    {
+        DIR *sub_dir = NULL;
+        FILE *file = NULL;
+        char abs_path[100] = {0};
+        if(*(entry->d_name) != '.')
+        {
+            sprintf(abs_path, "%s/%s", path, entry->d_name);
+            if(sub_dir = opendir(abs_path))
+            {
+                closedir(sub_dir);
+                remove_directory(abs_path);
+            }
+            else
+            {
+                if(file = fopen(abs_path, "r"))
+                {
+                    fclose(file);
+                    remove(abs_path);
+                }
+            }
+        }
+    }
+
+    remove(path);
+}
+
 static size_t throw_away(void *ptr, size_t size, size_t nmemb, void *data)
 {
     (void)ptr;
@@ -604,4 +640,39 @@ std::string tstd::get_answer(const std::string &question)
     std::getline(std::cin, line);
 
     return line;
+}
+
+std::vector<Package> tstd::load_package_list(std::string path)
+{
+    std::vector<Package> packages;
+    std::ifstream f(path);
+
+    if (!f.is_open())
+        return {};
+    else
+    {
+        std::string line;
+
+        while (std::getline(f, line))
+        {
+            if (tstd::trim(path)[0] == '#')
+                continue;
+
+            packages.push_back(tstd::parse_package(tstd::trim(line)));
+        }
+    }
+
+    f.close();
+    return packages;
+}
+
+void tstd::save_package_list(std::string path, std::vector<Package> packages)
+{
+    std::ofstream of;
+    of.open(path);
+
+    for (Package p : packages)
+        of << tstd::package_to_argument(p) << std::endl;
+
+    of.close();
 }
