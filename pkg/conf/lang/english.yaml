@@ -110,6 +110,7 @@ arguments.help.search_installed: "search for an installed package"
 arguments.help.search_online: "search for an installed package"
 arguments.help.create: "create a new package from the source of the current directory"
 arguments.help.keep_tmp: "keep tmp-folder after exit"
+arguments.help.download_to_path: "extracts package-source-code to a path (similiar to '--get', but extracts contents of repo-zip)"
 
 arguments.usage.help: ""
 arguments.usage.install: "<package> ..."
@@ -134,6 +135,7 @@ arguments.usage.search_installed: "<string>"
 arguments.usage.search_online: "<string> ..."
 arguments.usage.create: ""
 arguments.usage.keep_tmp: ""
+arguments.usage.download_to_path: "<path> <package> ..."
 
 arguments.package: "<package> = <git-user>:<git-repo>[@<git-server>] (git-server is %s by default)"
 
@@ -162,6 +164,8 @@ runtime.catch_ctrl_c: "catched ^C\ndon't do that again!"
 
 # main
 
+main.no_permission_to_create_directory: "[!!!]error:[.] no permission to create directory: "
+main.no_permission_to_move_directory: "[!!!]error:[.] no permission to move directory: "
 main.never_root: "[!!!]error:[.] never run tridymite as root!"
 main.no_local_module: "[!!!]error:[.] can't use operator \"-l/--local\": no local installation module in setup activated!"
 main.list_local_packages: "Local packages installed:"

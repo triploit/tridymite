@@ -109,6 +109,7 @@ arguments.help.get: "läd das archiv eines paketes ins aktuelle verzeichnis heru
 arguments.help.search_installed: "suche nach einem installierten paket"
 arguments.help.create: "ein neues paket mit dem aktuellen verzeichnis erstellen"
 arguments.help.keep_tmp: "den tmp-ordner nach abschließen des programmes behalten"
+arguments.help.download_to_path: "läd paket-source-code in einen bestimmten ordner (zu vergleichen mit  '--get', extrahiert das paket jedoch)"
 
 arguments.usage.help: ""
 arguments.usage.install: "<paket> ..."
@@ -132,6 +133,7 @@ arguments.usage.get: "<paket>"
 arguments.usage.search_installed: "<string>"
 arguments.usage.create: ""
 arguments.usage.keep_tmp: ""
+arguments.usage.download_to_path: "<pfad> <paket> ..."
 
 arguments.package: "<paket> = <git-nutzer>:<git-repo>[@<git-server>] (git-server ist standardmäßig %s)"
 
@@ -160,6 +162,8 @@ runtime.catch_ctrl_c: "^C abgefangen\ntu das nicht noch einmal!"
 
 # main
 
+main.no_permission_to_create_directory: "[!!!]error:[.] keine berechtigungen, um verzeichnis zu erstellen: "
+main.no_permission_to_move_directory: "[!!!]error:[.] keine berechtigung, um verzeichnis zu verschieben: "
 main.never_root: "[!!!]error:[.] führe tridymite niemals als root aus!"
 main.no_local_module: "[!!!]error:[.] kann die option \"-l/--local\" nicht nutzen: das modul zur lokalen installation ist nicht aktiviert!"
 main.list_local_packages: "Diese lokalen Pakete sind installiert:"
