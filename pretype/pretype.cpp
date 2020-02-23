@@ -1,7 +1,3 @@
-//
-// Created by survari on 16.04.19.
-//
-
 #include <fstream>
 #include <runtime.hpp>
 #include <std/tstd.hpp>

@@ -1,7 +1,3 @@
-//
-// Created by survari on 05.05.19.
-//
-
 #ifndef TRIDYMITE_UPDATE_ALL_HPP
 #define TRIDYMITE_UPDATE_ALL_HPP
 

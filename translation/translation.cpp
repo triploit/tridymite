@@ -1,7 +1,3 @@
-//
-// Created by survari on 01.01.19.
-//
-
 #include <iostream>
 #include <yaml-cpp/yaml.h>
 

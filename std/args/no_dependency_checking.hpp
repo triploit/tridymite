@@ -1,7 +1,3 @@
-//
-// Created by survari on 05.05.19.
-//
-
 #ifndef TRIDYMITE_NO_DEPENDENCY_CHECKING_HPP
 #define TRIDYMITE_NO_DEPENDENCY_CHECKING_HPP
 

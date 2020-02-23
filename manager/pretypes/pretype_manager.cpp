@@ -1,7 +1,3 @@
-//
-// Created by survari on 16.04.19.
-//
-
 #include <std/tstd.hpp>
 #include "pretype_manager.hpp"
 

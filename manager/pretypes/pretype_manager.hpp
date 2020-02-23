@@ -1,7 +1,3 @@
-//
-// Created by survari on 16.04.19.
-//
-
 #ifndef TRIDYMITE_PRETYPE_MANAGER_HPP
 #define TRIDYMITE_PRETYPE_MANAGER_HPP
 

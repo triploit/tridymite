@@ -1,7 +1,3 @@
-//
-// Created by survari on 22.12.18.
-//
-
 #include <tstd.hpp>
 #include <unistd.h>
 #include <curl/curl.h>

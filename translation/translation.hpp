@@ -1,7 +1,3 @@
-//
-// Created by survari on 01.01.19.
-//
-
 #ifndef TRIDYMITE_TRANSLATION_HPP
 #define TRIDYMITE_TRANSLATION_HPP
 

@@ -1,7 +1,3 @@
-//
-// Created by survari on 06.05.19.
-//
-
 #ifndef TRIDYMITE_SEARCH_ONLINE_HPP
 #define TRIDYMITE_SEARCH_ONLINE_HPP
 

@@ -1,7 +1,3 @@
-//
-// Created by survari on 29.12.18.
-//
-
 #include "ipackage_manager.hpp"
 
 #include <tstd.hpp>

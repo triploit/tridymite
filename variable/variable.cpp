@@ -1,7 +1,3 @@
-//
-// Created by survari on 16.04.19.
-//
-
 #include "variable.hpp"
 
 Variable::Variable(const std::string &name, const std::string &value)

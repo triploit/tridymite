@@ -1,7 +1,3 @@
-//
-// Created by survari on 26.11.18.
-//
-
 #ifndef TRIDYMITE_ARGUMENTS_HPP
 #define TRIDYMITE_ARGUMENTS_HPP
 

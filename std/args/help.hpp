@@ -1,7 +1,3 @@
-//
-// Created by survari on 05.05.19.
-//
-
 #ifndef TRIDYMITE_HELP_HPP
 #define TRIDYMITE_HELP_HPP
 

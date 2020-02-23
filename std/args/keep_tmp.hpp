@@ -1,7 +1,3 @@
-//
-// Created by survari on 02.06.19.
-//
-
 #ifndef TRIDYMITE_KEEP_TEMP_HPP
 #define TRIDYMITE_KEEP_TEMP_HPP
 
