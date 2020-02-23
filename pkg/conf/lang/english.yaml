@@ -111,6 +111,7 @@ arguments.help.search_online: "search for an installed package"
 arguments.help.create: "create a new package from the source of the current directory"
 arguments.help.keep_tmp: "keep tmp-folder after exit"
 arguments.help.download_to_path: "extracts package-source-code to a path (similiar to '--get', but extracts contents of repo-zip)"
+arguments.help.update_path: "reinstalls all packages in path (extended --download-to-path)"
 
 arguments.usage.help: ""
 arguments.usage.install: "<package> ..."
@@ -136,6 +137,7 @@ arguments.usage.search_online: "<string> ..."
 arguments.usage.create: ""
 arguments.usage.keep_tmp: ""
 arguments.usage.download_to_path: "<path> <package> ..."
+arguments.usage.update_path: "<path>"
 
 arguments.package: "<package> = <git-user>:<git-repo>[@<git-server>] (git-server is %s by default)"
 
