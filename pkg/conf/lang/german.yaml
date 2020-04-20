@@ -175,6 +175,7 @@ main.no_local_packages_installed: "Es wurden keine lokalen Pakete installiert."
 main.downloading: "[!]info:[.] herunterladen von " # "[!]info:[.] downloading <paket> ..." will be printed
 main.file_exists_overwrite: "[!!]warnung:[.] diese datei existiert bereits.\nmöchtest du sie überschreiben?"
 main.finished: "[!]info:[.] abgeschlossen."
+main.finished_downloading: "[!]info:[.] download abgeschlossen."
 main.package_not_found: "[!!!]error:[.] paket nicht gefunden!"
 main.description_package_not_found: "[!]info:[.] beschreibung anzeigen: das oajet konnte nicht gefunden werden:" # "[!]info:[.] show description: couldn't find package <paket>" will be printed
 main.trying_find_online: "[!]info:[.] versuche es online zu finden ..."
@@ -236,6 +237,8 @@ main.updated_o: "%d Paket aktualisiert."
 main.updated_t: "%d Pakete aktualisiert."
 main.removed_o: "%d Paket entfernt."
 main.removed_t: "%d Pakete entfernt."
+
+main.package_installed_in_path_skipping: "[!]info:[.] paket %s v%s ist bereits im pfad installiert. überspringe."
 
 # package
 
