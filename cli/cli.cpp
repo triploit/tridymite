@@ -346,9 +346,20 @@ std::vector<std::string> CLI::getParameters(const std::string &argument)
 
 void CLI::runArguments()
 {
-    for (int i = 0; i < arg_name.size(); i++)
+    for(std::map<std::string, std::vector<std::string>>::iterator it = arg_values.begin(); it != arg_values.end(); ++it)
     {
-        if (CLI::argumentGiven(tstd::split(arg_name[i], ',')[0]))
-            arg_fun[i](getParameters(tstd::split(arg_name[i], ',')[0]), this);
+        for (int x = 0; x < arg_name.size(); x++)
+        {
+            bool found = false;
+
+            for (std::string n : tstd::split(arg_name[x], ','))
+            {
+                if (it->first == n)
+                    found = true;
+            }
+
+            if (found)
+                arg_fun[x](getParameters(tstd::split(arg_name[x], ',')[0]), this);
+        }
     }
 }
