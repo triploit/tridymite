@@ -242,6 +242,7 @@ main.no_local_packages_installed: "No local packages installed."
 main.downloading: "[!]info:[.] downloading" # "[!]info:[.] downloading <package> ..." will be printed
 main.file_exists_overwrite: "[!!]warning:[.] this file already exists.\ndo you want to overwrite it?"
 main.finished: "[!]info:[.] finished."
+main.finished_downloading: "[!]info:[.] download finished."
 main.package_not_found: "[!!!]error:[.] package not found!"
 main.description_package_not_found: "[!]info:[.] show description: couldn't find package" # "[!]info:[.] show description: couldn't find package <package>" will be printed
 main.trying_find_online: "[!]info:[.] trying to find it online..."
@@ -303,6 +304,8 @@ main.updated_o: "Updated %d package."
 main.updated_t: "Updated %d packages."
 main.removed_o: "Removed %d package."
 main.removed_t: "Removed %d packages."
+
+main.package_installed_in_path_skipping: "[!]info:[.] package %s v%s is already installed in path. skipping."
 
 # package
 
