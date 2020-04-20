@@ -32,8 +32,11 @@ void __argument_download_to_path(const std::vector<std::string> &parameters, CLI
     std::vector<Package> pkgs = tstd::parse_package_arguments(a); // Get all parameters and convert them to packages
     std::vector<Package> installed_packages = tstd::load_package_list("packages.lst");
 
+    int cc = 0;
     for (Package p : pkgs)
     {
+        cc++;
+
         bool f = false;
         for (Package pkg : installed_packages)
         {
@@ -57,7 +60,7 @@ void __argument_download_to_path(const std::vector<std::string> &parameters, CLI
                 system(std::string("mkdir -p "+destination).c_str());
 
                 if (tstd::download_file(tstd::create_zip_url(p), destination+"/pkg.zip"))
-                    std::cout << Translation::get("main.finished", false) << std::endl;
+                    std::cout << Translation::get("main.finished_downloading", false) << std::endl;
                 else
                     std::cout << Translation::get("main.package_not_found", false) << std::endl;
             }
@@ -67,7 +70,7 @@ void __argument_download_to_path(const std::vector<std::string> &parameters, CLI
             system(std::string("mkdir -p "+destination).c_str());
 
             if (tstd::download_file(tstd::create_zip_url(p), destination+"/pkg.zip"))
-                std::cout << Translation::get("main.finished", false) << std::endl;
+                std::cout << Translation::get("main.finished_downloading", false) << std::endl;
             else
                 std::cout << Translation::get("main.package_not_found", false) << std::endl;
         }
@@ -93,6 +96,20 @@ void __argument_download_to_path(const std::vector<std::string> &parameters, CLI
             std::cout << Translation::get("main.no_permission_to_move_directory", false) << path << std::endl;
             Runtime::exit(1);
         }
+        else
+        {
+            std::fstream conf(destination+"/pkg/package.yaml", std::ios::app);
+            conf << "gituser: \"" << p.getGitUser() << "\"" << std::endl;
+            conf << "server: \"" << p.getServer() << "\"" << std::endl;
+            conf << "branch: \"" << p.getBranch() << "\"" << std::endl;
+            conf << "reponame: \"" << p.getRepoName() << "\"" << std::endl;
+            conf.close();
+        }
+
+        std::cout << Translation::get("main.finished", false) << std::endl;
+
+        if (cc < pkgs.size())
+            std::cout << std::endl;
     }
 
     tstd::save_package_list("packages.lst", installed_packages);
