@@ -101,6 +101,13 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
     }
 
     bool reinstall = IPackagesManager::isPackageInstalled(package);
+    bool update = false;
+
+    if (!reinstall)
+    {
+        if (IPackagesManager::getPackage(package).getVersion() < package.getVersion())
+            update = true;
+    }
 
     for (int i = 0; i < package.getProductsFrom().size(); i++)
     {
@@ -203,7 +210,7 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
             Runtime::exit(1);
         }
 
-        if (to_exists && !Runtime::force && !Runtime::update)
+        if (to_exists && !Runtime::force && !Runtime::update && !update)
         {
             if ((to == from ||
                 ((from_file && to_file) ||
@@ -485,7 +492,6 @@ void InstallationManager::localPackage(std::string path)
     }
 
     InstallationManager::linkProducts(prefix, package);
-
     std::cout << prefix << Translation::get("manager.install.skipping", false) << std::endl;
 }
 
