@@ -27,8 +27,3 @@ products:
 
 links:
     - /usr/share/tridymite/tridy: "/usr/bin/tridy"
-
-gituser: triploit
-server: github.com
-reponame: tridymite
-branch: master
