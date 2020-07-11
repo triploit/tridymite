@@ -676,3 +676,9 @@ void tstd::save_package_list(std::string path, std::vector<Package> packages)
 
     of.close();
 }
+
+std::ifstream::pos_type tstd::get_file_size(std::string path)
+{
+    std::ifstream in(path, std::ifstream::ate | std::ifstream::binary);
+    return in.tellg();
+}

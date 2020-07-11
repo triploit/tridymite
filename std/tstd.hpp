@@ -34,6 +34,7 @@ namespace tstd
 
     int cursive_file_count(const std::string &path, int count=1);
     double check_size(const std::string &url);
+    std::ifstream::pos_type get_file_size(std::string path);
 
     std::vector<Package> parse_package_arguments(const std::vector<std::string> &packages);
     std::vector<std::string> split(std::string s, char delim); // Split a string by a delimiter
