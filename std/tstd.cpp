@@ -8,6 +8,8 @@
 #include <algorithm>
 #include <glob.h>
 #include <sys/param.h>
+#include <sys/ioctl.h>
+#include <iomanip>
 #include "tstd.hpp"
 
 
@@ -439,7 +441,51 @@ double tstd::check_size(const std::string &url)
     return -1;
 }
 
-bool tstd::download_file(const std::string &url, const std::string &destination)
+int draw_progress_bar(void* ptr, double TotalToDownload, double NowDownloaded, double TotalToUpload, double NowUploaded)
+{
+    // ensure that the file to be downloaded is not empty
+    // because that would cause a division by zero error later on
+
+    if (TotalToDownload <= 0.0) {
+        return 0;
+    }
+
+    struct winsize size;
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
+
+    int colums = size.ws_col / 2 - 4;
+    int percent = NowDownloaded * 100 / TotalToDownload;
+
+    if (NowDownloaded < 200)
+        percent = 0;
+    // std::cout << percent << " = " << NowDownloaded << " * 100 / " << TotalToDownload << std::endl;
+
+    float fill = colums * percent / 100;
+    int i = 0;
+
+    if (colums < 2)
+    {
+        std::cout << percent << "%\r";
+        return 0;
+    }
+
+    std::cout << " " << Translation::get("main.arrow", false) << percent << "% [ ";
+
+    for (; i < fill; i++)
+        std::cout << "#";
+
+    for (; i < colums; i++)
+        std::cout << "-";
+
+    std::cout << " ] " << std::fixed << std::setprecision(2) <<
+        (NowDownloaded / 1024 < 0.05 ? 0 : NowDownloaded / 1024) << "kb";
+
+    printf("\r");
+    fflush(stdout);
+    return 0;
+}
+
+bool tstd::download_file(const std::string &url, const std::string &destination, bool show_progress_bar)
 {
     CURL *curl;
     FILE *fp;
@@ -468,10 +514,31 @@ bool tstd::download_file(const std::string &url, const std::string &destination)
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
 
-        res = curl_easy_perform(curl);
+        if (show_progress_bar)
+        {
+            curl_easy_setopt(curl, CURLOPT_NOPROGRESS, false);
+            curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, draw_progress_bar);
+        }
 
+        res = curl_easy_perform(curl);
         curl_easy_cleanup(curl);
         fclose(fp);
+
+        if (show_progress_bar && ((res >= 200 && res < 300) || res == CURLE_OK))
+        {
+            struct winsize size;
+            ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
+            int colums = size.ws_col / 2 - 4;
+
+            std::cout << " " << Translation::get("main.arrow", false) << "100% [ ";
+
+            for (int i = 0; i < colums; i++)
+                std::cout << "#";
+
+            std::cout << " ] " << std::setprecision(2) << std::fixed <<
+                (get_file_size(destination) / 1024 < 0.05 ? 0 : get_file_size(destination) / 1024) <<
+                "kb       " << std::endl;
+        }
 
         return ((res >= 200 && res < 300) || res == CURLE_OK);
     }

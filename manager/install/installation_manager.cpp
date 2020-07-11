@@ -263,7 +263,7 @@ std::string InstallationManager::downloadPackage(const std::string &prefix, cons
 {
     std::cout << prefix << Translation::get("manager.install.downloading", false) << std::endl;
 
-    if (!tstd::download_file(tstd::create_zip_url(arg), package_zip))
+    if (!tstd::download_file(tstd::create_zip_url(arg), package_zip, true))
     {
         std::cout << Translation::get("general.package_not_found_good", false) << " " << tstd::package_to_argument(arg) << std::endl;
         Runtime::exit(1);

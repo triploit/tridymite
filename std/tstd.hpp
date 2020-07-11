@@ -27,7 +27,7 @@ namespace tstd
     std::string replace_quotation_marks(std::string from);
     std::string get_current_directory();
 
-    bool download_file(const std::string &url, const std::string &destination);
+    bool download_file(const std::string &url, const std::string &destination, bool show_progess_bar=false);
     bool yn_question(const std::string &q);
     bool url_exists(const std::string &url);
     void remove_directory(char* path);
