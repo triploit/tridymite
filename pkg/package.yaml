@@ -1,18 +1,18 @@
 name: "Tridymite"
-version: "1.0.4-beta.1"
+version: "1.0.6a"
 decription: "Tridymite package manager."
 information: >
     Install packages from GitHub, GitLab or other git-servers using Tridymite!
     Try it:
 
-        sudo tridy -i user:repo@server
-        sudo tridy -i triploit:tridymite@github.com
+        tridy -i user:repo@server
+        tridy -i triploit:tridymite@github.com
 
     You can leave off the @server. GitHub is the standard git-server. So
     also this will work:
 
-        sudo tridy -i user:repo
-        sudo tridy -i triploit:tridymite
+        tridy -i user:repo
+        tridy -i triploit:tridymite
 
 authors:
     - survari
@@ -27,7 +27,3 @@ products:
 
 links:
     - /usr/share/tridymite/tridy: "/usr/bin/tridy"
-
-gituser: triploit
-server: github.com
-reponame: tridymite

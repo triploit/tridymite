@@ -1,7 +1,3 @@
-//
-// Created by survari on 05.05.19.
-//
-
 #ifndef TRIDYMITE_NOT_SECURE_HPP
 #define TRIDYMITE_NOT_SECURE_HPP
 

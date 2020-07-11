@@ -1,7 +1,3 @@
-//
-// Created by survari on 05.05.19.
-//
-
 #ifndef TRIDYMITE_LOCAL_HPP
 #define TRIDYMITE_LOCAL_HPP
 

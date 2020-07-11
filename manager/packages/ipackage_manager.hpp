@@ -1,7 +1,3 @@
-//
-// Created by survari on 29.12.18.
-//
-
 #ifndef TRIDYMITE_IPACKAGESMANAGER_HPP
 #define TRIDYMITE_IPACKAGESMANAGER_HPP
 

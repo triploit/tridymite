@@ -1,7 +1,3 @@
-//
-// Created by survari on 12.01.19.
-//
-
 #include <runtime.hpp>
 #include <std/tstd.hpp>
 #include <thread>

@@ -1,7 +1,3 @@
-//
-// Created by survari on 22.12.18.
-//
-
 #include <tstd.hpp>
 #include <unistd.h>
 #include <curl/curl.h>
@@ -12,6 +8,8 @@
 #include <algorithm>
 #include <glob.h>
 #include <sys/param.h>
+#include <sys/ioctl.h>
+#include <iomanip>
 #include "tstd.hpp"
 
 
@@ -353,6 +351,42 @@ bool tstd::yn_question(const std::string &q)
     return (s == "Y" || s == "y");
 }
 
+void tstd::remove_directory(char *path)
+{
+    struct dirent *entry = NULL;
+    DIR *dir = NULL;
+    dir = opendir(path);
+
+    if (dir == NULL)
+        return;
+
+    while(entry = readdir(dir))
+    {
+        DIR *sub_dir = NULL;
+        FILE *file = NULL;
+        char abs_path[100] = {0};
+        if(*(entry->d_name) != '.')
+        {
+            sprintf(abs_path, "%s/%s", path, entry->d_name);
+            if(sub_dir = opendir(abs_path))
+            {
+                closedir(sub_dir);
+                remove_directory(abs_path);
+            }
+            else
+            {
+                if(file = fopen(abs_path, "r"))
+                {
+                    fclose(file);
+                    remove(abs_path);
+                }
+            }
+        }
+    }
+
+    remove(path);
+}
+
 static size_t throw_away(void *ptr, size_t size, size_t nmemb, void *data)
 {
     (void)ptr;
@@ -407,7 +441,51 @@ double tstd::check_size(const std::string &url)
     return -1;
 }
 
-bool tstd::download_file(const std::string &url, const std::string &destination)
+int draw_progress_bar(void* ptr, double TotalToDownload, double NowDownloaded, double TotalToUpload, double NowUploaded)
+{
+    // ensure that the file to be downloaded is not empty
+    // because that would cause a division by zero error later on
+
+    if (TotalToDownload <= 0.0) {
+        return 0;
+    }
+
+    struct winsize size;
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
+
+    int colums = size.ws_col / 2 - 4;
+    int percent = NowDownloaded * 100 / TotalToDownload;
+
+    if (NowDownloaded < 200)
+        percent = 0;
+    // std::cout << percent << " = " << NowDownloaded << " * 100 / " << TotalToDownload << std::endl;
+
+    float fill = colums * percent / 100;
+    int i = 0;
+
+    if (colums < 2)
+    {
+        std::cout << percent << "%\r";
+        return 0;
+    }
+
+    std::cout << " " << Translation::get("main.arrow", false) << percent << "% [ ";
+
+    for (; i < fill; i++)
+        std::cout << "#";
+
+    for (; i < colums; i++)
+        std::cout << "-";
+
+    std::cout << " ] " << std::fixed << std::setprecision(2) <<
+        (NowDownloaded / 1024 < 0.05 ? 0 : NowDownloaded / 1024) << "kb";
+
+    printf("\r");
+    fflush(stdout);
+    return 0;
+}
+
+bool tstd::download_file(const std::string &url, const std::string &destination, bool show_progress_bar)
 {
     CURL *curl;
     FILE *fp;
@@ -436,10 +514,31 @@ bool tstd::download_file(const std::string &url, const std::string &destination)
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
 
-        res = curl_easy_perform(curl);
+        if (show_progress_bar)
+        {
+            curl_easy_setopt(curl, CURLOPT_NOPROGRESS, false);
+            curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, draw_progress_bar);
+        }
 
+        res = curl_easy_perform(curl);
         curl_easy_cleanup(curl);
         fclose(fp);
+
+        if (show_progress_bar && ((res >= 200 && res < 300) || res == CURLE_OK))
+        {
+            struct winsize size;
+            ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
+            int colums = size.ws_col / 2 - 4;
+
+            std::cout << " " << Translation::get("main.arrow", false) << "100% [ ";
+
+            for (int i = 0; i < colums; i++)
+                std::cout << "#";
+
+            std::cout << " ] " << std::setprecision(2) << std::fixed <<
+                (get_file_size(destination) / 1024 < 0.05 ? 0 : get_file_size(destination) / 1024) <<
+                "kb       " << std::endl;
+        }
 
         return ((res >= 200 && res < 300) || res == CURLE_OK);
     }
@@ -608,4 +707,45 @@ std::string tstd::get_answer(const std::string &question)
     std::getline(std::cin, line);
 
     return line;
+}
+
+std::vector<Package> tstd::load_package_list(std::string path)
+{
+    std::vector<Package> packages;
+    std::ifstream f(path);
+
+    if (!f.is_open())
+        return {};
+    else
+    {
+        std::string line;
+
+        while (std::getline(f, line))
+        {
+            if (tstd::trim(path)[0] == '#')
+                continue;
+
+            packages.push_back(tstd::parse_package(tstd::trim(line)));
+        }
+    }
+
+    f.close();
+    return packages;
+}
+
+void tstd::save_package_list(std::string path, std::vector<Package> packages)
+{
+    std::ofstream of;
+    of.open(path);
+
+    for (Package p : packages)
+        of << tstd::package_to_argument(p) << std::endl;
+
+    of.close();
+}
+
+std::ifstream::pos_type tstd::get_file_size(std::string path)
+{
+    std::ifstream in(path, std::ifstream::ate | std::ifstream::binary);
+    return in.tellg();
 }

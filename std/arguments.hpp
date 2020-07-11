@@ -1,7 +1,3 @@
-//
-// Created by survari on 26.11.18.
-//
-
 #ifndef TRIDYMITE_ARGUMENTS_HPP
 #define TRIDYMITE_ARGUMENTS_HPP
 
@@ -9,6 +5,8 @@
 #include <vector>
 
 #include <std/args/args.hpp>
+#include <std/args/download_to_path.hpp>
+#include <std/args/update_local_path.hpp>
 
 const std::vector<std::string> __ARG_NAME { // Names, two names of the same argument are written in the same string and will be splitted at a comma
     "si,search-installed",
@@ -32,8 +30,9 @@ const std::vector<std::string> __ARG_NAME { // Names, two names of the same argu
     "u,update",
     "r,remove",
     "c,create",
-    "k,keep-temp"
-
+    "k,keep-temp",
+    "dp,download-to-path",
+    "up,update-path"
 };
 
 const std::vector<std::string> __ARG_HELP { // Help for the arguments
@@ -58,7 +57,9 @@ const std::vector<std::string> __ARG_HELP { // Help for the arguments
     "update",
     "remove",
     "create",
-    "keep_tmp"
+    "keep_tmp",
+    "download_to_path",
+    "update_path"
 };
 
 std::vector<int> __ARG_LENGTH { // How many arguments can an argument have? -1 = endless, 0 = 0, 1 = 1, ...
@@ -83,7 +84,9 @@ std::vector<int> __ARG_LENGTH { // How many arguments can an argument have? -1 =
     -1,
     -1,
     0,
-    0
+    0,
+    -1,
+    1
 };
 
 std::vector<void (*)(const std::vector<std::string>&, CLI* cli)> __ARG_FUNCTIONS {
@@ -108,7 +111,9 @@ std::vector<void (*)(const std::vector<std::string>&, CLI* cli)> __ARG_FUNCTIONS
     &__argument_update,
     &__argument_remove,
     &__argument_create,
-    &__argument_keep_tmp
+    &__argument_keep_tmp,
+    &__argument_download_to_path,
+    &__argument_update_path
 };
 
 #endif //TRIDYMITE_ARGUMENTS_HPP

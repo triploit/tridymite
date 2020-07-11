@@ -1,7 +1,3 @@
-//
-// Created by survari on 24.12.18.
-//
-
 #include "installation_manager.hpp"
 
 #include <curl/curl.h>
@@ -68,8 +64,8 @@ bool InstallationManager::linkProducts(const std::string &prefix, const Package 
         from_var = "$"+from_var;
         to_var = "$"+to_var;
 
-        std::cout << prefix << Translation::get("manager.install.linking", false) << package.getProductsTo()[i] << std::endl;
-        system(std::string("ln -s "+from_var+" "+to_var).c_str());
+        std::cout << prefix << Translation::get("manager.install.linking", false) << tstd::trim(package.getProductsTo()[i]) << std::endl;
+        system(("if [ ! -L "+to_var+" ]; then sudo ln -s "+from_var+" "+to_var+"; fi").c_str());
     }
 
     return true;
@@ -105,6 +101,13 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
     }
 
     bool reinstall = IPackagesManager::isPackageInstalled(package);
+    bool update = false;
+
+    if (!reinstall)
+    {
+        if (IPackagesManager::getPackage(package).getVersion() < package.getVersion())
+            update = true;
+    }
 
     for (int i = 0; i < package.getProductsFrom().size(); i++)
     {
@@ -207,7 +210,7 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
             Runtime::exit(1);
         }
 
-        if (to_exists && !Runtime::force && !Runtime::update)
+        if (to_exists && !Runtime::force && !Runtime::update && !update)
         {
             if ((to == from ||
                 ((from_file && to_file) ||
@@ -260,9 +263,7 @@ std::string InstallationManager::downloadPackage(const std::string &prefix, cons
 {
     std::cout << prefix << Translation::get("manager.install.downloading", false) << std::endl;
 
-    std::cout << tstd::create_zip_url(arg) << std::endl;
-
-    if (!tstd::download_file(tstd::create_zip_url(arg), package_zip))
+    if (!tstd::download_file(tstd::create_zip_url(arg), package_zip, true))
     {
         std::cout << Translation::get("general.package_not_found_good", false) << " " << tstd::package_to_argument(arg) << std::endl;
         Runtime::exit(1);
@@ -491,7 +492,6 @@ void InstallationManager::localPackage(std::string path)
     }
 
     InstallationManager::linkProducts(prefix, package);
-
     std::cout << prefix << Translation::get("manager.install.skipping", false) << std::endl;
 }
 
@@ -521,8 +521,6 @@ void InstallationManager::installPackage(const Package &arg, bool nl)
     _of << "server: " << arg.getServer() << std::endl;
     _of << "branch: " << arg.getBranch() << std::endl;
     _of.close();
-
-    std::cout << file << std::endl;
 
     Package package(YAML::LoadFile(file));
 

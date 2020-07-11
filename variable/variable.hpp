@@ -1,7 +1,3 @@
-//
-// Created by survari on 16.04.19.
-//
-
 #ifndef TRIDYMITE_VARIABLE_HPP
 #define TRIDYMITE_VARIABLE_HPP
 

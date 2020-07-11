@@ -1,7 +1,3 @@
-//
-// Created by survari on 16.12.18.
-//
-
 #ifndef TRIDYMITE_TOKEN_HPP
 #define TRIDYMITE_TOKEN_HPP
 

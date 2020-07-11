@@ -27,12 +27,14 @@ namespace tstd
     std::string replace_quotation_marks(std::string from);
     std::string get_current_directory();
 
-    bool download_file(const std::string &url, const std::string &destination);
+    bool download_file(const std::string &url, const std::string &destination, bool show_progess_bar=false);
     bool yn_question(const std::string &q);
     bool url_exists(const std::string &url);
+    void remove_directory(char* path);
 
     int cursive_file_count(const std::string &path, int count=1);
     double check_size(const std::string &url);
+    std::ifstream::pos_type get_file_size(std::string path);
 
     std::vector<Package> parse_package_arguments(const std::vector<std::string> &packages);
     std::vector<std::string> split(std::string s, char delim); // Split a string by a delimiter
@@ -40,6 +42,9 @@ namespace tstd
     std::vector<std::string> read_cursive_all_files(std::string path);
     std::vector<std::string> get_all_directories(const std::string &path);
     std::vector<std::string> create_list_of_packages(const std::vector<Package> &packages);
+
+    std::vector<Package> load_package_list(std::string path);
+    void save_package_list(std::string path, std::vector<Package> packages);
 };
 
 
