@@ -9,18 +9,18 @@ at the start of the project I didn't really think about versioning and just gave
 everything some increasing number-letter-dots-combination. I'm trying to improve 
 this from now on.
 
-### v1.0.6
+### v1.0.6 (12.07.2020)
 
 * added statusbar for package-downloads
 * added changelog
 
-### v1.0.5-beta.1
+### v1.0.5-beta.1 (20.04.2020)
 
 * fixed performance for GPPS packages
 * fixed bugs in GPPS installations
 * fixed sentences to translation fallback
 
-### v1.0.4-beta.2
+### v1.0.4-beta.2 (23.02.2020)
 
 * fixed translations
 
@@ -29,7 +29,7 @@ this from now on.
     * installation of package-source into a given directory, with basic
     functionality like install, remove, update
 
-### v1.0.4-beta.1
+### v1.0.4-beta.1 (08.06.2019)
 
 * added support for Git tags
 
