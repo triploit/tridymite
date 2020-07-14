@@ -73,4 +73,5 @@ add_executable(tridymite
         variable/variable.cpp
         variable/variable.hpp
 
-        std/args/args.hpp)
+        std/args/args.hpp 
+        std/args/verbose.hpp)
