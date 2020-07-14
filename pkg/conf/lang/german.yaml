@@ -3,6 +3,7 @@ general.package_not_found: "[!!!]error:[.] paket %s nicht gefunden!"
 general.package_not_found_good: "[!!!]error:[.] paket nicht gefunden:"
 general.continue_question: "willst du fortfahren? (y=ja, n=nein)" # don't change up the 'y' and 'n', but translate 'yes' and 'no'! 
 general.aborted: "abgebrochen."
+general.error: "[!!!]error:[.]"
 
 # cli
 
@@ -17,6 +18,7 @@ cli.unfinished_arguments: "[!!!]error:[.] cli: die deklarationen der argumente s
 
 manager.dependencies.cant_remove_dependency: "[!]info:[.] kann %s nicht entfernen: ist eine abhängigkeit von:"
 manager.dependencies.added_dependency: "[!]info:[.] abhängigkeit hinzugefügt:"
+manager.dependencies.dependency_version_conflict: "[!!!]error:[.] die pakete %s und %s nutzen unterschiedliche versionen von %s, die miteinander im konflikt stehen.\n\n    %s -> version %s of %s\n    %s -> version %s of %s"
 
 # manager/install
 
