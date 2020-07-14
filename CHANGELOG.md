@@ -9,6 +9,12 @@ at the start of the project I didn't really think about versioning and just gave
 everything some increasing number-letter-dots-combination. I'm trying to improve 
 this from now on.
 
+### v1.0.7 (14.07.2020)
+
+* fixed coloring at removing/updating messages
+* added checking for conflicting versions in package dependencies
+* added verbose argument
+
 ### v1.0.6 (12.07.2020)
 
 * added statusbar for package-downloads
