@@ -111,6 +111,7 @@ arguments.help.create: "ein neues paket mit dem aktuellen verzeichnis erstellen"
 arguments.help.keep_tmp: "den tmp-ordner nach abschließen des programmes behalten"
 arguments.help.download_to_path: "läd paket-source-code in einen bestimmten ordner (zu vergleichen mit  '--get', extrahiert das paket jedoch)"
 arguments.help.update_path: "reinstalliert alle pakete im gegebenen pfad (erweitertes --download-to-path)"
+arguments.help.verbose: "aktiviert die erweiterte ausgabe"
 
 arguments.usage.help: ""
 arguments.usage.install: "<paket> ..."
@@ -136,6 +137,7 @@ arguments.usage.create: ""
 arguments.usage.keep_tmp: ""
 arguments.usage.download_to_path: "<pfad> <paket> ..."
 arguments.usage.update_path: "<path>"
+arguments.usage.verbose: ""
 
 arguments.package: "<paket> = <git-nutzer>:<git-repo>[@<git-server>] (git-server ist standardmäßig %s)"
 
