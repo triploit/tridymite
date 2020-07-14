@@ -3,13 +3,16 @@
 #include <thread>
 #include "dependency_manager.hpp"
 
-void DependencyManager::checkDependencies(const Package &package_to_check)
+void DependencyManager::checkDependencies(const Package package_to_check)
 {
     if (Runtime::no_dependencies)
         return;
 
     for (Package dependency : package_to_check.getDependencies())
     {
+        dependency = getPackagesConfig({ dependency }, false)[0];
+        dependency.setAddedBy(tstd::package_to_argument(package_to_check));
+
         for (int i = 0; i < Runtime::to_remove.size(); i++)
         {
             const Package &x = Runtime::to_remove[i];
@@ -40,31 +43,75 @@ void DependencyManager::checkDependencies(const Package &package_to_check)
 
         bool found = false;
 
-        for (int x = 0; x < Runtime::to_install.size(); x++)
+        for (const Package &installed_package : IPackagesManager::getInstalledPackages())
         {
-            const Package &package_to_install = Runtime::to_install[x];
-
-            if (package_to_install.getRepoName() == dependency.getRepoName() &&
-                package_to_install.getGitUser() == dependency.getGitUser() &&
-                package_to_install.getServer() == dependency.getServer() &&
-                package_to_install.getBranch() == dependency.getBranch())
+            if (installed_package.getRepoName() == dependency.getRepoName() &&
+                installed_package.getGitUser() == dependency.getGitUser())
             {
-                found = true;
-                
-                Runtime::to_install.insert(Runtime::to_install.begin(), package_to_install);
-                Runtime::to_install.erase(Runtime::to_install.begin()+x+1);
+                if (installed_package.getVersion() != dependency.getVersion() && installed_package.isDependency())
+                {
+                    std::cout << std::endl;
+                    printf(Translation::get("manager.dependencies.dependency_version_conflict").c_str(),
+                           dependency.getAddedBy().c_str(),
+                           installed_package.getDependantPackage().c_str(),
+
+                           std::string(dependency.getGitUser()+":"+dependency.getRepoName()).c_str(),
+
+                           dependency.getAddedBy().c_str(),
+                           dependency.getVersion().ToString().c_str(),
+                           std::string(dependency.getGitUser()+":"+dependency.getRepoName()).c_str(),
+
+                           installed_package.getDependantPackage().c_str(),
+                           installed_package.getVersion().ToString().c_str(),
+                           std::string(dependency.getGitUser()+":"+dependency.getRepoName()).c_str());
+
+                    if (!IPackagesManager::isPackageInstalledNV(tstd::parse_package(dependency.getAddedBy())))
+                        std::cout << std::endl << Translation::get("manager.install.aborting_installation");
+
+                    Runtime::exit(1);
+                }
+                else if (installed_package.getVersion() == dependency.getVersion())
+                    found = true;
             }
         }
 
         if (!found)
         {
-            for (const Package &installed_package : IPackagesManager::getInstalledPackages())
+            for (int x = 0; x < Runtime::to_install.size(); x++)
             {
-                if (installed_package.getRepoName() == dependency.getRepoName() &&
-                    installed_package.getGitUser() == dependency.getGitUser() &&
-                    installed_package.getServer() == dependency.getServer() &&
-                    installed_package.getBranch() == dependency.getBranch())
+                const Package &package_to_install = Runtime::to_install[x];
+
+                if (package_to_install.getRepoName() == dependency.getRepoName() &&
+                    package_to_install.getGitUser() == dependency.getGitUser())
+                {
+                    if (package_to_install.getVersion() != dependency.getVersion())
+                    {
+                        std::cout << std::endl;
+                        printf(Translation::get("manager.dependencies.dependency_version_conflict").c_str(),
+                            dependency.getAddedBy().c_str(),
+                            package_to_install.getAddedBy().c_str(),
+
+                            std::string(dependency.getGitUser()+":"+dependency.getRepoName()).c_str(),
+
+                            dependency.getAddedBy().c_str(),
+                            dependency.getVersion().ToString().c_str(),
+                            std::string(dependency.getGitUser()+":"+dependency.getRepoName()).c_str(),
+
+                            package_to_install.getAddedBy().c_str(),
+                            package_to_install.getVersion().ToString().c_str(),
+                            std::string(dependency.getGitUser()+":"+dependency.getRepoName()).c_str());
+
+                        if (!IPackagesManager::isPackageInstalledNV(tstd::parse_package(dependency.getAddedBy())))
+                            std::cout << std::endl << Translation::get("manager.install.aborting_installation");
+
+                        Runtime::exit(1);
+                    }
+
                     found = true;
+
+                    Runtime::to_install.insert(Runtime::to_install.begin(), package_to_install);
+                    Runtime::to_install.erase(Runtime::to_install.begin()+x+1);
+                }
             }
         }
 
@@ -77,7 +124,7 @@ void DependencyManager::checkDependencies(const Package &package_to_check)
     }
 }
 
-std::vector<Package> DependencyManager::getPackagesConfig(std::vector<Package> packages)
+std::vector<Package> DependencyManager::getPackagesConfig(std::vector<Package> packages, bool show_message)
 {
     std::vector<std::thread> threads;
     int count;
@@ -128,19 +175,21 @@ std::vector<Package> DependencyManager::getPackagesConfig(std::vector<Package> p
         if (t.joinable())
         {
             count += 1;
-            std::cout << Translation::get("general.loading_packages", false) + " " +
-                         std::to_string(count) + "/" +
-                         std::to_string(packages.size()) << std::endl;
+
+            if (show_message)
+                std::cout << Translation::get("general.loading_packages", false) + " " +
+                             std::to_string(count) + "/" +
+                             std::to_string(packages.size()) << std::endl;
 
             std::cin.sync();
             t.join();
 
-            if (count < packages.size())
+            if (count < packages.size() && show_message)
                 printf("\033[1A");
         }
     }
 
-    if (count > 0)
+    if (count > 0 && show_message)
         std::cout << std::endl;
 
     threads.clear();
@@ -161,7 +210,6 @@ std::vector<Package> DependencyManager::getPackagesConfig(std::vector<Package> p
 
                 for (int i = 0; i < packages.size(); i++)
                 {
-
                     if (npackage.getGitUser() == packages[i].getGitUser() &&
                         npackage.getServer() == packages[i].getServer() &&
                         npackage.getRepoName() == packages[i].getRepoName())
