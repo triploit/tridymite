@@ -20,10 +20,11 @@ private:
     std::string name;           // name of project
     std::string description;    // long description
     std::string information;    // short description
-    YAML::Node type;    // short description
+    YAML::Node type;            // short description
     std::string yaml_path;      // path were the yaml file lies
     Script build_script;        // build script
 
+    std::string added_by;
     std::vector<Package> dependencies;  // all dependencies
     std::vector<std::string> authors;   // authors and co-workers
 
@@ -50,12 +51,13 @@ public:
     const std::string &getServer() const;
     const std::string &getYamlPath() const;
     const std::string &getBranch() const;
+    const std::string &getRepoName() const;
+    const std::string &getAddedBy() const;
 
     const Script &getBuildScript() const;
     const semver::Version &getVersion() const;
     const YAML::Node &getType() const;
 
-    const std::string &getRepoName() const;
     const std::vector<Package> &getDependencies() const;
     const std::vector<std::string> &getAuthors() const;
     const std::vector<std::string> &getProductsFrom() const;
@@ -72,11 +74,15 @@ public:
     void setYamlPath(const std::string &path);
     void setVersion(const semver::Version &version);
     void setBranch(const std::string &branch);
+    void setAddedBy(const std::string &package_argument);
 
     void setType(const YAML::Node &type);
     void setBuildScript(const Script &functions);
     void setDependencies(const std::vector<Package> &dependencies);
     void setAuthors(const std::vector<std::string> &authors);
+
+    bool isDependency() const;
+    const std::string getDependantPackage() const;
 
     friend std::ostream &operator<<(std::ostream &os, const Package &p);
     const bool operator==(const Package &p) const;

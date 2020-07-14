@@ -203,9 +203,6 @@ const std::string &Package::getYamlPath() const
 
 void Package::load_package_from_nodes(const YAML::Node &pkg)
 {
-    if (pkg["reponame"])
-        setRepoName(pkg["reponame"].as<std::string>());
-
     if (pkg["gituser"])
         setGitUser(pkg["gituser"].as<std::string>());
     else
@@ -219,6 +216,14 @@ void Package::load_package_from_nodes(const YAML::Node &pkg)
     else
     {
         printf(Translation::get("package.no_option_set").c_str(), getRepoName().c_str(), "git server");
+        Runtime::exit(1);
+    }
+
+    if (pkg["reponame"])
+        setRepoName(pkg["reponame"].as<std::string>());
+    else
+    {
+        printf(Translation::get("package.no_option_set").c_str(), getRepoName().c_str(), "repo name");
         Runtime::exit(1);
     }
 
@@ -302,36 +307,40 @@ void Package::load_package_from_nodes(const YAML::Node &pkg)
         }
     }
 
-    for (const YAML::Node &n : pkg["dependencies"])
+    if (pkg["dependencies"])
     {
-        if (n.as<std::string>().rfind("https://", 0) == 0)
+        for (const YAML::Node &n : pkg["dependencies"])
         {
-            std::string file = Runtime::tmp_dir + "/tmp.yaml";
-            std::string url = n.as<std::string>();
-
-            if (!tstd::download_file(url, file))
+            if (n.as<std::string>().rfind("https://", 0) == 0)
             {
-                printf(Translation::get("package.no_tridymite_package").c_str(), tstd::package_to_argument(*this).c_str(), url.c_str());
-                Runtime::exit(1);
+                std::string file = Runtime::tmp_dir + "/tmp.yaml";
+                std::string url = n.as<std::string>();
+
+                if (!tstd::download_file(url, file))
+                {
+                    printf(Translation::get("package.no_tridymite_package").c_str(),
+                        tstd::package_to_argument(*this).c_str(), url.c_str());
+                    Runtime::exit(1);
+                }
+
+                std::ofstream _of(file, std::ios::app);
+                _of << "gituser: " << this->getGitUser() << std::endl;
+                _of << "reponame: " << this->getRepoName() << std::endl;
+                _of << "server: " << this->getServer() << std::endl;
+                _of << "branch: " << this->getBranch() << std::endl;
+                _of.close();
+
+                dependencies.push_back(Package(YAML::LoadFile(file)));
             }
-
-            std::ofstream _of(file, std::ios::app);
-            _of << "gituser: " << this->getGitUser() << std::endl;
-            _of << "reponame: " << this->getRepoName() << std::endl;
-            _of << "server: " << this->getServer() << std::endl;
-            _of << "branch: " << this->getBranch() << std::endl;
-            _of.close();
-
-            dependencies.push_back(Package(YAML::LoadFile(file)));
-        }
-        else if (std::regex_match(n.as<std::string>(), std::regex(
-                "([a-zA-Z_0-9\-]*):([a-zA-Z_0-9\-]*)@([a-zA-Z_0-9\-]*)\.([a-zA-Z_0-9\-]*)")))
-        {
-            dependencies.push_back(tstd::parse_package(n.as<std::string>()));
-        }
-        else if (n.as<std::string>() == "nopkg")
-        {
-            printf(Translation::get("package.nopkg").c_str(), tstd::package_to_argument(*this).c_str());
+            else if (std::regex_match(n.as<std::string>(),
+                std::regex("([a-zA-Z_0-9\-]+):([a-zA-Z_0-9\-]+)@([a-zA-Z_0-9\-]+)\.([a-zA-Z_0-9\-]+)((\#[a-zA-Z_0-9]+([a-zA-Z_0-9\.\-]*[a-zA-Z_0-9]+|))|)")))
+            {
+                dependencies.push_back(tstd::parse_package(n.as<std::string>()));
+            }
+            else if (n.as<std::string>() == "nopkg")
+            {
+                printf(Translation::get("package.nopkg").c_str(), tstd::package_to_argument(*this).c_str());
+            }
         }
     }
 }
@@ -354,4 +363,60 @@ void Package::setBranch(const std::string &branch)
 const std::string &Package::getBranch() const
 {
     return branch;
+}
+
+const std::string &Package::getAddedBy() const
+{
+    return this->added_by;
+}
+
+void Package::setAddedBy(const std::string &package_argument)
+{
+    this->added_by = package_argument;
+}
+
+bool Package::isDependency() const
+{
+    for (const Package &p : IPackagesManager::getInstalledPackages())
+    {
+        for (const Package &dep : p.getDependencies())
+        {
+            if (dep.getGitUser() == getGitUser() && dep.getRepoName() == getRepoName())
+                return true;
+        }
+    }
+
+    for (const Package &p : Runtime::to_install)
+    {
+        for (const Package &dep : p.getDependencies())
+        {
+            if (dep.getGitUser() == getGitUser() && dep.getRepoName() == getRepoName())
+                return true;
+        }
+    }
+
+    return false;
+}
+
+const std::string Package::getDependantPackage() const
+{
+    for (const Package &p : IPackagesManager::getInstalledPackages())
+    {
+        for (const Package &dep : p.getDependencies())
+        {
+            if (dep.getGitUser() == getGitUser() && dep.getRepoName() == getRepoName())
+                return tstd::package_to_argument(p);
+        }
+
+        for (const Package &p : Runtime::to_install)
+        {
+            for (const Package &dep : p.getDependencies())
+            {
+                if (dep.getGitUser() == getGitUser() && dep.getRepoName() == getRepoName())
+                    return tstd::package_to_argument(p);
+            }
+        }
+    }
+
+    return "<null>";
 }
