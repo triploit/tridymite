@@ -105,7 +105,7 @@ void __argument_search_online(const std::vector<std::string> &parameters, CLI* c
             std::string post;
             info = std::accumulate(result.begin()+2, result.end(), info);
 
-            if (IPackagesManager::isPackageInstalledNV(package))
+            if (IPackagesManager::isPackageInstalledNVS(package))
             {
                 post = " (installed)";
 

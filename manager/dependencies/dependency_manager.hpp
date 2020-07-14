@@ -7,9 +7,8 @@
 class DependencyManager
 {
 public:
-    static void checkDependencies(const Package &package_to_check);
-
-    static std::vector<Package> getPackagesConfig(std::vector<Package> packages);
+    static void checkDependencies(const Package package_to_check);
+    static std::vector<Package> getPackagesConfig(std::vector<Package> packages, bool show_message=true);
 };
 
 

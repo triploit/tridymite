@@ -469,7 +469,7 @@ int draw_progress_bar(void* ptr, double TotalToDownload, double NowDownloaded, d
         return 0;
     }
 
-    std::cout << " " << Translation::get("main.arrow", false) << percent << "% [ ";
+    std::cout << Translation::get("main.arrow", false) << percent << "% [ ";
 
     for (; i < fill; i++)
         std::cout << "#";

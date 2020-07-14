@@ -3,6 +3,7 @@ general.package_not_found: "[!!!]error:[.] package %s not found!"
 general.package_not_found_good: "[!!!]error:[.] package not found:"
 general.continue_question: "do you want to continue? (y=yes, n=no)" # don't change up the 'y' and 'n', but translate 'yes' and 'no'! 
 general.aborted: "aborted."
+general.error: "[!!!]error:[.]"
 
 # cli
 
@@ -17,6 +18,7 @@ cli.unfinished_arguments: "[!!!]error:[.] cli: the declerations of the arguments
 
 manager.dependencies.cant_remove_dependency: "[!]info:[.] can't remove %s: is a dependency of:"
 manager.dependencies.added_dependency: "[!]info:[.] added dependency:"
+manager.dependencies.dependency_version_conflict: "[!!!]error:[.] the packages %s and %s are using conflicting versions of %s.\n\n    %s -> version %s of %s\n    %s -> version %s of %s"
 
 # manager/install
 
@@ -112,6 +114,7 @@ arguments.help.create: "create a new package from the source of the current dire
 arguments.help.keep_tmp: "keep tmp-folder after exit"
 arguments.help.download_to_path: "extracts package-source-code to a path (similiar to '--get', but extracts contents of repo-zip)"
 arguments.help.update_path: "reinstalls all packages in path (extended --download-to-path)"
+arguments.help.verbose: "enable verbose output"
 
 arguments.usage.help: ""
 arguments.usage.install: "<package> ..."
@@ -138,6 +141,7 @@ arguments.usage.create: ""
 arguments.usage.keep_tmp: ""
 arguments.usage.download_to_path: "<path> <package> ..."
 arguments.usage.update_path: "<path>"
+arguments.usage.verbose: ""
 
 arguments.package: "<package> = <git-user>:<git-repo>[@<git-server>] (git-server is %s by default)"
 

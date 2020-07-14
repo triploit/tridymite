@@ -107,7 +107,7 @@ void RemoveManager::uninstallPackage(const Package &p)
     std::string file = Runtime::tmp_dir+"/tmp.yaml";
     std::string url = tstd::create_url(p, "raw/"+p.getBranch()+"/pkg/package.yaml");
 
-    std::cout << "[ " << Translation::get("manager.remove.removing", false) << " ] " << Translation::get("manager.remove.now_uninstalling", false) << " " << tstd::package_to_argument(p) << std::endl;
+    std::cout << "\033[1;33m[ " << Translation::get("manager.remove.removing", false) << " ]\033[00m " << Translation::get("manager.remove.now_uninstalling", false) << " " << tstd::package_to_argument(p) << std::endl;
 
     Package package = p;
     YAML::Node node;
@@ -162,7 +162,9 @@ void RemoveManager::uninstallPackage(const Package &p)
 
         std::cout << " \033[1;32m=>\033[00m " << Translation::get("manager.remove.removing_path", false) << " " << dir << std::endl;
         system(std::string("sudo rm -rf "+dir).c_str());
-        std::cout << std::endl;
+
+        if (!(Runtime::to_remove[Runtime::to_remove.size()-1] == p))
+            std::cout << std::endl;
     }
     else
     {

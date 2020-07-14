@@ -22,6 +22,6 @@ void UpdateManager::updatePackage(const Package &to_update)
         }
     }
 
-    std::cout << "[ " << Translation::get("manager.update.updating", false) << " ] " << Translation::get("manager.update.updating_package", false) << " " << tstd::package_to_argument(to_update) << std::endl;
+    std::cout << "\033[1;33m[ " << Translation::get("manager.update.updating", false) << "] \033[00m " << Translation::get("manager.update.updating_package", false) << " " << tstd::package_to_argument(to_update) << std::endl;
     InstallationManager::installPackage(to_update, false);
 }

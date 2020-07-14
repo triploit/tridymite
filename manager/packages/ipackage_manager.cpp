@@ -55,13 +55,12 @@ const Package& IPackagesManager::getPackage(const Package &p)
     return p;
 }
 
-bool IPackagesManager::isPackageInstalledNV(const Package &p) // NV = no version comparison
+bool IPackagesManager::isPackageInstalledNVS(const Package &p) // NVS = no version and nor server comparison
 {
     for (const Package &installed_package : IPackagesManager::installed_packages)
     {
         if (p.getGitUser() == installed_package.getGitUser() &&
-            p.getRepoName() == installed_package.getRepoName() &&
-            p.getServer() == installed_package.getServer())
+            p.getRepoName() == installed_package.getRepoName())
             return true;
     }
 

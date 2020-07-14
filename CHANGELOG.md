@@ -9,27 +9,31 @@ at the start of the project I didn't really think about versioning and just gave
 everything some increasing number-letter-dots-combination. I'm trying to improve 
 this from now on.
 
-### v1.0.6
+### v1.0.7 (14.07.2020)
+
+* fixed coloring at removing/updating messages
+* added checking for conflicting versions in package dependencies
+* added verbose argument
+
+### v1.0.6 (12.07.2020)
 
 * added statusbar for package-downloads
 * added changelog
 
-### v1.0.5-beta.1
+### v1.0.5-beta.1 (20.04.2020)
 
 * fixed performance for GPPS packages
 * fixed bugs in GPPS installations
 * fixed sentences to translation fallback
 
-### v1.0.4-beta.2
+### v1.0.4-beta.2 (23.02.2020)
 
 * fixed translations
-
-
 * added support for Tridymite's GPPS (Given Path Package Support)
     * installation of package-source into a given directory, with basic
     functionality like install, remove, update
 
-### v1.0.4-beta.1
+### v1.0.4-beta.1 (08.06.2019)
 
 * added support for Git tags
 
@@ -62,7 +66,6 @@ my second note about how I messed up the versioning.)
 ### v1.0.2d (01.06.2019)
 
 * fixed spelling in translations
-
 * added create argument for creation of package YAMLs
 * added new translation sentences
 
@@ -70,8 +73,6 @@ my second note about how I messed up the versioning.)
 
 * fixed bug at too-few-arguments-error
 * fixed wrong spelling in translations
-
-
 * added search-script for BitBucket
 
 ### v1.0.2b (09.05.2019)
@@ -82,16 +83,12 @@ my second note about how I messed up the versioning.)
 
 * fixed installation bug
 * fixed bug in help page generation
-
-
 * added search-online function for GitHub and GitLab
 * renamed old search argument (for installed packages) from "s" to "si"
 
 ### v1.0.1a (24.04.2019)
 
 * fixed installation bug for choosing the language
-
-
 * added branching support
 * added logo to source
 * added new translation sentences
