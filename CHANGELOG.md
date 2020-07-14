@@ -29,8 +29,6 @@ this from now on.
 ### v1.0.4-beta.2 (23.02.2020)
 
 * fixed translations
-
-
 * added support for Tridymite's GPPS (Given Path Package Support)
     * installation of package-source into a given directory, with basic
     functionality like install, remove, update
@@ -68,7 +66,6 @@ my second note about how I messed up the versioning.)
 ### v1.0.2d (01.06.2019)
 
 * fixed spelling in translations
-
 * added create argument for creation of package YAMLs
 * added new translation sentences
 
@@ -76,8 +73,6 @@ my second note about how I messed up the versioning.)
 
 * fixed bug at too-few-arguments-error
 * fixed wrong spelling in translations
-
-
 * added search-script for BitBucket
 
 ### v1.0.2b (09.05.2019)
@@ -88,16 +83,12 @@ my second note about how I messed up the versioning.)
 
 * fixed installation bug
 * fixed bug in help page generation
-
-
 * added search-online function for GitHub and GitLab
 * renamed old search argument (for installed packages) from "s" to "si"
 
 ### v1.0.1a (24.04.2019)
 
 * fixed installation bug for choosing the language
-
-
 * added branching support
 * added logo to source
 * added new translation sentences
