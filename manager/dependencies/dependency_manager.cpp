@@ -65,7 +65,7 @@ void DependencyManager::checkDependencies(const Package package_to_check)
                            installed_package.getVersion().ToString().c_str(),
                            std::string(dependency.getGitUser()+":"+dependency.getRepoName()).c_str());
 
-                    if (!IPackagesManager::isPackageInstalledNV(tstd::parse_package(dependency.getAddedBy())))
+                    if (!IPackagesManager::isPackageInstalledNVS(tstd::parse_package(dependency.getAddedBy())))
                         std::cout << std::endl << Translation::get("manager.install.aborting_installation");
 
                     Runtime::exit(1);
@@ -101,7 +101,7 @@ void DependencyManager::checkDependencies(const Package package_to_check)
                             package_to_install.getVersion().ToString().c_str(),
                             std::string(dependency.getGitUser()+":"+dependency.getRepoName()).c_str());
 
-                        if (!IPackagesManager::isPackageInstalledNV(tstd::parse_package(dependency.getAddedBy())))
+                        if (!IPackagesManager::isPackageInstalledNVS(tstd::parse_package(dependency.getAddedBy())))
                             std::cout << std::endl << Translation::get("manager.install.aborting_installation");
 
                         Runtime::exit(1);
