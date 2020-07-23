@@ -15,35 +15,29 @@
 #include <runtime.hpp>
 #include <manager/dependencies/dependency_manager.hpp>
 
-bool InstallationManager::linkProducts(const std::string &prefix, const Package &package)
+std::string make_path(const std::string &path)
 {
-    if (package.getLinksTo().size() > 0)
-        std::cout << prefix << Translation::get("manager.install.linking_files", false) << std::endl;
+    std::string repl = tstd::replace(path, "$cwd", tstd::get_current_directory());
 
-    for (int i = 0; i < package.getLinksFrom().size(); i++)
+    if (Runtime::try_local && Runtime::local_folder)
     {
-        std::string from = package.getLinksFrom()[i];
-        from = tstd::replace(from, "$cwd", tstd::get_current_directory());
+        repl = tstd::replace(repl, "$usr", std::string(getenv("HOME")) + "/.local");
+        repl = tstd::replace(repl, "$share", std::string(getenv("HOME")) + "/.local/share");
+        repl = tstd::replace(repl, "$bin", std::string(getenv("HOME")) + "/.local/bin");
+        repl = tstd::replace(repl, "$lib", std::string(getenv("HOME")) + "/.local/lib");
+    }
+    else
+    {
+        repl = tstd::replace(repl, "$usr", "/usr");
+        repl = tstd::replace(repl, "$share", "/usr/share");
+        repl = tstd::replace(repl, "$bin", "/usr/bin");
+        repl = tstd::replace(repl, "$lib", "/usr/lib");
+    }
 
-        if (Runtime::try_local && Runtime::local_folder)
-        {
-            from = tstd::replace(from, "$usr", std::string(getenv("HOME"))+"/.local");
-            from = tstd::replace(from, "$share", std::string(getenv("HOME"))+"/.local/share");
-            from = tstd::replace(from, "$bin", std::string(getenv("HOME"))+"/.local/bin");
-            from = tstd::replace(from, "$lib", std::string(getenv("HOME"))+"/.local/lib");
-        }
-        else
-        {
-            from = tstd::replace(from, "$usr", "/usr");
-            from = tstd::replace(from, "$share", "/usr/share");
-            from = tstd::replace(from, "$bin", "/usr/bin");
-            from = tstd::replace(from, "$lib", "/usr/lib");
-        }
+    return repl;
+}
 
-        std::string to = package.getLinksTo()[i];
-        to = tstd::replace(to, "$cwd", tstd::get_current_directory());
-
-        if (Runtime::try_local && Runtime::local_folder)
+bool InstallationManager::linkProducts(const std::string &prefix, const Package &package)
         {
             to = tstd::replace(to, "$usr", std::string(getenv("HOME"))+"/.local");
             to = tstd::replace(to, "$share", std::string(getenv("HOME"))+"/.local/share");
