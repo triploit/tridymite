@@ -306,6 +306,7 @@ std::vector<std::string> tstd::read_cursive_all_files(std::string path)
 
 std::vector<std::string> tstd::get_all_directories(const std::string &path)
 {
+    std::cout.flush();
     std::vector<std::string> dirs;
 
     DIR* dirp = opendir(path.c_str());
@@ -331,10 +332,24 @@ std::vector<std::string> tstd::get_all_directories(const std::string &path)
     return dirs;
 }
 
-bool tstd::yn_question(const std::string &q)
+bool tstd::yn_question(const std::string &q, bool std_yes)
 {
-    std::cout << q << std::endl;
-    std::cout << "[y/n] : ";
+    std::cout << q;
+
+    if (!q.empty() && q[q.size()-1] != '\n')
+        std::cout << std::endl;
+
+    if (std_yes)
+        std::cout << "[Y/n] : ";
+    else
+        std::cout << "[y/N] : ";
+
+    if (Runtime::insecure_ignore_all_questions)
+    {
+        std::cout << (std_yes ? "y" : "n") << std::endl;
+        return std_yes;
+    }
+
     std::string s;
 
     while (s != "y" && s != "Y" && s != "n" && s != "N")
@@ -343,8 +358,15 @@ bool tstd::yn_question(const std::string &q)
 
         if (s != "y" && s != "Y" && s != "n" && s != "N")
         {
+            if (s == "")
+                return std_yes;
+
             std::cout << Translation::get("std.neither_y_or_no", false) << std::endl;
-            std::cout << "[y/n] : ";
+
+            if (std_yes)
+                std::cout << "[Y/n] : ";
+            else
+                std::cout << "[y/N] : ";
         }
     }
 
@@ -499,7 +521,7 @@ bool tstd::download_file(const std::string &url, const std::string &destination,
         if (r > 1000000000)
         {
             std::cout << Translation::get("std.big_file", false) << " (" << std::round(r/1000000000) << "GB)." << std::endl;
-            if(!tstd::yn_question(Translation::get("general.continue_question", false)))
+            if(!tstd::yn_question(Translation::get("general.continue_question", false), false))
             {
                 std::cout << Translation::get("general.aborted", false) << std::endl;
                 return false;

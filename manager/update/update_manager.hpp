@@ -4,7 +4,7 @@
 class UpdateManager
 {
 public:
-    static void updatePackage(const Package &to_update);
+    static bool updatePackage(const Package &to_update);
 };
 
 

@@ -15,7 +15,7 @@ void __argument_create(const std::vector<std::string> &parameters, CLI* cli)
     std::string version = tstd::get_answer(Translation::get("main.create.version", false));
     std::string descritpion = tstd::get_answer(Translation::get("main.create.description", false));
 
-    bool information = tstd::yn_question(Translation::get("main.create.info_file", false));
+    bool information = tstd::yn_question(Translation::get("main.create.info_file", false), false);
     std::string infos;
 
     if (information) {
@@ -48,7 +48,7 @@ void __argument_create(const std::vector<std::string> &parameters, CLI* cli)
         std::cout << "   - " << p.getName() << std::endl;
     }
 
-    bool type = tstd::yn_question(Translation::get("main.create.one_of_them", false));
+    bool type = tstd::yn_question(Translation::get("main.create.one_of_them", false), false);
     std::string type_name;
     std::vector<Variable> type_variables;
 
@@ -77,7 +77,7 @@ void __argument_create(const std::vector<std::string> &parameters, CLI* cli)
 
     std::cout << std::endl;
 
-    bool products = tstd::yn_question(Translation::get("main.create.products_now", false));
+    bool products = tstd::yn_question(Translation::get("main.create.products_now", false), false);
     std::vector<std::string> products_from;
     std::vector<std::string> products_to;
 
@@ -97,7 +97,7 @@ void __argument_create(const std::vector<std::string> &parameters, CLI* cli)
         }
     }
 
-    bool links = tstd::yn_question(Translation::get("main.create.links_now", false));
+    bool links = tstd::yn_question(Translation::get("main.create.links_now", false), false);
     std::vector<std::string> links_from;
     std::vector<std::string> links_to;
 
@@ -123,8 +123,8 @@ void __argument_create(const std::vector<std::string> &parameters, CLI* cli)
     if (std::ifstream("pkg/package.yaml").is_open()) {
         do_it = false;
 
-        if (tstd::yn_question(Translation::get("main.create.already_exists_overwrite", false))) {
-            if (tstd::yn_question(Translation::get("main.create.sure", false))) {
+        if (tstd::yn_question(Translation::get("main.create.already_exists_overwrite", false), false)) {
+            if (tstd::yn_question(Translation::get("main.create.sure", false), false)) {
                 std::cout << Translation::get("main.create.ok");
                 do_it = true;
             }

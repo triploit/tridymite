@@ -87,12 +87,13 @@ manager.dependencies.dependency_version_conflict: "[!!!]error:[.] the packages %
 
 # manager/install
 
-manager.install.linking_files: "linking files ..."
+manager.install.linking_files: "linking %d files ..."
 manager.install.linking: "linking " # "linking <path>" will be printed
 manager.install.counting_files: "counting files ..."
 manager.install.file_warning: "[!!]warning:[.] this package contains more than 100 files."
 manager.install.continue_counting: "continue counting ..."
 manager.install.moving_files: "copying %d files ..."
+manager.install.moving_file: "copying %d file ..."
 manager.install.local_directory_not_found: "[!!!]error:[.] couldn't find the directory for local packages."
 manager.install.global_installation_question: "do you want to continue and install it globally? (y=yes, n=no)" # don't change up the 'y' and 'n', but translate 'yes' and 'no'!
 manager.install.aborting_installation: "aborted package installation."
@@ -125,6 +126,11 @@ manager.install.doesnt_support_local: "[!!!]error:[.] this package doesn't suppo
 manager.install.pretype_doesnt_exit: "[!!!]error:[.] the pretype \"%s\" doesn't exists on this computer!"
 manager.install.skip_and_continue: "do you want to skip this package and proceed with the other installations? (y=yes, n=no)" # don't change up the 'y' and 'n', but translate 'yes' and 'no'!
 manager.install.no_build_script: "[!!!]error:[.] no build script exists."
+manager.install.cant_continue_installation_is_dep: "[!!!]error:[.] can't proceed installation, the package was a dependency of %s."
+manager.install.following_moved: "the following files will be moved:"
+manager.install.following_linked: "the following files will be linked:"
+manager.install.linking_error_cleanup: "there was an error linking the files! do you want to clean up the remaining files in the filesystem?"
+manager.install.installation_error: "[!!!]error:[.] an error accured while installing the package."
 
 # manager/remove
 

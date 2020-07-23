@@ -13,7 +13,7 @@ bool RemoveManager::unlinkProducts(const std::string &prefix, const Package &pac
     {
         std::cout << Translation::get("manager.remove.local_directory_not_found", false).c_str() << std::endl;
 
-        if (!tstd::yn_question(Translation::get("manager.remove.remove_globally_instead", false)))
+        if (!tstd::yn_question(Translation::get("manager.remove.remove_globally_instead", false), false))
         {
             std::cout << Translation::get("general.aborted", false) << std::endl;
             return false;
@@ -63,7 +63,7 @@ bool RemoveManager::removeProducts(const std::string &prefix, const Package &pac
     {
         std::cout << Translation::get("manager.remove.local_directory_not_found", false) << std::endl;
 
-        if (!tstd::yn_question(Translation::get("manager.remove.remove_globally_instead", false)))
+        if (!tstd::yn_question(Translation::get("manager.remove.remove_globally_instead", false), false))
         {
             std::cout << Translation::get("general.aborted", false) << std::endl;
             return false;
@@ -162,6 +162,8 @@ void RemoveManager::uninstallPackage(const Package &p)
 
         std::cout << " \033[1;32m=>\033[00m " << Translation::get("manager.remove.removing_path", false) << " " << dir << std::endl;
         system(std::string("sudo rm -rf "+dir).c_str());
+
+        Runtime::p_removed++;
 
         if (!(Runtime::to_remove[Runtime::to_remove.size()-1] == p))
             std::cout << std::endl;

@@ -28,8 +28,8 @@ namespace tstd
     std::string get_current_directory();
 
     bool download_file(const std::string &url, const std::string &destination, bool show_progess_bar=false);
-    bool yn_question(const std::string &q);
-    bool url_exists(const std::string &url);
+    bool yn_question(const std::string &q, bool std_yes);
+    // bool url_exists(const std::string &url);
     void remove_directory(char* path);
 
     int cursive_file_count(const std::string &path, int count=1);

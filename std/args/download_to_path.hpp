@@ -3,7 +3,12 @@
 
 #include <vector>
 #include <cli/cli.hpp>
+
+#if __has_include(<filesystem>)
 #include <filesystem>
+#else
+#include <experimental/filesystem>
+#endif
 
 void __argument_download_to_path(const std::vector<std::string> &parameters, CLI* cli)
 {
@@ -51,10 +56,9 @@ void __argument_download_to_path(const std::vector<std::string> &parameters, CLI
         std::string destination = p.getRepoName()+"_"+p.getGitUser();
         std::cout <<  Translation::get("main.downloading", false) << " " << tstd::package_to_argument(p) << "..." << std::endl;
 
-        struct stat info;
         if(std::filesystem::exists(destination))
         {
-            if (Runtime::force || tstd::yn_question(Translation::get("main.file_exists_overwrite", false)))
+            if (Runtime::force || tstd::yn_question(Translation::get("main.file_exists_overwrite", false), false))
             {
                 tstd::remove_directory(const_cast<char *>((destination + "/").c_str()));
                 system(std::string("mkdir -p "+destination).c_str());

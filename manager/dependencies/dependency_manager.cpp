@@ -88,18 +88,18 @@ void DependencyManager::checkDependencies(const Package package_to_check)
                     {
                         std::cout << std::endl;
                         printf(Translation::get("manager.dependencies.dependency_version_conflict").c_str(),
-                            dependency.getAddedBy().c_str(),
-                            package_to_install.getAddedBy().c_str(),
+                               dependency.getAddedBy().c_str(),
+                               package_to_install.getAddedBy().c_str(),
 
-                            std::string(dependency.getGitUser()+":"+dependency.getRepoName()).c_str(),
+                               std::string(dependency.getGitUser()+":"+dependency.getRepoName()).c_str(),
 
-                            dependency.getAddedBy().c_str(),
-                            dependency.getVersion().ToString().c_str(),
-                            std::string(dependency.getGitUser()+":"+dependency.getRepoName()).c_str(),
+                               dependency.getAddedBy().c_str(),
+                               dependency.getVersion().ToString().c_str(),
+                               std::string(dependency.getGitUser()+":"+dependency.getRepoName()).c_str(),
 
-                            package_to_install.getAddedBy().c_str(),
-                            package_to_install.getVersion().ToString().c_str(),
-                            std::string(dependency.getGitUser()+":"+dependency.getRepoName()).c_str());
+                               package_to_install.getAddedBy().c_str(),
+                               package_to_install.getVersion().ToString().c_str(),
+                               std::string(dependency.getGitUser()+":"+dependency.getRepoName()).c_str());
 
                         if (!IPackagesManager::isPackageInstalledNVS(tstd::parse_package(dependency.getAddedBy())))
                             std::cout << std::endl << Translation::get("manager.install.aborting_installation");
@@ -111,6 +111,41 @@ void DependencyManager::checkDependencies(const Package package_to_check)
 
                     Runtime::to_install.insert(Runtime::to_install.begin(), package_to_install);
                     Runtime::to_install.erase(Runtime::to_install.begin()+x+1);
+                }
+            }
+        }
+
+        if (!found && Runtime::try_local)
+        {
+            for (const Package &installed_package : IPackagesManager::getGloballyInstalledPackages())
+            {
+                if (installed_package.getRepoName() == dependency.getRepoName() &&
+                    installed_package.getGitUser() == dependency.getGitUser())
+                {
+                    if (installed_package.getVersion() != dependency.getVersion() && installed_package.isDependency())
+                    {
+                        std::cout << std::endl;
+                        printf(Translation::get("manager.dependencies.dependency_version_conflict").c_str(),
+                               dependency.getAddedBy().c_str(),
+                               installed_package.getDependantPackage().c_str(),
+
+                               std::string(dependency.getGitUser()+":"+dependency.getRepoName()).c_str(),
+
+                               dependency.getAddedBy().c_str(),
+                               dependency.getVersion().ToString().c_str(),
+                               std::string(dependency.getGitUser()+":"+dependency.getRepoName()).c_str(),
+
+                               installed_package.getDependantPackage().c_str(),
+                               installed_package.getVersion().ToString().c_str(),
+                               std::string(dependency.getGitUser()+":"+dependency.getRepoName()).c_str());
+
+                        if (!IPackagesManager::isPackageInstalledNVS(tstd::parse_package(dependency.getAddedBy())))
+                            std::cout << std::endl << Translation::get("manager.install.aborting_installation");
+
+                        Runtime::exit(1);
+                    }
+                    else if (installed_package.getVersion() == dependency.getVersion())
+                        found = true;
                 }
             }
         }

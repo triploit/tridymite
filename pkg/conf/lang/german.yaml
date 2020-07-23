@@ -22,12 +22,13 @@ manager.dependencies.dependency_version_conflict: "[!!!]error:[.] die pakete %s 
 
 # manager/install
 
-manager.install.linking_files: "verlinke dateien ..."
+manager.install.linking_files: "verlinke %d dateien ..."
 manager.install.linking: "verlinke " # "linking <path>" will be printed
 manager.install.counting_files: "zähle dateien ..."
 manager.install.file_warning: "[!!]warnung:[.] dieses paket enthält mehr als 100 dateien." 
 manager.install.continue_counting: "zähle weiter ..."
 manager.install.moving_files: "kopiere %d dateien ..."
+manager.install.moving_file: "kopiere %d datei ..."
 manager.install.local_directory_not_found: "[!!!]error:[.] konnte das verzeichnis für die lokalen pakete nicht finden."
 manager.install.global_installation_question: "möchtest du fortfahren und es global installieren? (y=ja, n=nein)" # don't change up the 'y' and 'n', but translate 'yes' and 'no'! 
 manager.install.aborting_installation: "paketinstallation abgebrochen."
@@ -60,6 +61,11 @@ manager.install.doesnt_support_local: "[!!!]error:[.] dieses paket unterstützt 
 manager.install.pretype_doesnt_exit: "[!!!]error:[.] der pretype \"%s\" existiert nicht auf diesem computer!"
 manager.install.skip_and_continue: "möchtest du dieses paket überspringen und mit den anderen installationen fortfahren? (y=ja, n=nein)" # don't change up the 'y' and 'n', but translate 'yes' and 'no'! 
 manager.install.no_build_script: "[!!!]error:[.] es existiert kein build-script im paket."
+manager.install.cant_continue_installation_is_dep: "[!!!]error:[.] kann die installation nicht fortsetzen, das paket war eine abhängigkeit von %s."
+manager.install.following_moved: "folgende dateien werden verschoben:"
+manager.install.following_linked: "folgende dateien werden verlinkt:"
+manager.install.linking_error_cleanup: "es gab einen fehler beim verlinken der dateien! möchtest du die verbleibenden dateien im system löschen?"
+manager.install.installation_error: "[!!!]error:[.] ein fehler ist beim installieren des paketes aufgetreten."
 
 # manager/remove
 

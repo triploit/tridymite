@@ -12,7 +12,7 @@ void __argument_get(const std::vector<std::string> &parameters, CLI* cli)
 
     if (std::ifstream(destination).is_open())
     {
-        if (tstd::yn_question(Translation::get("main.file_exists_overwrite", false)))
+        if (tstd::yn_question(Translation::get("main.file_exists_overwrite", false), false))
         {
             if (tstd::download_file(tstd::create_zip_url(p), destination))
                 std::cout << Translation::get("main.finished", false) << std::endl;

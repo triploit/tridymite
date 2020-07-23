@@ -5,52 +5,50 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#if __has_include(<filesystem>)
+#include <filesystem>
+#else
+#include <experimental/filesystem>
+#endif
+
 #include <std/tstd.hpp>
 #include <runtime.hpp>
 #include <manager/dependencies/dependency_manager.hpp>
+#include <algorithm>
+#include <manager/remove/remove_manager.hpp>
+
+std::string make_path(const std::string &path)
+{
+    std::string repl = tstd::replace(path, "$cwd", tstd::get_current_directory());
+
+    if (Runtime::try_local && Runtime::local_folder)
+    {
+        repl = tstd::replace(repl, "$usr", std::string(getenv("HOME")) + "/.local");
+        repl = tstd::replace(repl, "$share", std::string(getenv("HOME")) + "/.local/share");
+        repl = tstd::replace(repl, "$bin", std::string(getenv("HOME")) + "/.local/bin");
+        repl = tstd::replace(repl, "$lib", std::string(getenv("HOME")) + "/.local/lib");
+    }
+    else
+    {
+        repl = tstd::replace(repl, "$usr", "/usr");
+        repl = tstd::replace(repl, "$share", "/usr/share");
+        repl = tstd::replace(repl, "$bin", "/usr/bin");
+        repl = tstd::replace(repl, "$lib", "/usr/lib");
+    }
+
+    return repl;
+}
 
 bool InstallationManager::linkProducts(const std::string &prefix, const Package &package)
 {
     if (package.getLinksTo().size() > 0)
-        std::cout << prefix << Translation::get("manager.install.linking_files", false) << std::endl;
+        printf(std::string(prefix+Translation::get("manager.install.linking_files", false)).c_str(),
+            package.getLinksTo().size());
 
     for (int i = 0; i < package.getLinksFrom().size(); i++)
     {
-        std::string from = package.getLinksFrom()[i];
-        from = tstd::replace(from, "$cwd", tstd::get_current_directory());
-
-        if (Runtime::try_local && Runtime::local_folder)
-        {
-            from = tstd::replace(from, "$usr", std::string(getenv("HOME"))+"/.local");
-            from = tstd::replace(from, "$share", std::string(getenv("HOME"))+"/.local/share");
-            from = tstd::replace(from, "$bin", std::string(getenv("HOME"))+"/.local/bin");
-            from = tstd::replace(from, "$lib", std::string(getenv("HOME"))+"/.local/lib");
-        }
-        else
-        {
-            from = tstd::replace(from, "$usr", "/usr");
-            from = tstd::replace(from, "$share", "/usr/share");
-            from = tstd::replace(from, "$bin", "/usr/bin");
-            from = tstd::replace(from, "$lib", "/usr/lib");
-        }
-
-        std::string to = package.getLinksTo()[i];
-        to = tstd::replace(to, "$cwd", tstd::get_current_directory());
-
-        if (Runtime::try_local && Runtime::local_folder)
-        {
-            to = tstd::replace(to, "$usr", std::string(getenv("HOME"))+"/.local");
-            to = tstd::replace(to, "$share", std::string(getenv("HOME"))+"/.local/share");
-            to = tstd::replace(to, "$bin", std::string(getenv("HOME"))+"/.local/bin");
-            to = tstd::replace(to, "$lib", std::string(getenv("HOME"))+"/.local/lib");
-        }
-        else
-        {
-            to = tstd::replace(to, "$usr", "/usr");
-            to = tstd::replace(to, "$share", "/usr/share");
-            to = tstd::replace(to, "$bin", "/usr/bin");
-            to = tstd::replace(to, "$lib", "/usr/lib");
-        }
+        std::string from = make_path(package.getLinksFrom()[i]);
+        std::string to = make_path(package.getLinksTo()[i]);
 
         to = tstd::replace_quotation_marks(to);
         from = tstd::replace_quotation_marks(from);
@@ -65,7 +63,9 @@ bool InstallationManager::linkProducts(const std::string &prefix, const Package 
         to_var = "$"+to_var;
 
         std::cout << prefix << Translation::get("manager.install.linking", false) << tstd::trim(package.getProductsTo()[i]) << std::endl;
-        system(("if [ ! -L "+to_var+" ]; then sudo ln -s "+from_var+" "+to_var+"; fi").c_str());
+
+        if (system(("if [ ! -L "+to_var+" ]; then sudo ln -s "+from_var+" "+to_var+"; fi").c_str()) != 0)
+            return false;
     }
 
     return true;
@@ -74,31 +74,15 @@ bool InstallationManager::linkProducts(const std::string &prefix, const Package 
 bool InstallationManager::moveProducts(const std::string &prefix, const Package &package)
 {
     int count = 0;
-    std::cout << prefix << Translation::get("manager.install.counting_files", false) << std::endl;
 
     for (const std::string &s : package.getProductsFrom())
-    {
         count += tstd::cursive_file_count(s);
 
-        if (count >= 100)
-        {
-            std::cout << Translation::get("manager.install.file_warning", false) << std::endl;
-            std::cout << prefix << Translation::get("manager.install.continue_counting", false) << std::endl;
-        }
-    }
-
-    if (count >= 100)
-    {
-        std::cout << std::endl;
-
-        if (count != 1)
-            printf(Translation::get("manager.install.moving_files").c_str(), count);
-        else
-            printf(Translation::get("manager.install.moving_files").c_str(), count);
-
-        if (!tstd::yn_question(Translation::get("general.continue_question")))
-            return false;
-    }
+    std::cout << prefix;
+    if (count != 1)
+        printf(Translation::get("manager.install.moving_files").c_str(), count);
+    else
+        printf(Translation::get("manager.install.moving_file").c_str(), count);
 
     bool reinstall = IPackagesManager::isPackageInstalled(package);
     bool update = false;
@@ -115,48 +99,50 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
         {
             std::cout << Translation::get("manager.install.local_directory_not_found", false) << std::endl;
 
-            if (!tstd::yn_question(Translation::get("manager.install.global_installation_question")))
+            if (!tstd::yn_question(Translation::get("manager.install.global_installation_question"), false))
             {
                 std::cout << Translation::get("manager.install.aborting_installation", false) << std::endl;
-                return 0;
+                return false;
             }
         }
 
-        std::string from = tstd::trim(package.getProductsFrom()[i]);
-        from = tstd::replace(from, "$cwd", tstd::get_current_directory());
+        std::string from = make_path(tstd::trim(package.getProductsFrom()[i]));
+        std::string to = make_path(tstd::trim(package.getProductsTo()[i]));
 
-        if (Runtime::try_local && Runtime::local_folder)
-        {
-            from = tstd::replace(from, "$usr", std::string(getenv("HOME"))+"/.local");
-            from = tstd::replace(from, "$share", std::string(getenv("HOME"))+"/.local/share");
-            from = tstd::replace(from, "$bin", std::string(getenv("HOME"))+"/.local/bin");
-            from = tstd::replace(from, "$lib", std::string(getenv("HOME"))+"/.local/lib");
-        }
-        else
-        {
-            from = tstd::replace(from, "$usr", "/usr");
-            from = tstd::replace(from, "$share", "/usr/share");
-            from = tstd::replace(from, "$bin", "/usr/bin");
-            from = tstd::replace(from, "$lib", "/usr/lib");
-        }
+        bool from_file = false;
+        bool to_file = false;
 
-        std::string to = tstd::trim(package.getProductsTo()[i]);
-        to = tstd::replace(to, "$cwd", tstd::get_current_directory());
+        bool from_exists = true;
+        bool to_exists = true;
 
-        if (Runtime::try_local && Runtime::local_folder)
+        struct stat info_from;
+        struct stat info_to;
+
+        if(stat(to.c_str(), &info_to) != 0)
+            to_exists = false;
+        else to_file = (info_to.st_mode & S_IFDIR) == 0;
+
+        if(stat(from.c_str(), &info_from) != 0)
+            from_exists = false;
+        else from_file = (info_from.st_mode & S_IFDIR) == 0;
+
+        if (to_exists && !Runtime::force && !Runtime::update && !update)
         {
-            to = tstd::replace(to, "$usr", std::string(getenv("HOME"))+"/.local");
-            to = tstd::replace(to, "$share", std::string(getenv("HOME"))+"/.local/share");
-            to = tstd::replace(to, "$bin", std::string(getenv("HOME"))+"/.local/bin");
-            to = tstd::replace(to, "$lib", std::string(getenv("HOME"))+"/.local/lib");
+            if ((to == from ||
+                 ((from_file && to_file) ||
+                  (!from_file && !to_file)))
+                && !reinstall)
+            {
+                printf(Translation::get("manager.install.file_conflict").c_str(), tstd::package_to_argument(package).c_str(), to.c_str());
+                return false;
+            }
         }
-        else
-        {
-            to = tstd::replace(to, "$usr", "/usr");
-            to = tstd::replace(to, "$share", "/usr/share");
-            to = tstd::replace(to, "$bin", "/usr/bin");
-            to = tstd::replace(to, "$lib", "/usr/lib");
-        }
+    }
+
+    for (int i = 0; i < package.getProductsFrom().size(); i++)
+    {
+        std::string from = make_path(tstd::trim(package.getProductsFrom()[i]));
+        std::string to = make_path(tstd::trim(package.getProductsTo()[i]));
 
         bool from_file = false;
         bool to_file = false;
@@ -207,19 +193,7 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
         if (!from_exists)
         {
             printf(Translation::get("manager.install.product_not_existing").c_str(), tstd::package_to_argument(package).c_str(), from.c_str());
-            Runtime::exit(1);
-        }
-
-        if (to_exists && !Runtime::force && !Runtime::update && !update)
-        {
-            if ((to == from ||
-                ((from_file && to_file) ||
-                (!from_file && !to_file)))
-                && !reinstall)
-            {
-                printf(Translation::get("manager.install.file_conflict").c_str(), tstd::package_to_argument(package).c_str(), to.c_str());
-                Runtime::exit(1);
-            }
+            return false;
         }
 
         if (Runtime::verbose)
@@ -238,20 +212,20 @@ bool InstallationManager::moveProducts(const std::string &prefix, const Package 
             if (system(std::string("if [ -f "+to_var+" ]; then sudo rm "+to_var+"; fi; sudo cp "+from_var+" "+to_var).c_str()) != 0)
             {
                 printf(Translation::get("manager.install.moving_error_unknown").c_str(), getenv(from_var.substr(1, from_var.size()).c_str()));
-                Runtime::exit(1);
+                return false;
             }
         }
         else if (!from_file && to_file)
         {
             printf(Translation::get("manager.install.directory_into_file").c_str(), tstd::package_to_argument(package).c_str(), from.c_str());
-            Runtime::exit(1);
+            return false;
         }
         else if (!to_file && !from_file)
         {
             if (system(std::string("if [ ! -d "+to_var+" ]; then sudo mkdir -p "+to_var+"; fi; sudo cp -rf "+from_var+"/* "+to_var).c_str()) != 0)
             {
                 printf(Translation::get("manager.install.file_neither_exists").c_str(), from.c_str(), from.c_str(), to.c_str());
-                Runtime::exit(1);
+                return false;
             }
         }
     }
@@ -319,18 +293,43 @@ std::string InstallationManager::downloadPackage(const std::string &prefix, cons
         }
     }
 
+    for (const auto& dirEntry : std::filesystem::directory_iterator(package_dir))
+    {
+        if (std::filesystem::is_directory(dirEntry))
+        {
+            std::string dir_name = dirEntry.path().string();
+            std::string pd = package_dir+source_path;
+            std::string unformatted_dir_name = dir_name;
+
+            if (dir_name[dir_name.size()-1] != '/' && pd[pd.size()-1] == '/')
+            {
+                dir_name += "/";
+                unformatted_dir_name += "/";
+            }
+
+            std::transform(dir_name.begin(), dir_name.end(), dir_name.begin(),
+                           [](unsigned char c){ return std::tolower(c); });
+
+            if (dir_name == pd && unformatted_dir_name != dir_name)
+            {
+                chdir(unformatted_dir_name.c_str());
+                return unformatted_dir_name;
+            }
+        }
+    }
+
     chdir(source_path.c_str());
     return package_dir+source_path;
 }
 
-void InstallationManager::localPackage(std::string path)
+bool InstallationManager::localPackage(std::string path)
 {
     std::cout << std::endl;
 
-    if (!tstd::yn_question(Translation::get("general.continue_question", false)))
+    if (!tstd::yn_question(Translation::get("general.continue_question", false), true))
     {
         std::cout << Translation::get("general.aborted", false) << std::endl;
-        return;
+        return false;
     }
 
     if (path[path.size()-1] != '/')
@@ -397,7 +396,7 @@ void InstallationManager::localPackage(std::string path)
         else
         {
             printf(Translation::get("manager.install.local_skip").c_str(), tstd::package_to_argument(package).c_str(), package.getVersion().ToString().c_str());
-            return;
+            return false;
         }
     }
 
@@ -443,14 +442,15 @@ void InstallationManager::localPackage(std::string path)
                    package.getType()["name"].as<std::string>().c_str());
 
             if (Runtime::to_install.size() <= 1)
-                return;
+                return false;
 
-            if (!tstd::yn_question(Translation::get("manager.install.skip_and_continue", false)))
+            if (!tstd::yn_question(Translation::get("manager.install.skip_and_continue", false), false))
             {
                 std::cout << Translation::get("general.aborted", false) << std::endl;
                 Runtime::exit(0);
             }
-            return;
+
+            return false;
         }
     }
     else
@@ -458,44 +458,62 @@ void InstallationManager::localPackage(std::string path)
         std::cout << Translation::get("manager.install.no_build_script", false) << std::endl;
 
         if (Runtime::to_install.size() <= 1)
-            return;
+            return false;
 
-        if (!tstd::yn_question(Translation::get("manager.install.skip_and_continue", false)))
+        if (!tstd::yn_question(Translation::get("manager.install.skip_and_continue", false), false))
         {
             std::cout << "aborted." << std::endl;
             Runtime::exit(0);
         }
 
-        return;
+        return false;
     }
 
     std::cout << prefix << Translation::get("manager.install.installing_version", false) << " " << package.getVersion() << " ..." << std::endl;
-
     std::string package_str = package.getGitUser()+"+" + package.getRepoName()+"+" + package.getServer();
 
-    if (InstallationManager::moveProducts(prefix, package))
+    if (approveChanges(prefix, package))
     {
-        std::string dir = Runtime::tridy_dir+"/conf/packages/"+package_str;
-        system(std::string("if [ ! -d "+dir+" ]; then sudo mkdir -p "+dir+"; fi").c_str());
+        if (InstallationManager::moveProducts(prefix, package))
+        {
+            if (InstallationManager::linkProducts(prefix, package))
+            {
+                std::string dir = Runtime::tridy_dir+"/conf/packages/"+package_str;
+                system(std::string("if [ ! -d "+dir+" ]; then sudo mkdir -p "+dir+"; fi").c_str());
 
-        system(std::string("sudo cp "+path+"pkg/package.yaml package.yaml.bkp").c_str());
+                system(std::string("sudo cp "+path+"pkg/package.yaml package.yaml.bkp").c_str());
 
-        if (std::ifstream(path+"pkg/package.sh"+dir).is_open())
-            system(std::string("sudo cp "+path+"pkg/package.sh "+dir).c_str());
+                if (std::ifstream(path+"pkg/package.sh"+dir).is_open())
+                    system(std::string("sudo cp "+path+"pkg/package.sh "+dir).c_str());
 
-        std::string c = std::string("sudo echo -e \"\\nlocal: "+std::string(Runtime::try_local ? "true" : "false")+"\\n\" >> "+file+"; sudo cp "+path+"pkg/package.yaml "+dir);
-        system(c.c_str());
-        system(std::string("sudo cp package.yaml.bkp "+path+"pkg/package.yaml").c_str());
+                std::string c = std::string("sudo echo -e \"\\nlocal: "+std::string(Runtime::try_local ? "true" : "false")+"\\n\" >> "+file+"; sudo cp "+path+"pkg/package.yaml "+dir);
+                system(c.c_str());
+                system(std::string("sudo cp package.yaml.bkp "+path+"pkg/package.yaml").c_str());
 
-        chdir(Runtime::tmp_dir.c_str());
-        return;
+                chdir(Runtime::tmp_dir.c_str());
+
+                Runtime::p_installed++;
+                return true;
+            }
+        }
+
+        std::cout << Translation::get("manager.install.installation_error");
     }
 
-    InstallationManager::linkProducts(prefix, package);
+    if (package.getLinksTo().size() > 0 && package.getProductsTo().size() > 0)
+    {
+        if (tstd::yn_question(Translation::get("manager.install.linking_error_cleanup", false), true))
+        {
+            RemoveManager::unlinkProducts(prefix, package);
+            RemoveManager::removeProducts(prefix, package);
+        }
+    }
+
     std::cout << prefix << Translation::get("manager.install.skipping", false) << std::endl;
+    return false;
 }
 
-void InstallationManager::installPackage(const Package &arg, bool nl)
+bool InstallationManager::installPackage(const Package &arg, bool nl, bool update)
 {
     std::string prefix = "\033[1;33m[ " + arg.getRepoName() + " ]\033[00m ";
 
@@ -526,7 +544,7 @@ void InstallationManager::installPackage(const Package &arg, bool nl)
 
     std::string tridy_dir_backup = Runtime::tridy_dir;
     bool try_local_backup = Runtime::try_local;
-    bool l = false;
+    bool supports_local_installation = false;
 
     if (Runtime::try_local)
     {
@@ -536,17 +554,17 @@ void InstallationManager::installPackage(const Package &arg, bool nl)
                 s.find("$share") != std::string::npos ||
                 s.find("$bin") != std::string::npos ||
                 s.find("$lib") != std::string::npos)
-                l = true;
+                supports_local_installation = true;
         }
 
-        if (!l)
+        if (!supports_local_installation)
         {
             std::cout << Translation::get("manager.install.doesnt_support_local", false) << std::endl;
 
-            if (!tstd::yn_question(Translation::get("manager.install.global_installation_question", false)))
+            if (!tstd::yn_question(Translation::get("manager.install.global_installation_question", false), false))
             {
                 std::cout << Translation::get("general.aborted", false) << std::endl;
-                return;
+                return false;
             }
 
             Runtime::tridy_dir = Runtime::backup_tridy_dir;
@@ -588,14 +606,15 @@ void InstallationManager::installPackage(const Package &arg, bool nl)
             printf(Translation::get("manager.install.pretype_doesnt_exit").c_str(), package.getType()["name"].as<std::string>().c_str());
 
             if (Runtime::to_install.size() <= 1)
-                return;
+                return false;
 
-            if (!tstd::yn_question(Translation::get("manager.install.skip_and_continue", false)))
+            if (!tstd::yn_question(Translation::get("manager.install.skip_and_continue", false), false))
             {
                 std::cout << Translation::get("general.aborted", false) << std::endl;
                 Runtime::exit(0);
             }
-            return;
+
+            return false;
         }
     }
     else
@@ -603,43 +622,119 @@ void InstallationManager::installPackage(const Package &arg, bool nl)
         std::cout << Translation::get("manager.install.no_build_script", false) << std::endl;
 
         if (Runtime::to_install.size() <= 1)
-            return;
+            return false;
 
-        if (!tstd::yn_question(Translation::get("manager.install.skip_and_continue", false)))
+        if (!tstd::yn_question(Translation::get("manager.install.skip_and_continue", false), false))
         {
             std::cout << "aborted." << std::endl;
             Runtime::exit(0);
         }
 
-        return;
+        return false;
     }
 
     std::cout << prefix << Translation::get("manager.install.installing_version", false) << " " << package.getVersion() << " ..." << std::endl;
 
-    if (InstallationManager::moveProducts(prefix, package))
+    if (approveChanges(prefix, package))
     {
-        InstallationManager::linkProducts(prefix, package);
+        if (InstallationManager::moveProducts(prefix, package))
+        {
+            if (InstallationManager::linkProducts(prefix, package))
+            {
+                std::string dir = Runtime::tridy_dir+"/conf/packages/"+package_str;
+                system(std::string("if [ ! -d "+dir+" ]; then sudo mkdir -p "+dir+"; fi").c_str());
 
-        std::string dir = Runtime::tridy_dir+"/conf/packages/"+package_str;
-        system(std::string("if [ ! -d "+dir+" ]; then sudo mkdir -p "+dir+"; fi").c_str());
+                system(std::string("sudo cp "+package_dir+"pkg/package.yaml package.yaml.bkp").c_str());
 
-        system(std::string("sudo cp "+package_dir+"pkg/package.yaml package.yaml.bkp").c_str());
+                if (std::ifstream(package_dir+"pkg/package.sh"+dir).is_open())
+                    system(std::string("sudo cp "+package_dir+"pkg/package.sh "+dir).c_str());
 
-        if (std::ifstream(package_dir+"pkg/package.sh"+dir).is_open())
-            system(std::string("sudo cp "+package_dir+"pkg/package.sh "+dir).c_str());
+                system(std::string("sudo echo -e \"\\nlocal: "+std::string(Runtime::try_local ? "true" : "false")+"\\n\" >> "+file+"; sudo cp "+package_dir+"pkg/package.yaml "+dir).c_str());
+                system(std::string("sudo cp package.yaml.bkp "+package_dir+"pkg/package.yaml").c_str());
 
-        system(std::string("sudo echo -e \"\\nlocal: "+std::string(Runtime::try_local ? "true" : "false")+"\\n\" >> "+file+"; sudo cp "+package_dir+"pkg/package.yaml "+dir).c_str());
-        system(std::string("sudo cp package.yaml.bkp "+package_dir+"pkg/package.yaml").c_str());
+                chdir(Runtime::tmp_dir.c_str());
 
-        chdir(Runtime::tmp_dir.c_str());
-        return;
+                if (update)
+                    Runtime::p_updated++;
+                else
+                    Runtime::p_installed++;
+
+                return true;
+            }
+        }
+
+        std::cout << Translation::get("manager.install.installation_error");
     }
 
-    if (!l)
+    if (package.getLinksTo().size() > 0 && package.getProductsTo().size() > 0)
+    {
+        if (tstd::yn_question(Translation::get("manager.install.linking_error_cleanup", false), true))
+        {
+            RemoveManager::unlinkProducts(prefix, package);
+            RemoveManager::removeProducts(prefix, package);
+        }
+    }
+
+    if (!supports_local_installation)
     {
         Runtime::tridy_dir = tridy_dir_backup;
         Runtime::try_local = try_local_backup;
     }
 
     std::cout << prefix << Translation::get("manager.install.skipping", false) << std::endl;
+    return false;
+}
+
+bool InstallationManager::approveChanges(const std::string &prefix, const Package &package)
+{
+    int count = 0;
+    std::cout << prefix << Translation::get("manager.install.counting_files", false) << std::endl;
+
+    if (package.getProductsFrom().size() > 0)
+        std::cout << prefix << Translation::get("manager.install.following_moved", false) << std::endl;
+
+    for (const std::string &s : package.getProductsFrom())
+    {
+        count += tstd::cursive_file_count(s);
+
+        if (count >= 100)
+        {
+            std::cout << Translation::get("manager.install.file_warning", false) << std::endl;
+            std::cout << prefix << Translation::get("manager.install.continue_counting", false) << std::endl;
+        }
+    }
+
+    for (int i = 0; i < package.getProductsFrom().size(); i++)
+    {
+        std::cout << Translation::get("main.arrow", false) <<
+                  package.getProductsFrom()[i] <<
+                  " ->" <<
+                  make_path(package.getProductsTo()[i]) <<
+                  std::endl;
+    }
+
+    std::cout << std::endl;
+
+    if (package.getLinksFrom().size() != 0)
+    {
+        std::cout << prefix << Translation::get("manager.install.following_linked", false) << std::endl;
+
+        for (int i = 0; i < package.getLinksFrom().size(); i++)
+        {
+            std::cout << Translation::get("main.arrow", false) <<
+                      package.getLinksFrom()[i] <<
+                      " ->" <<
+                      make_path(package.getLinksTo()[i]) <<
+                      std::endl;
+        }
+
+        std::cout << std::endl;
+
+        if (!tstd::yn_question(Translation::get("general.continue_question"), true))
+            return false;
+    }
+    else if (!tstd::yn_question(Translation::get("general.continue_question"), true))
+        return false;
+
+    return true;
 }

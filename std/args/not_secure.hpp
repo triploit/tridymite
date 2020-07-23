@@ -5,7 +5,7 @@
 
 void __argument_not_secure(const std::vector<std::string> &parameters, CLI* cli)
 {
-    Runtime::insecure = true; // Don't ask security questions and just install/update/remove everything given
+    Runtime::insecure_ignore_all_questions = true; // Don't press enter, just rush through everything
 }
 
 #endif //TRIDYMITE_HELP_HPP

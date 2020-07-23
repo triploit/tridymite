@@ -1,5 +1,20 @@
 #!/usr/bin/env bash
 
+error_level=0
+error_packages2=""
+error_packages3=""
+error_packages4=""
+error_packages5=""
+error_packages6=""
+error_packages7=""
+
+SH_RC=""
+LANGUAGE="english"
+
+WRITE_SHELL=0           # write local path to SH_RC
+CREATE_LOCAL_PATHS=0    # create local paths
+WRITE_LANGUAGE=0
+
 function try_running_message() {
     echo "Try running:"
     echo "   (Ubuntu, Mint, Debian)     - $ sudo apt-get install ${1/\#/ }"
@@ -8,18 +23,26 @@ function try_running_message() {
     echo "       (or)                     $ sudo yum install ${4/\#/ }"
     echo "   (Solus Linux)              - $ sudo eopkg install ${5/\#/ }"
     echo "   (openSUSE)                 - $ sudo zypper in ${6/\#/ }"
+
+    error_packages2="$error_packages2${1/\#/ } "
+    error_packages3="$error_packages3${2/\#/ } "
+    error_packages4="$error_packages4${3/\#/ } "
+    error_packages5="$error_packages5${4/\#/ } "
+    error_packages6="$error_packages6${5/\#/ } "
+    error_packages7="$error_packages7${6/\#/ } "
 }
 
 function check_programs() { # command_name, apt, pacman, dnf, yum, eopkg, zypper
     if ! [ -x "$(command -v $1)" ]; then
         echo "Error: $1 is not installed. Please install it."
         try_running_message $2 $3 $4 $5 $6 $7
-        exit 1
+        echo ""
+        error_level=$((error_level+1))
     fi
 }
 
 function ask_local {
-    if [[ "$PATH" == *"${pfli}"* ]] && [[ "$1" != "-l" ]]
+    if [[ "$PATH" == *"${pfli}"* ]] && [[ "$1" != "-l" ]] && [[ -d "~/.local/bin" ]]
     then
         printf ""
     else
@@ -38,18 +61,25 @@ function ask_local {
 
             if [[ "$wsh" == "1" ]]
             then
-                shdir="$HOME/.bashrc"
+                SH_RC="$HOME/.bashrc"
             elif [[ "$wsh" == "2" ]]
             then
-                shdir="$HOME/.zshrc"
+                SH_RC="$HOME/.zshrc"
             else
                 echo -e "Then please give me the \e[1mcomplete\e[00m path of the autoload script (for bash it's $HOME/.bashrc, for zsh $HOME/.zshrc)."
                 printf "> "
-                read shdir
+                read SH_RC
             fi
 
-            echo -e "\nPATH=\"$HOME/.local/bin/:\$PATH\"" >> "${shdir}"
-            mkdir -p ${HOME}/.local/share/tridymite/conf/packages
+            shrc_c=`cat ${SH_RC}`
+            if [[ $shrc_c == *"PATH=\"$HOME/.local/bin/:\$PATH\""* ]];
+            then
+                echo "Installation okay."
+            else
+                WRITE_SHELL=1
+            fi
+
+            CREATE_LOCAL_PATHS=1
         fi
     fi
 }
@@ -88,7 +118,8 @@ function get_language {
     done
 
     echo "You chose ${lang_names[(($language-1))]}."
-    echo "language: \"${lang_names[(($language-1))]}\"" >> tridy_dir/conf/config.yaml
+    LANGUAGE="${lang_names[(($language-1))]}"
+    WRITE_LANGUAGE=1
     echo -e "\e[32;1mOkay.\e[00m"
 }
 
@@ -227,23 +258,36 @@ function install_yaml_cpp {
 # check_programs name apt pacman dnf yum eopkg zypper
 
 check_programs git git git git-all git-core git git-core
-check_programs curl libcurl4-gnutls-dev curl libcurl-gnutls libcurl-devel libcurl-devel curl libcurl-devel
+# check_programs curl libcurl4-gnutls-dev curl libcurl-gnutls libcurl-devel libcurl-devel curl libcurl-devel
 check_programs wget wget wget wget 'wget#-y' wget
 check_programs g++ g++ gcc gcc-c++ gcc-c++ '-c#system.devel' gcc-c++
 check_programs make make make make make '-c#system.devel' '-t#devel_basis'
 check_programs cmake cmake cmake cmake cmake '-c#system.devel' cmake
 
-if [ ! -f "/usr/include/x86_64-linux-gnu/curl/curl.h" ] && [ ! -f "/usr/include/curl/curl.h" ] && [ ! -f "/usr/include/x86_64-linux-gnu/curl/curl.h" ] 
+if [ ! -f "/usr/include/x86_64-linux-gnu/curl/curl.h" ] && [ ! -f "/usr/include/curl/curl.h" ] && [ ! -f "/usr/include/x86_64-linux-gnu/curl/curl.h" ]
 then
     echo "Error: libcurl isn't installed!"
-    try_running_message "libcurl4-gnutls-dev" "libcurl-gnutls" "libcurl" "libcurl" "curl-devel" "<UNKNOWN>"
-    exit 1
+    try_running_message "libcurl4-gnutls-dev" "libcurl-gnutls" "libcurl-devel" "libcurl" "curl-devel" "libcurl-devel"
+    error_level=$((error_level+1))
+    echo ""
 fi
 
 if [ ! -d "/usr/include/yaml-cpp" ] && [ ! -d "/usr/local/include/yaml-cpp" ]
 then
     echo "Error: yaml-cpp isn't installed!"
     try_running_message libyaml-cpp-dev yaml-cpp yaml-cpp-devel yaml-cpp-devel yaml-cpp-devel yaml-cpp-devel
+    error_level=$((error_level+1))
+    echo ""
+fi
+
+if [[ $error_level > 0 ]]; # apt pacman dnf yum eopkg zypper
+then
+    if [[ $error_level > 1 ]]; # apt pacman dnf yum eopkg zypper
+    then
+        echo "or everything:"
+        try_running_message "$error_packages2" "$error_packages3" "$error_packages4" "$error_packages5" "$error_packages6" "$error_packages7"
+    fi
+
     exit 1
 fi
 
@@ -306,7 +350,9 @@ rm tridy_dir/*.sh tridy_dir/*.yaml
 #
 #########################################################################
 
-get_language
+if [[ "$1" != "-a" ]] && [[ "$1" != "-al" ]]; then
+    get_language
+fi
 
 #########################################################################
 #
@@ -314,7 +360,19 @@ get_language
 #
 #########################################################################
 
-ask_local
+if [[ "$1" != "-a" ]] && [[ "$1" != "-al" ]]; then
+    ask_local
+fi
+
+if [[ "$1" == "-al" ]]; then
+    if [[ "$PATH" == *"${pfli}"* ]] && [[ -d "~/.local/bin" ]]
+    then
+        printf ""
+    else
+        _local=true
+        CREATE_LOCAL_PATHS=1
+    fi
+fi
 
 #########################################################################
 #
@@ -330,20 +388,21 @@ get_acces_tokens
 #
 #########################################################################
 
-
-if [[ `lsb_release -si` == LinuxMint ]]
+if [[ `lsb_release -si` == LinuxMint ]] || [[ `lsb_release -si` == Zorin ]]
 then
-    if ! grep -qF 's = tstd::replace(s, ": !<!> ", ": ");' package/package.cpp
+    if ! grep -qF 's = tstd::replace(s, "!<!> ", "");' package/package.cpp
     then
         echo "Hmm... you are using Linux Mint..."
         echo "We had a bit of trouble with this linux distribution in the past, so we want to"
         echo "prevent you from some errors and add some code, that fixes these errors :) !"
 
         file_content=`cat package/package.cpp`
-        file_content=${file_content/'/*{MINT_LINE}*/'/'s = tstd::replace(s, ": !<!> ", ": ");'}
-        echo 'ADDED LINE TO PACKAGE CLASS: s = tstd::replace(s, ": !<!> ", ": ");'
+        GF='"'
+        file_content=${file_content/"/*{MINT_LINE}*/"/"s = tstd::replace(s, ${GF}!<!> ${GF}, ${GF}${GF});"}
+        file_content=${file_content/"/*{MINT_LINE}*/"/"s = tstd::replace(s, ${GF}!<!> ${GF}, ${GF}${GF});"}
+        echo 'ADDED LINE TO PACKAGE CLASS: s = tstd::replace(s, "!<!> ", "");'
 
-        echo "$file_content" > package/package.cpp
+        echo "$file_content" # > package/package.cpp
     fi
 fi
 
@@ -372,13 +431,27 @@ then
     fi
 fi
 
-sudo cp -r tridy_dir /usr/share/tridymite/
-sudo ln -s /usr/share/tridymite/tridy /usr/bin/tridy
-
 if [[ "$_local" == "true" ]]
 then
     mkdir -p ~/.local/share/tridymite/packages/
 fi
+
+if [[ $WRITE_SHELL == 1 ]]; then
+    echo -e "\nPATH=\"$HOME/.local/bin/:\$PATH\"" >> "${SH_RC}"
+fi
+
+if [[ $CREATE_LOCAL_PATHS == 1 ]]; then
+    mkdir -p ${HOME}/.local/bin
+    mkdir -p ${HOME}/.local/share/tridymite/conf/packages
+fi
+
+
+if [[ $WRITE_LANGUAGE == 1 ]]; then
+    echo "language: \"${LANGUAGE}\"" >> tridy_dir/conf/config.yaml
+fi
+
+sudo cp -r tridy_dir /usr/share/tridymite/
+sudo ln -s /usr/share/tridymite/tridy /usr/bin/tridy
 
 if [ -d "bkp_pkg" ]
 then

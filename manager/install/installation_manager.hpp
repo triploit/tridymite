@@ -7,8 +7,9 @@
 class InstallationManager
 {
 public:
-    static void installPackage(const Package &arg, bool nl=true);
-    static void localPackage(std::string path);
+    static bool installPackage(const Package &arg, bool nl=true, bool update=false);
+    static bool localPackage(std::string path);
+    static bool approveChanges(const std::string &prefix, const Package &package);
     static bool moveProducts(const std::string &prefix, const Package &package);
     static bool linkProducts(const std::string &prefix, const Package &package);
     static std::string downloadPackage(const std::string &prefix, const std::string &package_dir, const std::string &package_zip, const Package &arg);

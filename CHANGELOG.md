@@ -9,6 +9,36 @@ at the start of the project I didn't really think about versioning and just gave
 everything some increasing number-letter-dots-combination. I'm trying to improve 
 this from now on.
 
+### v1.1.0 (23.07.2020)
+
+Note: When I tested Tridymite on different Distributions, I noticed that some 
+distributions use old GCC compilers (like version 7 or so...), which can't 
+compile the `#include <filesystem>` library. I tried to fix that by adding some
+preprocessor instructions to the files, which use the filesystem library (for
+example look at line 8 to 12 of `manager/install/installation_manager.cpp`), but 
+I can't promise the problem is gone now.
+
+* fixed package-installation-bugs for some Debian based distributions
+* fixed dependency-reinstallation for local packages (if dependency is installed 
+  globally, don't install it locally again)
+* fixed bug with case sensitivity with Git and Tridymite (Git is case 
+  insensitive with URLs, Tridymite was case sensitive and produced an error.
+  If the package directory was in a different case than the package 
+  argument, it couldn't find the config files.)
+* fixed missing file-linking at local installation
+* showing packages products and links before moving
+* install-script now shows all missing dependencies before exiting, except only 
+  one
+* now aborting installation, if an installation of a dependency fails, instead 
+  of continuing
+* now asking for cleaning of failed installations
+* edited installation-script in terms of automation, added option `-a`
+* edited installation-script, so the installation takes place after asking the
+  questions, not during asking
+* added libcurl dependency to openSUSE's help-message in installation-script
+* added standard Y/N-answers for Y/N-questions (like in other package managers)
+* added insecure-installation-argument
+
 ### v1.0.7 (14.07.2020)
 
 * fixed coloring at removing/updating messages
@@ -48,7 +78,8 @@ this from now on.
 
 ### v1.0.3a (03.06.2019)
 
-Note: There is a version v1.0.3 in the commits, which was a wrong version number.
+Note: There is a version v1.0.3 in the commits, which was a wrong version 
+number.
 It was changed to v1.0.3a.
 
 * fixed yaml-cpp dependency in installation script
