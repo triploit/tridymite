@@ -276,6 +276,7 @@ void Package::load_package_from_nodes(const YAML::Node &pkg)
             std::stringstream ss;
             ss << n;
             std::string s = ss.str();
+            /*{MINT_LINE}*/
 
             std::string from = tstd::split(s, ':')[0];
             std::string to = std::string(s).substr(tstd::split(s, ':')[0].size()+1, s.size());
@@ -298,6 +299,7 @@ void Package::load_package_from_nodes(const YAML::Node &pkg)
             std::stringstream ss;
             ss << n;
             std::string s = ss.str();
+            /*{MINT_LINE}*/
 
             std::string from = tstd::split(s, ':')[0];
             std::string to = std::string(s).substr(tstd::split(s, ':')[0].size()+1, s.size());
@@ -407,14 +409,14 @@ const std::string Package::getDependantPackage() const
             if (dep.getGitUser() == getGitUser() && dep.getRepoName() == getRepoName())
                 return tstd::package_to_argument(p);
         }
+    }
 
-        for (const Package &p : Runtime::to_install)
+    for (const Package &p : Runtime::to_install)
+    {
+        for (const Package &dep : p.getDependencies())
         {
-            for (const Package &dep : p.getDependencies())
-            {
-                if (dep.getGitUser() == getGitUser() && dep.getRepoName() == getRepoName())
-                    return tstd::package_to_argument(p);
-            }
+            if (dep.getGitUser() == getGitUser() && dep.getRepoName() == getRepoName())
+                return tstd::package_to_argument(p);
         }
     }
 
