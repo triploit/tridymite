@@ -246,7 +246,7 @@ int main(int argc, char* argv[])
             Runtime::to_remove.size() == 0)
             Runtime::exit(0);
 
-        if (!tstd::yn_question(Translation::get("general.continue_question", false)))
+        if (!tstd::yn_question(Translation::get("general.continue_question", false), true))
             Runtime::exit(0);
 
         // Installing/Updating/Removing
@@ -258,45 +258,60 @@ int main(int argc, char* argv[])
 
         for (const Package &update_me : Runtime::to_update) // Iterate through packages, that have to be updated
         {
-            UpdateManager::updatePackage(update_me);
+            if (!UpdateManager::updatePackage(update_me))
+            {
+                if (update_me.isDependency())
+                {
+                    printf(Translation::get("manager.install.cant_continue_installation_is_dep").c_str(),
+                           update_me.getDependantPackage().c_str());
+                    Runtime::exit(1);
+                }
+            }
         }
 
         for (const Package &install_me : Runtime::to_install) // Iterate through packages, that have to be installed
         {
-            InstallationManager::installPackage(install_me);
+            if (!InstallationManager::installPackage(install_me))
+            {
+                if (install_me.isDependency())
+                {
+                    printf(Translation::get("manager.install.cant_continue_installation_is_dep").c_str(),
+                           install_me.getDependantPackage().c_str());
+                    Runtime::exit(1);
+                }
+            }
         }
     }
 
     std::cout << std::endl << Translation::get("main.all_work_done");
-
-    if (!Runtime::to_install.empty())
+    if (Runtime::p_installed > 0)
     {
         std::cout << Translation::get("main.arrow", false);
 
-        if (Runtime::to_install.size() > 1)
-            printf(Translation::get("main.installed_t").c_str(), Runtime::to_install.size());
+        if (Runtime::p_installed > 1)
+            printf(Translation::get("main.installed_t").c_str(), Runtime::p_installed);
         else
-            printf(Translation::get("main.installed_o").c_str(), Runtime::to_install.size());
+            printf(Translation::get("main.installed_o").c_str(), Runtime::p_installed);
     }
 
-    if (!Runtime::to_update.empty())
+    if (Runtime::p_updated > 0)
     {
         std::cout << Translation::get("main.arrow", false);
 
-        if (Runtime::to_update.size() > 1)
-            printf(Translation::get("main.updated_t").c_str(), Runtime::to_update.size());
+        if (Runtime::p_updated > 1)
+            printf(Translation::get("main.updated_t").c_str(), Runtime::p_updated);
         else
-            printf(Translation::get("main.updated_o").c_str(), Runtime::to_update.size());
+            printf(Translation::get("main.updated_o").c_str(), Runtime::p_updated);
     }
 
-    if (!Runtime::to_remove.empty())
+    if (Runtime::p_removed > 0)
     {
         std::cout << Translation::get("main.arrow", false);
 
-        if (Runtime::to_remove.size() > 1)
-            printf(Translation::get("main.removed_t").c_str(), Runtime::to_remove.size());
+        if (Runtime::p_removed > 1)
+            printf(Translation::get("main.removed_t").c_str(), Runtime::p_removed);
         else
-            printf(Translation::get("main.removed_o").c_str(), Runtime::to_remove.size());
+            printf(Translation::get("main.removed_o").c_str(), Runtime::p_removed);
     }
 
     Runtime::exit(0);
