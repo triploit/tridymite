@@ -45,7 +45,7 @@ public:
 
     inline static bool verbose;
     inline static bool reinstall;
-    inline static bool insecure;
+    inline static bool insecure_ignore_all_questions;
     inline static bool update_all;
     inline static bool no_dependencies;
     inline static bool force;
@@ -53,6 +53,10 @@ public:
     inline static bool try_local;
     inline static bool keep_tmp;
     inline static bool local_folder;
+
+    inline static int p_installed;
+    inline static int p_updated;
+    inline static int p_removed;
 
     inline static std::string language;
 
@@ -64,7 +68,7 @@ public:
     {
         verbose = false;
         reinstall = false;
-        insecure = false;
+        insecure_ignore_all_questions = false;
         update_all = false;
         no_dependencies = false;
         force = false;
@@ -73,6 +77,10 @@ public:
         local_folder = true;
         keep_tmp = false;
         pid = getpid();
+
+        p_installed = 0;
+        p_removed = 0;
+        p_updated = 0;
 
         std::string homedir = getenv("HOME");
 
@@ -135,13 +143,13 @@ public:
         Runtime::directories_to_clean.push_back(tmp_dir);
         Translation::loadConfig(tridy_dir+"conf/lang/"+language+".yaml");
 
-        IPackagesManager::load(tridy_dir+"conf/packages/");
+        IPackagesManager::load(tridy_dir+"conf/packages/", backup_tridy_dir+"/conf/packages/");
         PreTypeManager::load(tridy_dir+"conf/pretypes/");
     }
 
     static void reloadManagers()
     {
-        IPackagesManager::load(tridy_dir+"/conf/packages/");
+        IPackagesManager::load(tridy_dir+"/conf/packages/", backup_tridy_dir+"/conf/packages/");
     }
 
     static bool cleanFiles()
@@ -192,10 +200,76 @@ public:
         if (lang_exit)
         {
             if (i != 0)
+            {
+                if (Runtime::p_installed > 0)
+                {
+                    std::cout << Translation::get("main.arrow", false);
+
+                    if (Runtime::p_installed > 1)
+                        printf(Translation::get("main.installed_t").c_str(), Runtime::p_installed);
+                    else
+                        printf(Translation::get("main.installed_o").c_str(), Runtime::p_installed);
+                }
+
+                if (Runtime::p_updated > 0)
+                {
+                    std::cout << Translation::get("main.arrow", false);
+
+                    if (Runtime::p_updated > 1)
+                        printf(Translation::get("main.updated_t").c_str(), Runtime::p_updated);
+                    else
+                        printf(Translation::get("main.updated_o").c_str(), Runtime::p_updated);
+                }
+
+                if (Runtime::p_removed > 0)
+                {
+                    std::cout << Translation::get("main.arrow", false);
+
+                    if (Runtime::p_removed > 1)
+                        printf(Translation::get("main.removed_t").c_str(), Runtime::p_removed);
+                    else
+                        printf(Translation::get("main.removed_o").c_str(), Runtime::p_removed);
+                }
+            }
+
+            if (i != 0)
                 printf(Translation::get("runtime.exit").c_str(), i);
         }
         else
         {
+            if (i != 0)
+            {
+                if (Runtime::p_installed > 0)
+                {
+                    std::cout << "\033[1;32m=>\033[00m Installed " << Runtime::p_installed;
+
+                    if (Runtime::p_installed > 1)
+                        std::cout << " packages." << std::endl;
+                    else
+                        std::cout << " package." << std::endl;
+                }
+
+                if (Runtime::p_updated > 0)
+                {
+                    std::cout << "\033[1;32m=>\033[00m Updated " << Runtime::p_updated;
+
+                    if (Runtime::p_updated > 1)
+                        std::cout << " packages." << std::endl;
+                    else
+                        std::cout << " package." << std::endl;
+                }
+
+                if (Runtime::p_removed > 0)
+                {
+                    std::cout << "\033[1;32m=>\033[00m Removed " << Runtime::p_removed;
+
+                    if (Runtime::p_removed > 1)
+                        std::cout << " packages." << std::endl;
+                    else
+                        std::cout << " package." << std::endl;
+                }
+            }
+
             if (i != 0)
                 std::cout << "exiting with code " << i << std::endl;
         }
