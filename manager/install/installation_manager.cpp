@@ -5,6 +5,12 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#if __has_include(<filesystem>)
+#include <filesystem>
+#else
+#include <experimental/filesystem>
+#endif
+
 #include <std/tstd.hpp>
 #include <runtime.hpp>
 #include <manager/dependencies/dependency_manager.hpp>

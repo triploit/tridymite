@@ -3,7 +3,12 @@
 
 #include <vector>
 #include <cli/cli.hpp>
+
+#if __has_include(<filesystem>)
 #include <filesystem>
+#else
+#include <experimental/filesystem>
+#endif
 
 void __argument_update_path(const std::vector<std::string> &parameters, CLI* cli)
 {
